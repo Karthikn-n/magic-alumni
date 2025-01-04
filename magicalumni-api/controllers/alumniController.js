@@ -1,6 +1,9 @@
 const AlumniMember = require("../models/AlumniMember");
 const AlumniCollege = require("../models/AlumniCollege");
+const StudentCollege = require("../models/StudentCollege");
 const College = require("../models/College");
+const Department = require("../models/Department");
+const Student = require("../models/Student");
 const mongoose = require("mongoose");
 const otpGenerator = require("otp-generator");
 const { sendOtp } = require("../services/otpService");
@@ -47,42 +50,86 @@ const OTPModel = require("../models/OTPModel");
 //   }
 // };
 
-const registerAlumni = async (req, res) => {
+const registerMember = async (req, res) => {
   try {
-    const { name, department_name, linkedin_url, completed_year, college_ids } =
-      req.body;
-
-    const existingAlumni = await AlumniMember.findOne({
+    const {
       name,
       department_name,
-      designation,
-      mobile_number,
-      email,
       linkedin_url,
       completed_year,
-    });
-
-    if (existingAlumni) {
-      return res.status(400).json({ message: "Alumni member already exists" });
-    }
-
-    const newAlumni = new AlumniMember({
-      name,
-      department_name,
-      designation,
+      current_year,
+      college_id,
       mobile_number,
+      designation,
       email,
-      linkedin_url,
-      completed_year,
-    });
+      position,
+      department_id,
+    } = req.body;
 
-    await newAlumni.save();
+    let existingMember,
+      newMember,
+      mappedColleges = [];
 
-    let mappedColleges = [];
+    if (position) {
+      existingMember = await Student.findOne({ name, department_name });
 
-    for (const college_id of college_ids) {
+      if (existingMember) {
+        return res.status(400).json({ message: "Student already exists" });
+      }
+
+      newMember = new Student({
+        name,
+        department_name,
+        linkedin_url,
+        current_year,
+        mobile_number,
+        email,
+      });
+
+      await newMember.save();
+
       const college = await College.findById(college_id);
+      if (!college) {
+        return res
+          .status(404)
+          .json({ message: `College not found for ID: ${college_id}` });
+      }
 
+      const studentCollege = new StudentCollege({
+        student_id: newMember._id,
+        college_id,
+        department_id,
+      });
+
+      await studentCollege.save();
+      mappedColleges.push(college);
+    } else {
+      existingMember = await AlumniMember.findOne({
+        name,
+        department_name,
+        linkedin_url,
+        completed_year,
+      });
+
+      if (existingMember) {
+        return res
+          .status(400)
+          .json({ message: "Alumni member already exists" });
+      }
+
+      newMember = new AlumniMember({
+        name,
+        department_name,
+        linkedin_url,
+        completed_year,
+        mobile_number,
+        designation,
+        email,
+      });
+
+      await newMember.save();
+
+      const college = await College.findById(college_id);
       if (!college) {
         return res
           .status(404)
@@ -90,8 +137,9 @@ const registerAlumni = async (req, res) => {
       }
 
       const alumniCollege = new AlumniCollege({
-        alumni_id: newAlumni._id,
+        alumni_id: newMember._id,
         college_id,
+        department_id,
       });
 
       await alumniCollege.save();
@@ -99,13 +147,13 @@ const registerAlumni = async (req, res) => {
     }
 
     res.status(201).json({
-      message: "Alumni registered successfully",
-      alumni: newAlumni,
+      message: `${position ? "Student" : "Alumni"} registered successfully`,
+      member: newMember,
       colleges: mappedColleges,
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error registering alumni member",
+      message: "Error registering member",
       error: error.message,
     });
   }
@@ -159,7 +207,14 @@ const getAlumniById = async (req, res) => {
 
     const collegeDetails = await Promise.all(
       alumniCollegeData.map(async (record) => {
-        return await College.findOne({ _id: record.college_id });
+        const college = await College.findOne({ _id: record.college_id });
+        const departments = await Department.find({
+          _id: record.department_id,
+        });
+        return {
+          ...college._doc,
+          departments,
+        };
       })
     );
 
@@ -397,8 +452,42 @@ const verifyOtp = async (req, res) => {
   }
 };
 
+const alumniAddCollege = async (req, res) => {
+  try {
+    const { college_id, alumni_id, department_id } = req.body;
+
+    if (
+      !mongoose.Types.ObjectId.isValid(alumni_id) ||
+      !mongoose.Types.ObjectId.isValid(college_id) ||
+      !mongoose.Types.ObjectId.isValid(department_id)
+    ) {
+      return res.status(400).json({
+        message: "Invalid alumni_id, college_id, or department_id",
+      });
+    }
+
+    const newCollege = new AlumniCollege({
+      college_id,
+      alumni_id,
+      department_id,
+    });
+
+    await newCollege.save();
+
+    res.status(201).json({
+      message: "College added successfully",
+      college: newCollege,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error adding college",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
-  registerAlumni,
+  registerMember,
   getAllAlumni,
   updateAlumni,
   deleteAlumni,
@@ -407,4 +496,5 @@ module.exports = {
   getAlumniById,
   loginAlumni,
   verifyOtp,
+  alumniAddCollege,
 };

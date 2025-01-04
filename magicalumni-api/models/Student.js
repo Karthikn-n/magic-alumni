@@ -5,15 +5,11 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    college_name: {
-      type: String,
-      required: true,
-    },
-    college_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "College",
-      required: true,
-    },
+    // college_id: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "College",
+    //   required: true,
+    // },
     department_name: {
       type: String,
       required: true,
@@ -24,7 +20,7 @@ const studentSchema = new mongoose.Schema(
     },
     current_year: {
       type: Number,
-      required: true,
+      required: false,
     },
     mobile_number: {
       type: Number,
@@ -33,10 +29,6 @@ const studentSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-    },
-    status: {
-      type: String,
-      default: "Approved",
     },
   },
   {

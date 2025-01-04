@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-const AlumniCollegeSchema = new mongoose.Schema({
-  alumni_id: {
+const StudentCollegeSchema = new mongoose.Schema({
+  student_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "AlumniMember",
     required: true,
@@ -18,8 +18,8 @@ const AlumniCollegeSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: "not approved",
+    default: "approved",
   },
 });
 
-module.exports = mongoose.model("AlumniCollege", AlumniCollegeSchema);
+module.exports = mongoose.model("StudentCollege", StudentCollegeSchema);
