@@ -1,0 +1,188 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:magic_alumni/app/app.locator.dart';
+import 'package:magic_alumni/constants/app_constants.dart';
+import 'package:magic_alumni/model/alumni_model.dart';
+import 'package:magic_alumni/service/dio_service.dart';
+import 'package:magic_alumni/service/encrption_service.dart';
+import 'package:stacked_services/stacked_services.dart';
+
+import '../model/colleges_model.dart';
+
+class  AuthenticateService {
+  static final AuthenticateService _authenticateService = AuthenticateService._internal();
+  final _dio = DioService.dio;
+  final SnackbarService snackBar = locator<SnackbarService>();
+  final EncryptionService encrypt = locator<EncryptionService>();
+  // Local storage to store the user informations
+  final FlutterSecureStorage store = FlutterSecureStorage();
+  
+  AlumniModel? alumni;
+  List<CollegesModel> collegesList = [];
+
+
+  /// Register API for the Alumni 
+  /// Store the Alumni id and alumni approval Status from response for future use
+  Future<bool> register(Map<String, dynamic> data) async {
+    try{
+      final response = await _dio.post(
+        "${baseApiUrl}register",
+        data: encrypt.encryptData({"alumni": data})
+      );
+      // 
+      if (response.statusCode == 200 && response.data["status"] == "success") {
+        await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+        snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+        return true;
+      } else{
+        snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+        return false;
+      }
+    } on DioException catch (err, st) {
+      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
+      log("Something went on registering", stackTrace: st);
+    }
+    return false;
+  }
+
+  // Login API call to authenticate the user
+  // Get the response from the user
+  // Store the alumni_id in local storge
+  /// If the User is present in the Remote database store and call their Profile API
+  /// Get the Alumni ID from the local storage
+  /// Call the Alumni profile API to check their approval status
+  /// store the message in the log
+  Future<bool> login(String mobile) async {
+    try{
+      final response = await _dio.post(
+        "${baseApiUrl}login",
+        data: encrypt.encryptData({"mobile": mobile})
+      );
+      // 
+      if (response.statusCode == 200 && response.data["status"] == "success") {
+        await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+        snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+        if (alumni == null) {
+          await fetchAlumni();
+        }
+        return true;
+      } else{
+        snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+        return false;
+      }
+    } on DioException catch (err, st) {
+      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
+      log("Something went on request login", stackTrace: st);
+    }
+    return false;
+  }
+
+  /// Get Alumni profile API 
+  /// It call the API via dio Service and get the User information from the Database
+  /// Before Send the data It encrypt using [EncryptionService]
+  /// Parse the Alumni data from the response using [AlumniModel]
+  /// Store it in the local Storage using [FlutterSecureStorage] for maintain session
+  Future<void> fetchAlumni() async {
+    try {
+      final response = await _dio.post(
+        "${baseApiUrl}alumni",
+        data: encrypt.encryptData({
+          "alumni_id": await store.read(key: "alumni_id")
+        })
+      );
+      if (response.statusCode == 200 && response.data["status"] == "success") {
+        alumni = AlumniModel.fromJson(response.data["alumni_profile"]);
+        String alumniId =  await store.read(key: "alumni_id") ?? " ";
+        if (await store.read(key: alumniId) == null && alumni != null) {
+          await store.write(key: alumniId, value: alumni?.toMap().toString());
+        }
+      }
+    } on DioException catch (err, st) {
+      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
+      log("Something went on Requesting Alumni Profile", stackTrace: st);
+    }
+  }
+
+  /// Verify the OTP from their Mobile message
+  Future<bool> verifyOtp(String mobile) async {
+    try {
+      final response = await _dio.post(
+        "${baseApiUrl}verifyotp",
+        data: encrypt.encryptData({
+          "alumni_id": await store.read(key: "alumni_id"),
+          "alumni_mobile": mobile
+        })
+      );
+      if (response.statusCode == 200 && response.data["status"] == "success") {
+        await store.write(key: "loggedIn${await store.read(key: "alumni_id")}$mobile", value: "success");
+        
+        if (await store.read(key: "loggedIn${await store.read(key: "alumni_id")}$mobile") != "success") {
+           snackBar.showSnackbar(
+              message: response.data["message"], 
+              duration: const Duration(milliseconds: 1200)
+          );
+        }
+        return true;
+      }else{
+          snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+      }
+      return false;
+    } on DioException catch (err, st) {
+      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
+      log("Something went on Verify OTP", stackTrace: st);
+      return false;
+    }
+  }
+
+
+  /// clear the User session from the App
+  /// Delete their ID and Profile
+  Future<void> logout() async {
+    await store.delete(key: await store.read(key: "alumni_id") ?? '-1');
+    await store.delete(key: "alumni_id");
+  }
+  
+  /// Get all the College from the API and Store it in local storage 
+  Future<void> colleges() async {
+    try {
+      final response = await _dio.get(
+        "${baseApiUrl}college"
+      );
+      if (response.statusCode == 200 && response.data["status"] == "success") {
+        collegesList = (response.data["colleges"] ?? []).map((college) => CollegesModel.fromMap(college) ,).toList();
+      }else{
+        snackBar.showSnackbar(
+          message: response.data["message"], 
+          duration: const Duration(milliseconds: 1200)
+        );
+      }
+    } on DioException catch (err, st) {
+      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
+      log("Something went on getting colleges", stackTrace: st);
+    }
+  }
+
+  factory AuthenticateService(){
+    return _authenticateService;
+  }
+
+  // Private constructor to ensure only one instance is created across the APP
+  AuthenticateService._internal();
+}
