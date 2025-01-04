@@ -1,6 +1,7 @@
 const axios = require("axios");
 const fs = require("fs");
 const College = require("../models/College");
+const Department = require("../models/Department");
 const mongoose = require("mongoose");
 
 const path = require("path");
@@ -32,18 +33,28 @@ const createCollege = async (req, res) => {
 
 const getCollege = async (req, res) => {
   try {
-    // Fetch all colleges from the College model
     const collegeList = await College.find();
 
-    // If no colleges are found, return a message
     if (collegeList.length === 0) {
       return res.status(200).json({
         message: "No colleges found",
       });
     }
 
-    // Return the list of colleges
-    res.status(200).json(collegeList);
+    const collegeWithDepartments = await Promise.all(
+      collegeList.map(async (college) => {
+        const departments = await Department.find({ college_id: college._id });
+        return {
+          ...college._doc,
+          departments,
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: "Success",
+      collegeWithDepartments,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Error retrieving college lists",
