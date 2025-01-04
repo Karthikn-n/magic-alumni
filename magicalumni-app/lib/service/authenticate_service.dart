@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
@@ -32,7 +33,7 @@ class  AuthenticateService {
         data: encrypt.encryptData({"alumni": data})
       );
       // 
-      if (response.statusCode == 200 && response.data["status"] == "success") {
+      if (response.statusCode == 200 && response.data["status"] == "Success") {
         await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
@@ -165,13 +166,16 @@ class  AuthenticateService {
       final response = await _dio.get(
         "${baseApiUrl}college"
       );
-      if (response.statusCode == 200 && response.data["status"] == "success") {
-        collegesList = (response.data["colleges"] ?? []).map((college) => CollegesModel.fromMap(college) ,).toList();
+      if (response.statusCode == 200 && response.data["success"] == "Success") {
+        List<dynamic> collegesRepsponse =  (response.data["collegeWithDepartments"] ?? []) as List<dynamic>;
+        collegesList = collegesRepsponse.map((college) => CollegesModel.fromMap(college) ,).toList();
+        debugPrint("Colleges: ${collegesList.length}");
       }else{
         snackBar.showSnackbar(
-          message: response.data["message"], 
+          message: "Can't get colleges", 
           duration: const Duration(milliseconds: 1200)
         );
+        log("Something went on getting colleges", error: response.data["message"]);
       }
     } on DioException catch (err, st) {
       snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));

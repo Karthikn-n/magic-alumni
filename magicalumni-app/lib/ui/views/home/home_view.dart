@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
@@ -16,11 +17,12 @@ class HomeView extends StatelessWidget {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => HomeViewmodel(),
+      onViewModelReady: (viewModel) async => await viewModel.apiService.news(),
       builder: (ctx, model, child) {
         return Scaffold(
           body: Stack(
             children: [
-              // Profile card
+              // App Bar Tile
                Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor
@@ -29,8 +31,10 @@ class HomeView extends StatelessWidget {
                   children: [
                     SizedBox(height: kToolbarHeight,),
                     ListTile(
-                      leading: CircleAvatar(
-                        child: Icon(CupertinoIcons.person),
+                      leading: SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: Image.asset("assets/icon/logo.png"),
                       ),
                       title: Text(
                         "Welcome back to the hut,", 
@@ -85,11 +89,12 @@ class HomeView extends StatelessWidget {
                           SizedBox(height: size.height * 0.02,),
                           SizedBox(
                             height: 100,
-                            child: Center(child: RecentNotificationsWidget())
+                            child: RecentNotificationsWidget()
                           ),
                           // Latest News 
                           SizedBox(height: size.height * 0.015,),
                           Text("Latest News", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+                          
                           // Latest news List widget
                           LatestNewsWidget()
                         ],

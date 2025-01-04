@@ -1,4 +1,5 @@
 
+import 'package:magic_alumni/service/api_service.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
 import 'package:magic_alumni/service/dio_service.dart';
 import 'package:magic_alumni/service/encrption_service.dart';
@@ -35,6 +36,7 @@ import '../ui/views/login/login_view.dart';
     LazySingleton(classType: DioService),
     LazySingleton(classType: EncryptionService),
     LazySingleton(classType: AuthenticateService),
+    LazySingleton(classType: ApiService),
   ],
   logger: StackedLogger(),
 )

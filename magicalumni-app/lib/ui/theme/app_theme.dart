@@ -15,7 +15,8 @@ class AppTheme {
     ),
     
     primaryColor: Color(0xFF8400FF),
-    canvasColor: Colors.white,
+    
+    canvasColor: Color(0xFFF7CA18),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         textStyle: TextStyle(

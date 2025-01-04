@@ -33,6 +33,7 @@ class PeopleWidget extends StatelessWidget {
               Column(
                 children: [
                   CircleAvatar(
+                    backgroundColor: Theme.of(context).canvasColor,
                     child:  Icon(CupertinoIcons.person),
                   ),
                   const SizedBox(height: 10,),

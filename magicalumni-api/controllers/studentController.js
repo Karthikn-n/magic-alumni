@@ -1,4 +1,7 @@
 const Student = require("../models/Student");
+const College = require("../models/College");
+const StudentCollege = require("../models/StudentCollege");
+const Department = require("../models/Department");
 const mongoose = require("mongoose");
 const otpGenerator = require("otp-generator");
 const StudentOTP = require("../models/StudentOTPModel");
@@ -248,6 +251,60 @@ const verifyStudentOtp = async (req, res) => {
   }
 };
 
+const getStudentById = async (req, res) => {
+  try {
+    const { student_id } = req.body;
+
+    if (!student_id || !mongoose.Types.ObjectId.isValid(student_id)) {
+      return res.status(400).json({
+        message: "Invalid or missing student_id",
+      });
+    }
+
+    const studentCollegeData = await StudentCollege.find({
+      student_id,
+      status: "approved",
+    });
+
+    if (studentCollegeData.length === 0) {
+      return res.status(200).json({
+        message: "No approved student member found for this student_id",
+      });
+    }
+
+    const student = await Student.findOne({ _id: student_id });
+
+    if (!student) {
+      return res.status(200).json({
+        message: "No student found with this ID",
+      });
+    }
+
+    const collegeDetails = await Promise.all(
+      studentCollegeData.map(async (record) => {
+        const college = await College.findOne({ _id: record.college_id });
+        const departments = await Department.find({
+          _id: record.department_id,
+        });
+        return {
+          ...college._doc,
+          departments,
+        };
+      })
+    );
+
+    res.status(200).json({
+      student,
+      colleges: collegeDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error retrieving student and college data",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerStudent,
   getAllStudent,
@@ -255,4 +312,5 @@ module.exports = {
   deleteStudent,
   loginStudent,
   verifyStudentOtp,
+  getStudentById,
 };

@@ -24,6 +24,9 @@ class AppView extends StatelessWidget {
     
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => AppViewModel(), 
+      onViewModelReady: (viewModel) async {
+        await viewModel.apiService.events();
+      },
       builder: (context, model, child) {
         return Scaffold(
           body: views.elementAt(model.index),

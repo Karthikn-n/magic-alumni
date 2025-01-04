@@ -9,6 +9,7 @@ class RecentNotificationsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
+      clipBehavior: Clip.none,
       scrollDirection: Axis.horizontal,
       itemCount: 5,
       itemBuilder: (context, index) {
@@ -24,7 +25,7 @@ class RecentNotificationsWidget extends StatelessWidget {
                     width: MediaQuery.sizeOf(context).width * 0.8,
                     child: ListTile(
                       isThreeLine: true,
-                      tileColor: Theme.of(context).scaffoldBackgroundColor,
+                      tileColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         side: BorderSide(
                           color: Colors.black.withValues(alpha: 0.06),
@@ -90,12 +91,18 @@ class RecentNotificationsWidget extends StatelessWidget {
                 right: 0,
                 top: -20,
                 child: IconButton(
-                  onPressed: (){}, 
-                  icon: Icon(CupertinoIcons.xmark, size: 20,)
+                  onPressed: (){
+                  }, 
+                  icon: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: Image.asset("assets/icon/close.png"),
+                  )
                 )
               )
             ],
           ),
+        
         );
       },
     );
