@@ -16,6 +16,8 @@ var eventRoutes = require("./routes/eventRoutes");
 
 var JobRoutes = require("./routes/jobRoutes");
 
+var DepartmentRoutes = require("./routes/departmentRoutes");
+
 var NewsRoutes = require("./routes/newsRoutes");
 
 var CollegeRoutes = require("./routes/collegeRoutes");
@@ -37,6 +39,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/jobs", JobRoutes);
 app.use("/api", CollegeRoutes);
 app.use("/api/news", NewsRoutes);
+app.use("/api", DepartmentRoutes);
 console.log("Routes registered");
 var PORT = process.env.PORT || 5000;
 app.listen(PORT, function () {

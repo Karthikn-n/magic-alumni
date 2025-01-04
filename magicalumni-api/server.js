@@ -6,6 +6,7 @@ const alumniRoutes = require("./routes/alumniRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const JobRoutes = require("./routes/jobRoutes");
+const DepartmentRoutes = require("./routes/departmentRoutes");
 const NewsRoutes = require("./routes/newsRoutes");
 const CollegeRoutes = require("./routes/collegeRoutes");
 const path = require("path");
@@ -24,6 +25,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/jobs", JobRoutes);
 app.use("/api", CollegeRoutes);
 app.use("/api/news", NewsRoutes);
+app.use("/api", DepartmentRoutes);
 
 console.log("Routes registered");
 
