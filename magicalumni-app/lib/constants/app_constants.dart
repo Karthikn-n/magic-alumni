@@ -15,4 +15,4 @@ TextStyle textStyle = const TextStyle(
   color: Colors.white,
 );
 
-const String baseApiUrl = "http://localhost-5000/api/";
+const String baseApiUrl = "http://192.168.1.14:5000/api/";

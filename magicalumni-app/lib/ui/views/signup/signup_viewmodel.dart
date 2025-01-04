@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
+import 'package:magic_alumni/model/colleges_model.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -27,6 +28,20 @@ class SignupViewmodel extends BaseViewModel{
   bool isCurrentYearStudent = false;
 
   bool get isFormValid => isUserNameValid && isCollegNameValid && isdepNameValid && isYearValid && isLinkedInUrlValid;
+
+  CollegesModel? selectedCollege;
+  String? selectedDepartment;
+
+  /// Select the college from the API list and set the value to the [selectedCollege]
+  void setCollege(CollegesModel collegeName){
+    selectedCollege = collegeName;
+    notifyListeners();
+  }
+  /// Get the Department from selected college
+  void setDepartment(String departmentName){
+    selectedDepartment = departmentName;
+    notifyListeners();
+  }
 
   // Validation for the login form comes in the 
   void init(){

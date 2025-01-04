@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
+import 'package:magic_alumni/model/colleges_model.dart';
 import 'package:magic_alumni/ui/views/signup/signup_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
@@ -68,19 +69,96 @@ class SignupView extends StatelessWidget {
                               textInputAction: TextInputAction.next,
                             ),
                             // college name field
-                            TextFieldWidget(
-                              controller: model.collegeNameController,
-                              hintText: "College Name",
-                              prefixIcon: Container(
-                                height: 10,
-                                width: 10,
-                                padding: EdgeInsets.all(12),
-                                child: Image.asset(
-                                  "assets/icon/college.png", color: Theme.of(context).primaryColor,
-                                  fit: BoxFit.contain,
-                                ),
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8)
                               ),
-                              textInputAction: TextInputAction.next,
+                              child: DropdownButton<CollegesModel>(
+                                isExpanded: true,
+                                hint: Row(
+                                  spacing: 15,
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: Image.asset(
+                                        "assets/icon/college.png", color: Theme.of(context).primaryColor,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    Text(
+                                      model.selectedCollege != null ? model.selectedCollege!.collegeName : "Colleges", 
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w400, 
+                                        fontSize: model.selectedCollege != null ? 14 :12, 
+                                        color: model.selectedCollege != null ? Colors.black : Colors.black45
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // value: model.selectedCollege!,
+                                underline: Container(),
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                items: model.auth.collegesList.map((value) {
+                                  return DropdownMenuItem<CollegesModel>(
+                                    value: value,
+                                    child: Text(value.collegeName, style: TextStyle(fontSize: 14),)
+                                  );
+                                },).toList(), 
+                                onChanged: (value) {
+                                  if(value != null){
+                                    model.setCollege(value);
+                                  }
+                                },
+                              ),
+                            ),
+                            // Department name field
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8)
+                              ),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                hint: Row(
+                                  spacing: 15,
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: Image.asset(
+                                        "assets/icon/department.png", color: Theme.of(context).primaryColor,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    Text(
+                                      model.selectedDepartment != null ? model.selectedDepartment! : "Select Department", 
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w400, 
+                                        fontSize: model.selectedDepartment != null ? 14 : 12, 
+                                        color: model.selectedDepartment != null ? Colors.black : Colors.black45
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // value: model.selectedCollege!,
+                                underline: Container(),
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                items:  model.selectedCollege?.departments.map((value) {
+                                  return DropdownMenuItem<DepartmentModel>(
+                                    value: value,
+                                    child: Text(value.departmentName, style: TextStyle(fontSize: 14),)
+                                  );
+                                },).toList(), 
+                                onChanged: (value) {
+                                  if(value != null){
+                                    model.setDepartment(value.departmentName);
+                                  }
+                                },
+                              ),
                             ),
                             // Department name field
                             TextFieldWidget(
