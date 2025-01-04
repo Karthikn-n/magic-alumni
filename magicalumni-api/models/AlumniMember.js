@@ -23,7 +23,7 @@ const alumniMemberSchema = new mongoose.Schema(
     },
     completed_year: {
       type: Number,
-      required: true,
+      required: false,
     },
     mobile_number: {
       type: Number,
