@@ -12,6 +12,7 @@ import 'package:stacked_services/src/navigation/navigation_service.dart';
 import 'package:stacked_services/src/snackbar/snackbar_service.dart';
 import 'package:stacked_shared/stacked_shared.dart';
 
+import '../service/api_service.dart';
 import '../service/authenticate_service.dart';
 import '../service/dio_service.dart';
 import '../service/encrption_service.dart';
@@ -34,4 +35,5 @@ Future<void> setupLocator({
   locator.registerLazySingleton(() => DioService());
   locator.registerLazySingleton(() => EncryptionService());
   locator.registerLazySingleton(() => AuthenticateService());
+  locator.registerLazySingleton(() => ApiService());
 }
