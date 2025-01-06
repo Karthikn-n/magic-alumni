@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/ui/views/app-view/app_viewmodel.dart';
 import 'package:magic_alumni/ui/views/events/events_view.dart';

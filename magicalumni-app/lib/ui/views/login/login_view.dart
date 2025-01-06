@@ -92,13 +92,16 @@ class LoginView extends StatelessWidget {
                                 height: 48.0,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    !model.isAccountVerified
-                                      ? model.isMobileAdded 
-                                        ? await model.login(model.mobileController.text)// Call login API
-                                        : model.otpSnackBar()
-                                      : model.isOtpAdded
-                                        ? await model.verifyOtp(model.otpController.text)
-                                        : model.otpSnackBar();
+                                   
+                                    model.isOTPVerified
+                                    ? model.navigateHome()
+                                    : !model.isAccountVerified
+                                        ? model.isMobileAdded 
+                                          ? await model.login(model.mobileController.text)// Call login API
+                                          : model.mobileSnackBar()
+                                        : model.isOtpAdded
+                                          ? await model.verifyOtp(model.otpController.text)
+                                          : model.otpSnackBar();
                                   },
                                   child: Text(
                                     model.isAccountVerified ? "Verify" : 'Login',

@@ -1,12 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/events/events_viewmodel.dart';
 import 'package:magic_alumni/widgets/events/event_list_widget.dart';
 import 'package:stacked/stacked.dart';
 
-import '../../../widgets/people/filter_button.dart';
+
 
 class EventsView extends StatelessWidget {
   const EventsView({super.key});

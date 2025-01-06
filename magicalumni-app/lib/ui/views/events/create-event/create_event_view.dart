@@ -14,6 +14,7 @@ class CreateEventView extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
+      onViewModelReady: (viewModel) => viewModel.init(),
       viewModelBuilder: () => CreateEventViewmodel(),
       builder: (ctx, model, child) {
         return Scaffold(
@@ -96,6 +97,12 @@ class CreateEventView extends StatelessWidget {
                           textInputAction: TextInputAction.next,
                           prefixIcon: Icon(Icons.pin_drop_rounded, size: 20, color: Theme.of(context).primaryColor,),
                         ),
+                        TextFieldWidget(
+                          controller: model.eventTypeController,
+                          hintText: "Event Type",
+                          textInputAction: TextInputAction.next,
+                          prefixIcon: Icon(CupertinoIcons.group, size: 20, color: Theme.of(context).primaryColor,),
+                        ),
                         Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
@@ -103,7 +110,7 @@ class CreateEventView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8)
                           ),
                           child: DropdownButton(
-                            icon: Container(),
+                            isExpanded: true,
                             hint: Row(
                               spacing: 15,
                               children: [
@@ -120,7 +127,9 @@ class CreateEventView extends StatelessWidget {
                               );
                             },).toList(), 
                             onChanged: (value) {
-                              
+                              if (value != null) {
+                                model.selectOption(model.rsvpOptions.indexOf(value));
+                              }
                             },
                           ),
                         ),
@@ -139,6 +148,7 @@ class CreateEventView extends StatelessWidget {
                         TextFieldWidget(
                           controller: model.criteriaController,
                           hintText: "Criteria",
+                          prefixIcon: Icon(CupertinoIcons.check_mark_circled, size: 20, color: Theme.of(context).primaryColor,),
                           textInputAction: TextInputAction.next,
                         ),
                         TextFieldWidget(
@@ -151,8 +161,10 @@ class CreateEventView extends StatelessWidget {
                           width: size.width,
                           height: 50.0,
                           child: ElevatedButton(
-                            onPressed: () {
-                              
+                            onPressed: () async {
+                              model.formValid
+                              ? await model.events.eventCreate(await model.eventData())// Call the API 
+                              : model.showSnackbar(); // Show snack bar message
                             },
                             child: Text(
                               'Create Event',
