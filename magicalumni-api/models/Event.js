@@ -29,14 +29,13 @@ const eventSchema = new mongoose.Schema(
       required: true,
     },
     event_type: {
-      type: String,
+      type: [String],
       enum: ["seminar", "workshop", "meetup"],
-      required: true,
+      required: false,
     },
     rsvp_options: {
-      type: String,
-      enum: ["yes", "no", "maybe"],
-      default: "no",
+      type: [String],
+      default: ["no"],
     },
     location: {
       type: String,
