@@ -21,14 +21,14 @@ const alumniMemberSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    completed_year: {
-      type: Number,
-      required: false,
-    },
-    current_year: {
-      type: Number,
-      required: false,
-    },
+    // completed_year: {
+    //   type: Number,
+    //   required: false,
+    // },
+    // current_year: {
+    //   type: Number,
+    //   required: false,
+    // },
     mobile_number: {
       type: Number,
       required: true,
