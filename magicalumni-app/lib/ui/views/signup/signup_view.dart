@@ -17,7 +17,7 @@ class SignupView extends StatelessWidget {
       viewModelBuilder: () => SignupViewmodel(),
       onViewModelReady: (viewModel) async {
         viewModel.init();
-        await viewModel.auth.colleges();
+        await viewModel.getColleges();
       },
       builder: (context, model, child) {
         return Scaffold(
@@ -114,7 +114,7 @@ class SignupView extends StatelessWidget {
                                 },
                               ),
                             ),
-                            // Department name field
+                            // Department Drop down button 
                             Container(
                               width: double.infinity,
                               decoration: BoxDecoration(
@@ -155,36 +155,46 @@ class SignupView extends StatelessWidget {
                                 },).toList(), 
                                 onChanged: (value) {
                                   if(value != null){
-                                    model.setDepartment(value.departmentName);
+                                    model.setDepartment(value);
                                   }
                                 },
                               ),
                             ),
-                            // Department name field
+                            // Mobile number field
                             TextFieldWidget(
-                              controller: model.depNameController,
-                              prefixIcon: Container(
-                                height: 10,
-                                width: 10,
-                                padding: EdgeInsets.all(12),
-                                child: Image.asset(
-                                  "assets/icon/department.png", color: Theme.of(context).primaryColor,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              hintText: "Department Name",
+                              controller: model.mobileController,
+                              prefixIcon: Icon(CupertinoIcons.phone, color: Theme.of(context).primaryColor, size: 20,),
+                              hintText: "Mobile Number",
+                              maxLength: 10,
+                              keyboardType: TextInputType.phone,
+                              textInputAction: TextInputAction.next,
+                            ),
+                            // Email field
+                            TextFieldWidget(
+                              controller: model.emailController,
+                              prefixIcon: Icon(CupertinoIcons.mail, color: Theme.of(context).primaryColor, size: 20,),
+                              hintText: "Email",
+                              keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                             ),
                             // current year or passed out year text field
                             TextFieldWidget(
                               controller: model.currentOrCcyController,
-                               prefixIcon: Icon(CupertinoIcons.calendar, color: Theme.of(context).primaryColor, size: 20,),
+                              prefixIcon: Icon(CupertinoIcons.calendar, color: Theme.of(context).primaryColor, size: 20,),
                               hintText: model.isCurrentYearStudent ? "Current year" : "Passed Out Year",
                               textInputAction: TextInputAction.next,
                               keyboardType: model.isCurrentYearStudent 
                                 ? null
                                 : TextInputType.number,
                             ),
+                            !model.isCurrentYearStudent
+                            ? TextFieldWidget(
+                              controller: model.designationController,
+                              prefixIcon: Icon(CupertinoIcons.person, color: Theme.of(context).primaryColor, size: 20,),
+                              hintText: "Designation",
+                              textInputAction: TextInputAction.next,
+                            )
+                            : Container(),
                             // Check box for current year student
                             CheckboxListTile(
                               tristate: true,
@@ -202,9 +212,11 @@ class SignupView extends StatelessWidget {
                               width: size.width,
                               height: 50.0,
                               child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   model.isFormValid
-                                  ? model.auth.register(model.userData())
+                                  ? await model.auth.register(model.userData()).then((value){
+                                    value ? model.navigateHome() : null;
+                                  })
                                   : model.snackBarMessage();
                                 },
                                 child: Text(
@@ -260,6 +272,7 @@ class SignupView extends StatelessWidget {
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 20,),
                           ],
                         ),
                       ],

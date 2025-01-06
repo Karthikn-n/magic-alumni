@@ -70,6 +70,7 @@ const registerMember = async (req, res) => {
       newMember,
       mappedColleges = [];
 
+
     if (role) {
       existingMember = await AlumniMember.findOne({
         name,
