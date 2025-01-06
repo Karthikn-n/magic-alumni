@@ -27,6 +27,10 @@ const createEvent = async (req, res) => {
         .json({ message: "All required fields must be filled" });
     }
 
+    const rsvpArray = Array.isArray(rsvp_options)
+      ? rsvp_options
+      : [rsvp_options || "no"];
+
     const newEvent = new Event({
       alumni_id,
       college_id,
@@ -35,12 +39,31 @@ const createEvent = async (req, res) => {
       date,
       approval_status,
       event_type,
-      rsvp_options,
+      rsvp_options: rsvpArray,
       location,
       criteria,
     });
 
     const savedEvent = await newEvent.save();
+
+    // const students = await StudentCollege.find({ college_id });
+    // const alumni = await AlumniCollege.find({ college_id });
+
+    // const recipients = [
+    //   ...students.map((s) => s.student_id.toString()),
+    //   ...alumni.map((a) => a.alumni_id.toString()),
+    // ];
+
+    // recipients.forEach((userId) => {
+    //   const socketId = connectedUsers[userId];
+    //   if (socketId) {
+    //     io.to(socketId).emit("new_event", {
+    //       message: `New event "${event_title}" has been created by your college.`,
+    //       event: savedEvent,
+    //     });
+    //   }
+    // });
+
     res
       .status(201)
       .json({ message: "Event created successfully", event: savedEvent });
