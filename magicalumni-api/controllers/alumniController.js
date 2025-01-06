@@ -54,7 +54,7 @@ const registerMember = async (req, res) => {
   try {
     const {
       name,
-      department_name,
+      // department_name,
       linkedin_url,
       completed_year,
       current_year,
@@ -71,7 +71,7 @@ const registerMember = async (req, res) => {
       mappedColleges = [];
 
     if (position) {
-      existingMember = await Student.findOne({ name, department_name });
+      existingMember = await Student.findOne({ name });
 
       if (existingMember) {
         return res.status(400).json({ message: "Student already exists" });
@@ -79,7 +79,7 @@ const registerMember = async (req, res) => {
 
       newMember = new Student({
         name,
-        department_name,
+        // department_name,
         linkedin_url,
         current_year,
         mobile_number,
@@ -106,7 +106,7 @@ const registerMember = async (req, res) => {
     } else {
       existingMember = await AlumniMember.findOne({
         name,
-        department_name,
+        // department_name,
         linkedin_url,
         completed_year,
       });
@@ -119,7 +119,7 @@ const registerMember = async (req, res) => {
 
       newMember = new AlumniMember({
         name,
-        department_name,
+        // department_name,
         linkedin_url,
         completed_year,
         mobile_number,
@@ -147,7 +147,8 @@ const registerMember = async (req, res) => {
     }
 
     res.status(201).json({
-      message: `${position ? "Student" : "Alumni"} registered successfully`,
+      message: `Registered successfully`,
+      status: "Okay",
       member: newMember,
       colleges: mappedColleges,
     });

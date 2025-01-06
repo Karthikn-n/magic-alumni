@@ -9,10 +9,10 @@ const alumniMemberSchema = new mongoose.Schema(
     //   type: String,
     //   required: true,
     // },
-    department_name: {
-      type: String,
-      required: true,
-    },
+    // department_name: {
+    //   type: String,
+    //   required: true,
+    // },
     designation: {
       type: String,
       required: true,
