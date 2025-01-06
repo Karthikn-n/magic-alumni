@@ -12,6 +12,9 @@ class SignupViewmodel extends BaseViewModel{
   final TextEditingController depNameController = TextEditingController();
   final TextEditingController currentOrCcyController = TextEditingController();
   final TextEditingController linkedUrlController = TextEditingController();
+  final TextEditingController mobileController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController designationController = TextEditingController();
 
   // Navigator router to navigate next screens without context
   final NavigationService _navigationService = locator<NavigationService>();
@@ -35,11 +38,21 @@ class SignupViewmodel extends BaseViewModel{
   /// Select the college from the API list and set the value to the [selectedCollege]
   void setCollege(CollegesModel collegeName){
     selectedCollege = collegeName;
+    if (selectedCollege != null) {
+      collegeNameController.text = selectedCollege!.id;
+    }
     notifyListeners();
   }
   /// Get the Department from selected college
-  void setDepartment(String departmentName){
-    selectedDepartment = departmentName;
+  void setDepartment(DepartmentModel departmentName){
+    selectedDepartment = departmentName.departmentName;
+    depNameController.text = departmentName.id;
+    notifyListeners();
+  }
+
+  /// Call the colleges API and notfy the listeners
+  Future<void> getColleges() async {
+    await auth.colleges();
     notifyListeners();
   }
 
@@ -108,20 +121,27 @@ class SignupViewmodel extends BaseViewModel{
       duration: const Duration(milliseconds: 1500),
     );
   }
-
+// department_name
+// mobile_number
+// email
+// department_id
   Map<String, dynamic> userData(){
     final alumniData = {
-      "alumni_name": userNameController.text,
+      "name": userNameController.text,
       "linkedin_url": linkedUrlController.text,
-      "college_name": [collegeNameController.text],
-      "department_name":[depNameController.text],
+      "college_id": [collegeNameController.text],
+      "department_id":[depNameController.text],
+      "mobile_number": mobileController.text,
+      "email": emailController.text,
     };
     if(isCurrentYearStudent) {
-      alumniData["current_year_student"] = true;
+      alumniData["position"] = true;
       alumniData["current_year"] = currentOrCcyController.text;
+      alumniData["designation"] = "Student";
     }else{
-      alumniData["current_year_student"] = false;
-      alumniData["passed_out_year"] = currentOrCcyController.text;
+      alumniData["position"] = false;
+      alumniData["completed_year"] = currentOrCcyController.text;
+      alumniData["designation"] = designationController.text;
     }
     return alumniData;
   }

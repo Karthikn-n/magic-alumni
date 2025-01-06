@@ -16,10 +16,7 @@ class LoginViewmodel extends BaseViewModel{
   // check the account is exits are not is account is exist change the account verified status
   bool _isAccountVerified = false;
   bool get isAccountVerified => _isAccountVerified;
-  void accountVerifed(){
-    _isAccountVerified = true;
-    notifyListeners();
-  }
+
 
   // Use navigation service to navigate between views
   final NavigationService _navigationService = locator<NavigationService>();
@@ -40,14 +37,19 @@ class LoginViewmodel extends BaseViewModel{
     },);
     // Validate the otp fields
     otpController.addListener(() {
-       if (otpController.text.isEmpty) {
-        isOtpAdded = true;
-      }else{
+       if (otpController.text.isEmpty || mobileController.text.length < 6) {
         isOtpAdded = false;
+      }else{
+        isOtpAdded = true;
       }
     },);
   }
 
+  /// Once successfully user is verified set that to [true]
+  void verifyAccount(){
+    _isAccountVerified = true;
+    notifyListeners();
+  }
   
   // If the mobile is not added show the snackbar
   void mobileSnackBar(){
@@ -60,23 +62,31 @@ class LoginViewmodel extends BaseViewModel{
     }
   }
 
+  /// If the otp is not entered show the snackbar
   void otpSnackBar(){
-    if (mobileController.text.isEmpty) {
+    if (otpController.text.isEmpty) {
       _snackbarService.showSnackbar(message: "Enter a OTP", duration: const Duration(milliseconds: 1200));
     }else if(RegExp(r'^[0-9]{6}$').hasMatch(otpController.text)){
       _snackbarService.showSnackbar(message: "Enter a Valid OTP", duration: const Duration(milliseconds: 1200));
     }else{
       return;
     }
+    notifyListeners();
   }
 
+  // Call the API 
+  Future<void> login(String mobile) async 
+    => await auth.login(mobile).then((value) => value ? verifyAccount() : null,);
+ 
 
+  Future<void> verifyOtp(String otp) async 
+    => await auth.verifyOtp(otp).then((value) => value ? navigateHome() : null,);
+  
   // Move to signup screen 
   void navigateSignup() => _navigationService.replaceWithSignupView();
   
   // Navigate to home screen view
-  void navigateHome() => _navigationService.replaceWithAppView();
-
-
+  void navigateHome()  => _navigationService.replaceWithAppView();
 
 }
+

@@ -9,19 +9,23 @@ const alumniMemberSchema = new mongoose.Schema(
     //   type: String,
     //   required: true,
     // },
-    department_name: {
-      type: String,
-      required: true,
-    },
+    // department_name: {
+    //   type: String,
+    //   required: false,
+    // },
     designation: {
       type: String,
-      required: true,
+      required: false,
     },
     linkedin_url: {
       type: String,
       required: true,
     },
     completed_year: {
+      type: Number,
+      required: false,
+    },
+    current_year: {
       type: Number,
       required: false,
     },
@@ -32,6 +36,9 @@ const alumniMemberSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+    },
+    role: {
+      type: String,
     },
   },
   {

@@ -11,7 +11,7 @@ import 'package:magic_alumni/service/encrption_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 import '../model/colleges_model.dart';
-
+enum SnackBartype { custom }
 class  AuthenticateService {
   static final AuthenticateService _authenticateService = AuthenticateService._internal();
   final _dio = DioService.dio;
@@ -29,17 +29,23 @@ class  AuthenticateService {
   Future<bool> register(Map<String, dynamic> data) async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}register",
-        data: encrypt.encryptData({"alumni": data})
+        "${baseApiUrl}member/register",
+        data: data
       );
       // 
-      if (response.statusCode == 200 && response.data["status"] == "Success") {
-        await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+      if (response.statusCode == 201 && response.data["status"] == "Okay") {
+        // await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
         );
         return true;
+      } else if(response.data["message"] == "Alumni member already exists" && response.statusCode == 400) {
+         await snackBar.showCustomSnackBar(
+            variant: SnackBartype.custom,
+            message: "Member registered Login", 
+            duration: const Duration(milliseconds: 1200)
+        );
       } else{
         snackBar.showSnackbar(
             message: response.data["message"], 
@@ -64,12 +70,12 @@ class  AuthenticateService {
   Future<bool> login(String mobile) async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}login",
-        data: encrypt.encryptData({"mobile": mobile})
+        "${baseApiUrl}alumni/login",
+        data: {"mobile_number": mobile}
       );
       // 
-      if (response.statusCode == 200 && response.data["status"] == "success") {
-        await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+      if (response.statusCode == 200 && response.data["message"] == "OTP generated and stored successfully") {
+        await store.write(key: "alumni_mobile", value: mobile.toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
@@ -100,13 +106,11 @@ class  AuthenticateService {
   Future<void> fetchAlumni() async {
     try {
       final response = await _dio.post(
-        "${baseApiUrl}alumni",
-        data: encrypt.encryptData({
-          "alumni_id": await store.read(key: "alumni_id")
-        })
+        "${baseApiUrl}alumni/member",
+        data: {"alumni_id": await store.read(key: "alumni_id")}
       );
-      if (response.statusCode == 200 && response.data["status"] == "success") {
-        alumni = AlumniModel.fromJson(response.data["alumni_profile"]);
+      if (response.statusCode == 200) {
+        alumni = AlumniModel.fromJson(response.data);
         String alumniId =  await store.read(key: "alumni_id") ?? " ";
         if (await store.read(key: alumniId) == null && alumni != null) {
           await store.write(key: alumniId, value: alumni?.toMap().toString());
@@ -119,24 +123,24 @@ class  AuthenticateService {
   }
 
   /// Verify the OTP from their Mobile message
-  Future<bool> verifyOtp(String mobile) async {
+  Future<bool> verifyOtp(String otp) async {
     try {
       final response = await _dio.post(
-        "${baseApiUrl}verifyotp",
-        data: encrypt.encryptData({
-          "alumni_id": await store.read(key: "alumni_id"),
-          "alumni_mobile": mobile
-        })
+        "${baseApiUrl}alumni/verifyOtp",
+        data: {
+          "mobile_number": await store.read(key: "alumni_mobile"),
+          "otp": otp
+        }
       );
-      if (response.statusCode == 200 && response.data["status"] == "success") {
-        await store.write(key: "loggedIn${await store.read(key: "alumni_id")}$mobile", value: "success");
-        
-        if (await store.read(key: "loggedIn${await store.read(key: "alumni_id")}$mobile") != "success") {
+      if (response.statusCode == 200 && response.data["message"] == "OTP verified successfully") {
+        await store.write(key: "loggedIn${await store.read(key: "alumni_mobile")}", value: "success");
+        await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+        // if (await store.read(key: "loggedIn${await store.read(key: "alumni_id")}$mobile") != "success") {
            snackBar.showSnackbar(
               message: response.data["message"], 
               duration: const Duration(milliseconds: 1200)
           );
-        }
+        // }
         return true;
       }else{
           snackBar.showSnackbar(
