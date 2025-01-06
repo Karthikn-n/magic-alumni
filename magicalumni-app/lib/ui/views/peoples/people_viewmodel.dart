@@ -11,4 +11,6 @@ class PeopleViewmodel extends BaseViewModel{
       
     );
   }
+
+  /// Get all the alumni memebers who are approved by the management
 }
