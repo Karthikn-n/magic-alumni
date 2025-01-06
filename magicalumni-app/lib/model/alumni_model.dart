@@ -22,7 +22,7 @@ class AlumniModel {
   
   factory AlumniModel.fromJson(Map<String, dynamic> json){
     return AlumniModel(
-      id: json["id"], 
+      id: json["_id"], 
       name: json["name"], 
       colleges: (json["colleges"] ?? []).map<CollegeApprovalModel>((college) => CollegeApprovalModel.fromJson(college)).toList(), 
       mobile: json["mobile"], 

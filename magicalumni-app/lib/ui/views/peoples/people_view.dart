@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:magic_alumni/widgets/people/filter_button.dart';
 import 'package:magic_alumni/widgets/people/people_widget.dart';
 
 class PeopleView extends StatelessWidget {
