@@ -10,10 +10,10 @@ const studentSchema = new mongoose.Schema(
     //   ref: "College",
     //   required: true,
     // },
-    department_name: {
-      type: String,
-      required: true,
-    },
+    // department_name: {
+    //   type: String,
+    //   required: true,
+    // },
     linkedin_url: {
       type: String,
       required: true,
