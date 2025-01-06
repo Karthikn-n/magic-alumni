@@ -81,10 +81,10 @@ class LoginView extends StatelessWidget {
                               model.isAccountVerified 
                               ? TextFieldWidget(
                                   controller: model.otpController,
-                                  hintText: "4 Digit OTP",
-                                  maxLength: 4,
+                                  hintText: "6 Digit OTP",
+                                  maxLength: 6,
                                   textInputAction: TextInputAction.done,
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.visiblePassword,
                                 )
                               : Container(),
                               SizedBox(
@@ -92,16 +92,13 @@ class LoginView extends StatelessWidget {
                                 height: 48.0,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    model.isMobileAdded 
-                                      ? await model.auth.login(model.mobileController.text) // Call login API
-                                        ? model.accountVerifed() : null
-                                      : model.mobileSnackBar();
-                                    model.isAccountVerified 
-                                      ? model.isOtpAdded 
-                                        ? await model.auth.verifyOtp(model.mobileController.text)
-                                          ?  model.navigateHome() : null
-                                        : model.otpSnackBar()// Navigate to home 
-                                      : null;
+                                    !model.isAccountVerified
+                                      ? model.isMobileAdded 
+                                        ? await model.login(model.mobileController.text)// Call login API
+                                        : model.otpSnackBar()
+                                      : model.isOtpAdded
+                                        ? await model.verifyOtp(model.otpController.text)
+                                        : model.otpSnackBar();
                                   },
                                   child: Text(
                                     model.isAccountVerified ? "Verify" : 'Login',

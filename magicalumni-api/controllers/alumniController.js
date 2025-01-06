@@ -70,6 +70,7 @@ const registerMember = async (req, res) => {
       newMember,
       mappedColleges = [];
 
+
     if (role) {
       existingMember = await AlumniMember.findOne({
         name,
@@ -153,6 +154,7 @@ const registerMember = async (req, res) => {
     }
 
     res.status(201).json({
+
       message: `${role ? "Student" : "Alumni"} registered successfully`,
       _id: newMember._id,
       college_id,
