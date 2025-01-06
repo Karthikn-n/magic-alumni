@@ -23,9 +23,10 @@ const createJob = async (req, res) => {
       : job_image;
 
     if (!alumni_id || !college_id || !job_title || !last_date || !imagePath) {
-      return res
-        .status(400)
-        .json({ message: "All required fields must be filled" });
+      return res.status(400).json({
+        status: "not ok",
+        message: "All required fields must be filled",
+      });
     }
 
     const newJob = new Job({
@@ -40,11 +41,15 @@ const createJob = async (req, res) => {
     });
 
     const savedJob = await newJob.save();
-    res
-      .status(201)
-      .json({ message: "Job created successfully", job: savedJob });
+    res.status(201).json({
+      status: "ok",
+      message: "Job created successfully",
+      job: savedJob,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error creating job", error });
+    res
+      .status(500)
+      .json({ status: "error", message: "Error creating job", error });
   }
 };
 
@@ -54,6 +59,7 @@ const getAllJob = async (req, res) => {
 
     if (college_id && !mongoose.Types.ObjectId.isValid(college_id)) {
       return res.status(400).json({
+        status: "not ok",
         message: "Invalid college_id format",
       });
     }
@@ -67,13 +73,15 @@ const getAllJob = async (req, res) => {
 
     if (jobList.length === 0) {
       return res.status(200).json({
+        status: "ok",
         message: "No data found for this college",
       });
     }
 
-    res.status(200).json(jobList);
+    res.status(200).json({ status: "ok", jobList: jobList });
   } catch (error) {
     res.status(500).json({
+      status: "error",
       message: "Error retrieving job lists",
       error: error.message,
     });

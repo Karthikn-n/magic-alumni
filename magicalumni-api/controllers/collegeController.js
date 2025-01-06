@@ -11,9 +11,10 @@ const createCollege = async (req, res) => {
     const { name, address, city } = req.body;
 
     if (!name || !address || !city) {
-      return res
-        .status(400)
-        .json({ message: "All required fields must be filled" });
+      return res.status(400).json({
+        status: "not ok",
+        message: "All required fields must be filled",
+      });
     }
 
     const newCollege = new College({
@@ -23,11 +24,15 @@ const createCollege = async (req, res) => {
     });
 
     const savedCollege = await newCollege.save();
-    res
-      .status(201)
-      .json({ message: "College created successfully", college: savedCollege });
+    res.status(201).json({
+      status: "ok",
+      message: "College created successfully",
+      college: savedCollege,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error creating college", error });
+    res
+      .status(500)
+      .json({ status: "error", message: "Error creating college", error });
   }
 };
 
@@ -37,6 +42,7 @@ const getCollege = async (req, res) => {
 
     if (collegeList.length === 0) {
       return res.status(200).json({
+        status: "ok",
         message: "No colleges found",
       });
     }
@@ -52,11 +58,12 @@ const getCollege = async (req, res) => {
     );
 
     res.status(200).json({
-      success: "Success",
-      collegeWithDepartments,
+      status: "Ok",
+      collegeWithDepartments: collegeWithDepartments,
     });
   } catch (error) {
     res.status(500).json({
+      status: "error",
       message: "Error retrieving college lists",
       error: error.message,
     });

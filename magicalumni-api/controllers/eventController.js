@@ -22,9 +22,10 @@ const createEvent = async (req, res) => {
     const imagePath = req.file ? `/uploads/${req.file.filename}` : event_image;
 
     if (!alumni_id || !college_id || !event_title || !date || !imagePath) {
-      return res
-        .status(400)
-        .json({ message: "All required fields must be filled" });
+      return res.status(400).json({
+        status: "not ok",
+        message: "All required fields must be filled",
+      });
     }
 
     const rsvpArray = Array.isArray(rsvp_options)
@@ -64,11 +65,15 @@ const createEvent = async (req, res) => {
     //   }
     // });
 
-    res
-      .status(201)
-      .json({ message: "Event created successfully", event: savedEvent });
+    res.status(201).json({
+      status: "ok",
+      message: "Event created successfully",
+      event: savedEvent,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error creating event", error });
+    res
+      .status(500)
+      .json({ status: "error", message: "Error creating event", error });
   }
 };
 
@@ -78,6 +83,7 @@ const getAllEvent = async (req, res) => {
 
     if (college_id && !mongoose.Types.ObjectId.isValid(college_id)) {
       return res.status(400).json({
+        status: "not ok",
         message: "Invalid college_id format",
       });
     }
@@ -91,13 +97,15 @@ const getAllEvent = async (req, res) => {
 
     if (eventList.length === 0) {
       return res.status(200).json({
+        status: "ok",
         message: "No data found for this college",
       });
     }
 
-    res.status(200).json(eventList);
+    res.status(200).json({ status: "ok", eventList: eventList });
   } catch (error) {
     res.status(500).json({
+      status: "error",
       message: "Error retrieving event lists",
       error: error.message,
     });

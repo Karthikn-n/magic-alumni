@@ -8,6 +8,7 @@ const {
   loginStudent,
   verifyStudentOtp,
   getStudentById,
+  studentAddCollege,
 } = require("../controllers/studentController");
 const router = express.Router();
 
@@ -18,5 +19,5 @@ router.post("/student/delete", deleteStudent);
 router.post("/student/login", loginStudent);
 router.post("/student/verifyStudentOtp", verifyStudentOtp);
 router.post("/student/data", getStudentById);
-
+router.post("/student/addcollege", studentAddCollege);
 module.exports = router;
