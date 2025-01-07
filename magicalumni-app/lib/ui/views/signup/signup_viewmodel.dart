@@ -121,10 +121,7 @@ class SignupViewmodel extends BaseViewModel{
       duration: const Duration(milliseconds: 1500),
     );
   }
-// department_name
-// mobile_number
-// email
-// department_id
+  
   Map<String, dynamic> userData(){
     final alumniData = {
       "name": userNameController.text,
@@ -135,11 +132,10 @@ class SignupViewmodel extends BaseViewModel{
       "email": emailController.text,
     };
     if(isCurrentYearStudent) {
-      alumniData["position"] = true;
+      alumniData["role"] = 'Student';
       alumniData["current_year"] = currentOrCcyController.text;
       alumniData["designation"] = "Student";
     }else{
-      alumniData["position"] = false;
       alumniData["completed_year"] = currentOrCcyController.text;
       alumniData["designation"] = designationController.text;
     }

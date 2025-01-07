@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/ui/views/jobs/create-job/create_job_viewmodel.dart';
 import 'package:stacked/stacked.dart';
@@ -13,6 +14,8 @@ class CreateJobView extends StatelessWidget {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => CreateJobViewmodel(),
+      onViewModelReady: (viewModel) => viewModel.init(),
+      onDispose: (viewModel) => viewModel.dispose(),
       builder: (ctx, model, child) {
         return Scaffold(
           body: Stack(
@@ -61,6 +64,7 @@ class CreateJobView extends StatelessWidget {
                   ),
                   child: SingleChildScrollView(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 15,
                       children: [
                         const SizedBox(height: 20,),
@@ -76,6 +80,12 @@ class CreateJobView extends StatelessWidget {
                           hintText: "Job Location",
                           textInputAction: TextInputAction.next,
                           prefixIcon: Icon(Icons.pin_drop_rounded, size: 20, color: Theme.of(context).primaryColor,),
+                        ),
+                        TextFieldWidget(
+                          controller: model.companyNameController,
+                          hintText: "Company Name",
+                          textInputAction: TextInputAction.next,
+                          prefixIcon: Icon(CupertinoIcons.building_2_fill, size: 20, color: Theme.of(context).primaryColor,),
                         ),
                         TextFieldWidget(
                           controller: model.dateController,
@@ -109,7 +119,6 @@ class CreateJobView extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15),
                             child: DropdownButton(
-                              icon: Container(),
                               value: model.selectedJobType,
                               hint: Row(
                                 spacing: 15,
@@ -118,6 +127,7 @@ class CreateJobView extends StatelessWidget {
                                   Text("Job Type", style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12, color: Colors.black45),),
                                 ],
                               ),
+                              isExpanded: true,
                               underline: Container(),
                               items: model.jobTypes.map((value) {
                                 return DropdownMenuItem(
@@ -133,18 +143,51 @@ class CreateJobView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
                         TextFieldWidget(
-                          controller: model.criteriaController,
-                          hintText: "Criteria",
+                          controller: model.tagController,
+                          hintText: "Tags",
                           textInputAction: TextInputAction.next,
+                          prefixIcon: Icon(CupertinoIcons.tag, size: 20, color: Theme.of(context).primaryColor,),
+                          suffixIcon: IconButton(onPressed: () => model.addTag(model.tagController.text), icon: Icon(CupertinoIcons.add, size: 20, color: Theme.of(context).primaryColor,)),
                         ),
+                        model.tags.isNotEmpty
+                        ? SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            spacing: 5.0,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: List.generate(model.tags.length, (index) {
+                              return InkWell(
+                                onTap: () {
+                                  model.addTag(model.tags[index], remove: true, index: index);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: Theme.of(context).primaryColor)
+                                  ),
+                                  child: Row(
+                                    spacing: 4.0,
+                                    children: [
+                                      Text(model.tags[index], style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Theme.of(context).primaryColor),),
+                                      Icon(CupertinoIcons.xmark_circle, size: 18, color: Colors.red,)
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },),
+                          ),
+                        )
+                      : Container(),
                          SizedBox(
                           width: size.width,
                           height: 50.0,
                           child: ElevatedButton(
-                            onPressed: () {
-                              
+                            onPressed: () async {
+                              model.isFormValid
+                                ? model.jobs.jobCreate(await model.jobData())
+                                : model.showSnackBar();
                             },
                             child: Text(
                               'Post Job',

@@ -6,8 +6,6 @@ import 'package:magic_alumni/widgets/common/text_field.dart';
 import 'package:magic_alumni/widgets/jobs/job_list_widget.dart';
 import 'package:stacked/stacked.dart';
 
-import '../../../widgets/people/filter_button.dart';
-
 class JobsView extends StatelessWidget {
   const JobsView({super.key});
 
@@ -40,6 +38,7 @@ class JobsView extends StatelessWidget {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => JobViewModel(),
+      onViewModelReady: (viewModel) async => await viewModel.jobs(),
       builder: (ctx, model, child) {
         return Scaffold(
           body: DefaultTabController(
