@@ -130,7 +130,7 @@ class LoginViewmodel extends BaseViewModel{
     => await auth.verifyOtp(otp).then((value) {
       if(value) {
         verifiedOTP();
-        _isOTPVerified ? navigateHome() : null;  
+        // _isOTPVerified ? navigateHome() : null;  
       }
       notifyListeners();
     });

@@ -16,7 +16,10 @@ class HomeView extends StatelessWidget {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => HomeViewmodel(),
-      onViewModelReady: (viewModel) async => viewModel.newsList.isEmpty ? await viewModel.news() : null,
+      onViewModelReady: (viewModel) async  {
+        viewModel.newsList.isEmpty ? await viewModel.news() : null;
+        await viewModel.init();
+      },
       builder: (ctx, model, child) {
         return Scaffold(
           body: Stack(
@@ -43,7 +46,7 @@ class HomeView extends StatelessWidget {
                         ),
                       ),
                       subtitle:  Text(
-                        "Raj Kumar", 
+                        model.alumni != null ? model.alumni!.alumniProfileDetail.name : "", 
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -113,7 +116,7 @@ class HomeView extends StatelessWidget {
                     children: [
                       PageView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: 2,
+                        itemCount:  model.alumni != null ? model.alumni!.colleges.length : 2,
                         onPageChanged: (value) {
                           model.selectOtherCollege(value);
                         },
@@ -129,14 +132,14 @@ class HomeView extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Raj kumar",
+                                         model.alumni !=  null ? model.alumni!.alumniProfileDetail.name : "",
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w600
                                         ),
                                       ),
                                       Text(
-                                        "Tamilnadu Engineering college",
+                                        model.alumni !=  null && model.alumni!.colleges.isEmpty ? "Not approved" : model.alumni !=  null ? "college" : "college",
                                         maxLines: 1,
                                         style: TextStyle(
                                           fontSize: 12,
@@ -157,7 +160,7 @@ class HomeView extends StatelessWidget {
                                           children: [
                                             Icon(CupertinoIcons.check_mark_circled_solid, size: 14, color: Colors.green,),
                                             Text(
-                                              "Your alumni status have been approved",
+                                              model.alumni !=  null && model.alumni!.colleges.isEmpty ? "Not approved" : model.alumni !=  null ? "Not approved" : "college",
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w500

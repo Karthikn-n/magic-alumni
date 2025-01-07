@@ -1,7 +1,7 @@
 import 'package:magic_alumni/model/colleges_model.dart';
 
 class AlumniModel {
-  final AlumniProfileModel? alumniProfileDetail;
+  final AlumniProfileModel alumniProfileDetail;
   final List<CollegesModel> colleges;
   AlumniModel({
     required this.alumniProfileDetail,
@@ -10,7 +10,7 @@ class AlumniModel {
 
   factory AlumniModel.fromJson(Map<String, dynamic> json){
     return AlumniModel(
-      alumniProfileDetail: AlumniProfileModel.fromJson(json['alumniProfile']),
+      alumniProfileDetail: AlumniProfileModel.fromJson(json['alumniProfileDetail']),
       colleges: (json["colleges"] ?? []).map<CollegesModel>((college) => CollegesModel.fromMap(college)).toList(), 
     );
   }
@@ -18,7 +18,7 @@ class AlumniModel {
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
   
-    result.addAll({'alumniProfileDetail': alumniProfileDetail!.toMap()});
+    result.addAll({'alumniProfileDetail': alumniProfileDetail.toMap()});
     result.addAll({'colleges': colleges.map((x) => x.toMap()).toList()});
   
     return result;
@@ -29,7 +29,7 @@ class AlumniModel {
 
 
 class AlumniProfileModel {
-  final int id;
+  final String id;
   final String name;
   final String mobile;
   final String email;
@@ -47,10 +47,10 @@ class AlumniProfileModel {
   });
   factory AlumniProfileModel.fromJson(Map<String, dynamic> json){
     return AlumniProfileModel(
-      id: json["alumni_id"] ?? "", 
+      id: json["_id"] ?? "", 
       name: json["name"] ?? "", 
       role: json["role"] ?? "",
-      mobile: json["mobile_number"] ?? "", 
+      mobile: (json["mobile_number"] ?? "").toString(), 
       email: json["email"] ?? "", 
       linkedUrl: json["linkedin_url"] ?? "", 
       designation: json["designation"] ?? ""
@@ -58,15 +58,14 @@ class AlumniProfileModel {
   }
 
   Map<String, dynamic> toMap() {
-    final result = <String, dynamic>{};
-    result.addAll({'alumni_id': id});
-    result.addAll({'name': name});
-    result.addAll({'mobile': mobile});
-    result.addAll({"role": role});
-    result.addAll({'email': email});
-    result.addAll({'linkedin_url': linkedUrl});
-    result.addAll({'designation': designation});
-  
-    return result;
+     return {
+      '_id': id,
+      'name': name,
+      'mobile_number': mobile,
+      'role': role,
+      'email': email,
+      'linkedin_url': linkedUrl,
+      'designation': designation,
+    };
   }
 }
