@@ -6,7 +6,7 @@ class EventsModel {
   final String image;
   final String description;
   final String eventDate;
-  final String eventType;
+  final List<String> eventType;
   final String criteria;
   final String createdBy;
   final String location;
@@ -38,12 +38,12 @@ class EventsModel {
       image: map['event_image'] ?? '',
       description: map['description'] ?? '',
       eventDate: map['date'] ?? '',
-      eventType: map['event_type'] ?? '',
+      eventType: List<String>.from(map['event_type'] ?? []),
       criteria: map['criteria'] ?? '',
       createdBy: map['created_by'] ?? '',
       location: map['location'] ?? '',
       approvalStatus: map['approval_status'] ?? '',
-      revpOptions: List<String>.from(map['rsvp_options']),
+      revpOptions: List<String>.from(map['rsvp_options'] ?? []),
     );
   }
 

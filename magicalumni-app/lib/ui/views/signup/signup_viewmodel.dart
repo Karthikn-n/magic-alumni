@@ -16,6 +16,8 @@ class SignupViewmodel extends BaseViewModel{
   final TextEditingController emailController = TextEditingController();
   final TextEditingController designationController = TextEditingController();
 
+  List<CollegesModel> collegesList = [];
+
   // Navigator router to navigate next screens without context
   final NavigationService _navigationService = locator<NavigationService>();
   // Snackbar service to show the messages in screen
@@ -52,7 +54,7 @@ class SignupViewmodel extends BaseViewModel{
 
   /// Call the colleges API and notfy the listeners
   Future<void> getColleges() async {
-    await auth.colleges();
+    await auth.colleges().then((value) => collegesList = value);
     notifyListeners();
   }
 

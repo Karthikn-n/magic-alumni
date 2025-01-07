@@ -16,7 +16,7 @@ class HomeView extends StatelessWidget {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => HomeViewmodel(),
-      onViewModelReady: (viewModel) async => await viewModel.news(),
+      onViewModelReady: (viewModel) async => viewModel.newsList.isEmpty ? await viewModel.news() : null,
       builder: (ctx, model, child) {
         return Scaffold(
           body: Stack(
@@ -93,9 +93,8 @@ class HomeView extends StatelessWidget {
                           // Latest News 
                           SizedBox(height: size.height * 0.015,),
                           Text("Latest News", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                          
                           // Latest news List widget
-                          LatestNewsWidget()
+                          LatestNewsWidget(news: model.newsList,)
                         ],
                       ),
                     ),

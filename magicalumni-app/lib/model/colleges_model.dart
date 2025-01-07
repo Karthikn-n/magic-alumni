@@ -37,9 +37,11 @@ class CollegesModel {
 
 class DepartmentModel {
   final String id;
+  final String collegeId;
   final String departmentName;
   DepartmentModel({
     required this.id,
+    required this.collegeId,
     required this.departmentName,
   });
   
@@ -48,7 +50,8 @@ class DepartmentModel {
     final result = <String, dynamic>{};
   
     result.addAll({'_id': id});
-    result.addAll({'departmentName': departmentName});
+    result.addAll({'name': departmentName});
+    result.addAll({'college_id': collegeId});
   
     return result;
   }
@@ -57,6 +60,7 @@ class DepartmentModel {
     return DepartmentModel(
       id: map['_id'] ?? '',
       departmentName: map['name'] ?? '',
+      collegeId: map['college_id'] ?? '',
     );
   }
 }

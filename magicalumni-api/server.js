@@ -11,30 +11,30 @@ const NewsRoutes = require("./routes/newsRoutes");
 const CollegeRoutes = require("./routes/collegeRoutes");
 const path = require("path");
 const http = require("http");
-const socketIo = require("socket.io");
+// const socketIo = require("socket.io");
 dotenv.config();
 connectDB();
 
 const app = express();
 
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
-let connectedUsers = {};
-io.on("connection", (socket) => {
-  const userId = socket.handshake.query.user_id;
-  if (userId) {
-    connectedUsers[userId] = socket.id;
-  }
+// const io = socketIo(server, {
+//   cors: {
+//     origin: "*",
+//     methods: ["GET", "POST"],
+//   },
+// });
+// let connectedUsers = {};
+// io.on("connection", (socket) => {
+//   const userId = socket.handshake.query.user_id;
+//   if (userId) {
+//     connectedUsers[userId] = socket.id;
+//   }
 
-  socket.on("disconnect", () => {
-    delete connectedUsers[userId];
-  });
-});
+//   socket.on("disconnect", () => {
+//     delete connectedUsers[userId];
+//   });
+// });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));

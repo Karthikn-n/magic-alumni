@@ -22,8 +22,10 @@ class JobViewModel extends BaseViewModel{
 
   /// Get all the Jobs from the API and store it in the List
   Future<void> jobs() async {
-    await job.jobs().then((value) => jobsList = value,);
-    notifyListeners();
+    await job.jobs().then((value) {
+      jobsList = value;
+      notifyListeners();
+    });
   }
 
   void showReportDialog(){
