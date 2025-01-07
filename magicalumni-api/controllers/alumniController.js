@@ -162,7 +162,7 @@ const registerMember = async (req, res) => {
       status: "ok",
       message: `${role ? "Student" : "Alumni"} registered successfully`,
       _id: newMember._id,
-      collegeid: college_id,
+      college_id: college_id,
       role: newMember.role,
       approvalStatus: approvalStatus,
     });
@@ -218,15 +218,9 @@ const getAlumniById = async (req, res) => {
     if (alumniCollegeData.length === 0) {
       return res.status(200).json({
         status: "ok",
-        message: "No approved colleges found for this alumni",
-        alumni_id,
-        name: alumniProfile.name,
-        designation: alumniProfile.designation,
-        linkedin_url: alumniProfile.linkedin_url,
-        completed_year: alumniProfile.completed_year,
-        mobile_number: alumniProfile.mobile_number,
-        email: alumniProfile.email,
-        role: alumniProfile.role,
+        message: "No approved colleges for this alumni",
+        alumniProfile: alumniProfile,
+        colleges: [],
       });
     }
 
@@ -560,7 +554,7 @@ const verifyOtp = async (req, res) => {
       alumni_id: alumni._id,
       status: "approved",
     });
-
+    // console.log(approvedAlumni);
     const approvalStatus = approvedAlumni ? "approved" : "not approved";
     await OTPModel.deleteOne({ _id: otpRecord._id });
 
@@ -568,6 +562,7 @@ const verifyOtp = async (req, res) => {
       status: "ok",
       message: "OTP verified successfully",
       alumni_id: alumni._id,
+      college_id: approvedAlumni ? approvedAlumni.college_id : null,
       name: alumni.name,
       role: alumni.role,
       approvalStatus: approvalStatus,
