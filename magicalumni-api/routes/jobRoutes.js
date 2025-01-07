@@ -14,6 +14,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.post("/create", upload.single("job_image"), createJob);
+router.post("/create", createJob);
 router.post("/", getAllJob);
 module.exports = router;

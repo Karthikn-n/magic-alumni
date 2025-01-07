@@ -26,6 +26,7 @@ const AlumniCollegeSchema = new mongoose.Schema({
   },
   status: {
     type: String,
+    required: true,
   },
 });
 

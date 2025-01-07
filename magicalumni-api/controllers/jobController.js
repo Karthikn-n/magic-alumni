@@ -11,20 +11,22 @@ const createJob = async (req, res) => {
       alumni_id,
       college_id,
       job_title,
+      job_type,
       last_date,
       company_name,
       location,
       job_url,
-      job_image,
+      email,
+      // job_image,
       // status,
       tag,
     } = req.body;
 
-    const imagePath = req.file
-      ? `/uploads/jobs/${req.file.filename}`
-      : job_image;
+    // const imagePath = req.file
+    //   ? `/uploads/jobs/${req.file.filename}`
+    //   : job_image;
 
-    if (!alumni_id || !college_id || !job_title || !last_date || !imagePath) {
+    if (!alumni_id || !college_id || !job_title || !last_date) {
       return res.status(400).json({
         status: "not ok",
         message: "All required fields must be filled",
@@ -44,17 +46,25 @@ const createJob = async (req, res) => {
         .json({ status: "not ok", message: "Already exists" });
     }
 
+    const tagArray = Array.isArray(tag)
+      ? tag.filter(Boolean)
+      : tag
+      ? [tag]
+      : [];
+
     const newJob = new Job({
       alumni_id,
       college_id,
       job_title,
+      job_type,
       last_date,
       company_name,
       location,
       job_url,
-      job_image: imagePath,
+      email,
+      // job_image: imagePath,
       // status,
-      tag,
+      tag: tagArray,
     });
 
     const savedJob = await newJob.save();
@@ -64,6 +74,7 @@ const createJob = async (req, res) => {
       job: savedJob,
     });
   } catch (error) {
+    console.error("Error creating job:", error);
     res
       .status(500)
       .json({ status: "error", message: "Error creating job", error });

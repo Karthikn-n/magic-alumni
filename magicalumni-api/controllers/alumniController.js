@@ -73,8 +73,10 @@ const registerMember = async (req, res) => {
     if (role) {
       existingMember = await AlumniMember.findOne({
         name,
-        email,
+        linkedin_url,
         mobile_number,
+        email,
+        role: "Student",
       });
 
       if (existingMember) {
@@ -85,12 +87,11 @@ const registerMember = async (req, res) => {
 
       newMember = new AlumniMember({
         name,
-        // department_name,
         linkedin_url,
-        // current_year,
+        current_year,
         mobile_number,
         email,
-        role,
+        role: "Student",
       });
 
       await newMember.save();
@@ -108,6 +109,7 @@ const registerMember = async (req, res) => {
         college_id,
         department_id,
         current_year,
+        status: "approved",
       });
 
       await studentCollege.save();
@@ -115,9 +117,11 @@ const registerMember = async (req, res) => {
     } else {
       existingMember = await AlumniMember.findOne({
         name,
-        // department_name,
         linkedin_url,
-        completed_year,
+        mobile_number,
+        email,
+        designation,
+        role: "Alumni",
       });
 
       if (existingMember) {
@@ -152,6 +156,7 @@ const registerMember = async (req, res) => {
         college_id,
         department_id,
         completed_year,
+        status: "not approved",
       });
 
       await alumniCollege.save();
@@ -162,7 +167,7 @@ const registerMember = async (req, res) => {
       status: "ok",
       message: `${role ? "Student" : "Alumni"} registered successfully`,
       _id: newMember._id,
-      collegeid: college_id,
+      college_id: college_id,
       role: newMember.role,
       approvalStatus: approvalStatus,
     });
@@ -177,7 +182,17 @@ const registerMember = async (req, res) => {
 
 const getAllAlumni = async (req, res) => {
   try {
-    const alumniMembers = await AlumniCollege.find({ status: "approved" });
+    const { college_id } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(college_id)) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid college_id format",
+      });
+    }
+    const alumniMembers = await AlumniCollege.find({
+      college_id,
+      status: "approved",
+    });
     if (alumniMembers.length === 0) {
       return res
         .status(200)
@@ -218,15 +233,9 @@ const getAlumniById = async (req, res) => {
     if (alumniCollegeData.length === 0) {
       return res.status(200).json({
         status: "ok",
-        message: "No approved colleges found for this alumni",
-        alumni_id,
-        name: alumniProfile.name,
-        designation: alumniProfile.designation,
-        linkedin_url: alumniProfile.linkedin_url,
-        completed_year: alumniProfile.completed_year,
-        mobile_number: alumniProfile.mobile_number,
-        email: alumniProfile.email,
-        role: alumniProfile.role,
+        message: "No approved colleges for this alumni",
+        alumniProfile: alumniProfile,
+        colleges: [],
       });
     }
 
@@ -560,7 +569,7 @@ const verifyOtp = async (req, res) => {
       alumni_id: alumni._id,
       status: "approved",
     });
-
+    // console.log(approvedAlumni);
     const approvalStatus = approvedAlumni ? "approved" : "not approved";
     await OTPModel.deleteOne({ _id: otpRecord._id });
 
@@ -568,12 +577,13 @@ const verifyOtp = async (req, res) => {
       status: "ok",
       message: "OTP verified successfully",
       alumni_id: alumni._id,
+      college_id: approvedAlumni ? approvedAlumni.college_id : null,
       name: alumni.name,
       role: alumni.role,
       approvalStatus: approvalStatus,
     });
   } catch (error) {
-    console.error("Error verifying OTP:", error.message);
+    // console.error("Error verifying OTP:", error.message);
     res.status(500).json({
       status: "error",
       message: "Error verifying OTP",

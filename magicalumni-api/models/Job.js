@@ -12,16 +12,24 @@ const jobSchema = new mongoose.Schema(
       ref: "College",
       required: true,
     },
-    job_image: {
+    // job_image: {
+    //   type: String,
+    //   required: true,
+    // },
+    job_title: {
       type: String,
       required: true,
     },
-    job_title: {
+    job_type: {
       type: String,
       required: true,
     },
     last_date: {
       type: Date,
+      required: true,
+    },
+    email: {
+      type: String,
       required: true,
     },
     company_name: {
@@ -37,8 +45,9 @@ const jobSchema = new mongoose.Schema(
       required: true,
     },
     tag: {
-      type: String,
-      required: true,
+      type: [String],
+      required: [true],
+      validate: [arrayLimit, "At least one tag is required"],
     },
     // status: {
     //   type: String,
@@ -47,7 +56,9 @@ const jobSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+function arrayLimit(val) {
+  return val.length > 0;
+}
 const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
 
 module.exports = Job;
