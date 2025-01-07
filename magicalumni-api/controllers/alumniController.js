@@ -103,8 +103,8 @@ const registerMember = async (req, res) => {
         });
       }
 
-      const studentCollege = new StudentCollege({
-        student_id: newMember._id,
+      const studentCollege = AlumniCollege({
+        alumni_id: newMember._id,
         college_id,
         department_id,
         current_year,
@@ -157,13 +157,14 @@ const registerMember = async (req, res) => {
       await alumniCollege.save();
       mappedColleges.push(college);
     }
-
+    const approvalStatus = role ? "approved" : "not approved";
     res.status(201).json({
       status: "ok",
       message: `${role ? "Student" : "Alumni"} registered successfully`,
       _id: newMember._id,
       collegeid: college_id,
       role: newMember.role,
+      approvalStatus: approvalStatus,
     });
   } catch (error) {
     res.status(500).json({
@@ -247,6 +248,7 @@ const getAlumniById = async (req, res) => {
         return {
           ...college._doc,
           completed_year: record.completed_year,
+          approvalStatus: record.status,
           departments,
         };
       })
@@ -272,6 +274,7 @@ const updateAlumni = async (req, res) => {
     name,
     linkedin_url,
     completed_year,
+    current_year,
     mobile_number,
     email,
     designation,
@@ -291,6 +294,7 @@ const updateAlumni = async (req, res) => {
         name,
         linkedin_url,
         completed_year,
+        current_year,
         mobile_number,
         email,
         designation,
@@ -304,13 +308,13 @@ const updateAlumni = async (req, res) => {
 
     res.status(200).json({
       status: "ok",
-      message: "Alumni updated successfully",
+      message: "Updated successfully",
       alumni: updatedAlumni,
     });
   } catch (error) {
     res.status(500).json({
       status: "error",
-      message: "Error updating alumni member",
+      message: "Error updating data",
       error: error.message,
     });
   }
@@ -507,7 +511,12 @@ const verifyOtp = async (req, res) => {
         .status(404)
         .json({ status: "not found", message: "Alumni member not found" });
     }
+    const approvedAlumni = await AlumniCollege.findOne({
+      alumni_id: alumni._id,
+      status: "approved",
+    });
 
+    const approvalStatus = approvedAlumni ? "approved" : "not approved";
     await OTPModel.deleteOne({ _id: otpRecord._id });
 
     res.status(200).json({
@@ -516,6 +525,7 @@ const verifyOtp = async (req, res) => {
       alumni_id: alumni._id,
       name: alumni.name,
       role: alumni.role,
+      approvalStatus: approvalStatus,
     });
   } catch (error) {
     console.error("Error verifying OTP:", error.message);
@@ -542,10 +552,23 @@ const alumniAddCollege = async (req, res) => {
       });
     }
 
+    const alumni = await AlumniMember.findById(alumni_id);
+
+    if (!alumni) {
+      return res.status(404).json({
+        status: "not found",
+        message: "Alumni member not found",
+      });
+    }
+
+    const collegeStatus =
+      alumni.role === "Student" ? "approved" : "not approved";
+
     const newCollege = new AlumniCollege({
       college_id,
       alumni_id,
       department_id,
+      status: collegeStatus,
     });
 
     await newCollege.save();

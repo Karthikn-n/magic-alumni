@@ -14,7 +14,9 @@ const createJob = async (req, res) => {
       last_date,
       company_name,
       location,
+      job_url,
       job_image,
+      status,
       tag,
     } = req.body;
 
@@ -28,6 +30,19 @@ const createJob = async (req, res) => {
         message: "All required fields must be filled",
       });
     }
+    const existingJob = await Job.findOne({
+      alumni_id,
+      college_id,
+      job_title,
+      last_date,
+      // status: "Approved",
+    });
+
+    if (existingJob) {
+      return res
+        .status(400)
+        .json({ status: "not ok", message: "Already exists" });
+    }
 
     const newJob = new Job({
       alumni_id,
@@ -36,7 +51,9 @@ const createJob = async (req, res) => {
       last_date,
       company_name,
       location,
+      job_url,
       job_image: imagePath,
+      status,
       tag,
     });
 
