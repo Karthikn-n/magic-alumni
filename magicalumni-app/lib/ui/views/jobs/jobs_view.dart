@@ -11,30 +11,6 @@ class JobsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> jobTitles = [
-      "Software Engineer",
-      "Data Scientist",
-      "Cloud Architect",
-      "DevOps Engineer",
-      "UI/UX Designer",
-      "Mobile App Developer",
-      "Cybersecurity Analyst",
-      "Machine Learning Engineer",
-      "Database Administrator",
-      "IT Project Manager"
-    ];
-    List<String> locations = [
-      "San Francisco, CA",
-      "New York, NY",
-      "Seattle, WA",
-      "Austin, TX",
-      "Boston, MA",
-      "Chicago, IL",
-      "Denver, CO",
-      "Atlanta, GA",
-      "Los Angeles, CA",
-      "Dallas, TX"
-    ];
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => JobViewModel(),
@@ -80,58 +56,25 @@ class JobsView extends StatelessWidget {
                       child: Column(
                         spacing: 10,
                         children: [
-                          // Filer options
-                            // Material(
-                            //   color: Theme.of(context).scaffoldBackgroundColor,
-                            //   child: Row(
-                            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //     children: [
-                            //       Row(
-                            //         spacing: 10,
-                            //         children: [
-                            //           FilterButton(
-                            //             buttonName: "Internship", 
-                            //             // backgroundColor: Theme.of(context).primaryColor,
-                            //             onPressed: (){}
-                            //           ),
-                            //           FilterButton(
-                            //             buttonName: "Jobs", 
-                            //             onPressed: (){}
-                            //           ),
-                            //         ],
-                            //       ),
-                            //       // IconButton(
-                            //       //   onPressed: () {} , 
-                            //       //   icon: Icon(CupertinoIcons.search, color: Theme.of(context).primaryColor,)
-                            //       // )
-                            //       // FilterButton(
-                            //       //   buttonName: "Clear", 
-                            //       //   onPressed: (){}
-                            //       // )
-                            //     ],
-                            //   ),
-                            // ),
                           // List of jobs
                           TabBar(
                             padding: EdgeInsets.zero,
                             tabAlignment: TabAlignment.center,
                             dividerColor: Colors.transparent,
                             tabs: [
-                              Tab(text: "All Jobs",),
-                              Tab(text: "My Jobs",),
+                              Tab(text: "Jobs",),
+                              Tab(text: "Internship",),
                             ]
                           ),
                           Expanded(
                             child: TabBarView(
                               children: [
                                 JobListWidget(
-                                  jobTitles: jobTitles, 
-                                  locations: locations,
+                                  jobs: model.jobsList.where((element) => element.jobType == "Job",).toList(),
                                   onReportTap: () => showReportDialog(context),
                                 ),
                                 JobListWidget(
-                                  jobTitles: jobTitles, 
-                                  locations: locations,
+                                  jobs: model.jobsList,
                                   onReportTap: () => showReportDialog(context),
                                 ),
                               ]

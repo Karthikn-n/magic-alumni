@@ -1,14 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:magic_alumni/model/events_model.dart';
 
 class EventListWidget extends StatelessWidget {
   final VoidCallback? onTap;
-  const EventListWidget({super.key, this.onTap});
+  final List<EventsModel> events;
+  const EventListWidget({super.key, this.onTap, required this.events});
 
   @override
   Widget build(BuildContext context) {
     return  ListView.builder(
-      itemCount: 5,
+      itemCount: events.length,
       itemBuilder: (context, index) {
         return Material(
           color: Theme.of(context).scaffoldBackgroundColor,

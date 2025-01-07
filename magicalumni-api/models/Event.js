@@ -34,7 +34,7 @@ const eventSchema = new mongoose.Schema(
     },
     event_type: {
       type: String,
-      required: false,
+      required: true,
     },
     rsvp_options: {
       type: [String],

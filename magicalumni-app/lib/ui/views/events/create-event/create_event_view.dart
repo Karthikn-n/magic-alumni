@@ -64,6 +64,7 @@ class CreateEventView extends StatelessWidget {
                   ),
                   child: SingleChildScrollView(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 15,
                       children: [
                         const SizedBox(height: 20,),
@@ -133,6 +134,36 @@ class CreateEventView extends StatelessWidget {
                             },
                           ),
                         ),
+                        model.selectedRsvpOptions.isNotEmpty
+                        ? SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              spacing: 5.0,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: List.generate(model.selectedRsvpOptions.length, (index) {
+                                return InkWell(
+                                  onTap: () {
+                                    model.selectOption(index, removeOption: true);
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: Theme.of(context).primaryColor)
+                                    ),
+                                    child: Row(
+                                      spacing: 4.0,
+                                      children: [
+                                        Text(model.selectedRsvpOptions[index], style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Theme.of(context).primaryColor),),
+                                        Icon(CupertinoIcons.xmark_circle, size: 18, color: Colors.red,)
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },),
+                            ),
+                          )
+                        : Container(),
                         TextFieldWidget(
                           controller: model.imageController,
                           hintText: "Cover Image",
@@ -162,8 +193,9 @@ class CreateEventView extends StatelessWidget {
                           height: 50.0,
                           child: ElevatedButton(
                             onPressed: () async {
+                              print(await model.eventData());
                               model.formValid
-                              ? await model.events.eventCreate(await model.eventData())// Call the API 
+                              ? await model.events.eventCreate(await model.eventData()).then((value) => value ? Navigator.pop(context) : null,)// Call the API 
                               : model.showSnackbar(); // Show snack bar message
                             },
                             child: Text(

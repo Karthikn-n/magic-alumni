@@ -214,7 +214,7 @@ class SignupView extends StatelessWidget {
                               child: ElevatedButton(
                                 onPressed: () async {
                                   model.isFormValid
-                                  ? await model.auth.register(model.userData()).then((value){
+                                  ? await model.auth.register( model.userData()).then((value){
                                     value ? model.navigateHome() : null;
                                   })
                                   : model.snackBarMessage();
@@ -253,6 +253,7 @@ class SignupView extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            Container(),
                             // Login Navigation
                             InkWell(
                               onTap: () {

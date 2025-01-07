@@ -40,7 +40,7 @@ class LoginView extends StatelessWidget {
               ),
               // The stack hold the forms
               Positioned(
-                top: isKeyVisible ? size.height * 0.3 : size.height * 0.45,
+                top: isKeyVisible ? size.height * 0.25 : size.height * 0.4,
                 bottom: 0,
                 right: 0,
                 left: 0,
@@ -83,16 +83,38 @@ class LoginView extends StatelessWidget {
                                   controller: model.otpController,
                                   hintText: "6 Digit OTP",
                                   maxLength: 6,
+                                  prefixIcon: Icon(Icons.password, size: 20, color: Theme.of(context).primaryColor,),
                                   textInputAction: TextInputAction.done,
                                   keyboardType: TextInputType.visiblePassword,
                                 )
                               : Container(),
+                              model.isResendClicked
+                              ?  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("Resend OTP in: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
+                                      Text(model.formatTime(model.time), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFFF7CA18)),),
+                                    ],
+                                  )
+                              : !model.isAccountVerified ? Container(): Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("Didn't receive OTP: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
+                                  InkWell(
+                                    onTap: () async {
+                                      await model.login(model.mobileController.text);
+                                      model.startTimer();
+                                    },
+                                    child: Text("Resend", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFFF7CA18)),)
+                                  ),
+                                ],
+                              ),
                               SizedBox(
                                 width: size.width,
                                 height: 48.0,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                   
+                                    // model.auth.fetchAlumni();
                                     model.isOTPVerified
                                     ? model.navigateHome()
                                     : !model.isAccountVerified

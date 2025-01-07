@@ -26,26 +26,29 @@ class  AuthenticateService {
 
   /// Register API for the Alumni 
   /// Store the Alumni id and alumni approval Status from response for future use
+  /// Checked Working
   Future<bool> register(Map<String, dynamic> data) async {
     try{
       final response = await _dio.post(
         "${baseApiUrl}member/register",
         data: data
       );
-      // 
-      if (response.statusCode == 201 && response.data["status"] == "Okay") {
-        // await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+      if (response.statusCode == 201 && response.data["status"] == "ok") {
+        await store.write(key: "alumni_id", value: response.data["_id"].toString());
+        await store.write(key: "college_id", value: response.data["collegeid"].toString());
+        await store.write(key: "alumni_role", value: response.data["role"].toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
         );
         return true;
-      } else if(response.data["message"] == "Alumni member already exists" && response.statusCode == 400) {
+      } else if(response.data["status"] == "not ok" && response.statusCode == 400) {
          await snackBar.showCustomSnackBar(
             variant: SnackBartype.custom,
-            message: "Member registered Login", 
+            message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
         );
+        return true;
       } else{
         snackBar.showSnackbar(
             message: response.data["message"], 
@@ -54,8 +57,7 @@ class  AuthenticateService {
         return false;
       }
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
-      log("Something went on registering", stackTrace: st);
+      log("Something went on registering", stackTrace: st, error: err.toString());
     }
     return false;
   }
@@ -67,6 +69,7 @@ class  AuthenticateService {
   /// Get the Alumni ID from the local storage
   /// Call the Alumni profile API to check their approval status
   /// store the message in the log
+  /// Checked Working
   Future<bool> login(String mobile) async {
     try{
       final response = await _dio.post(
@@ -74,7 +77,7 @@ class  AuthenticateService {
         data: {"mobile_number": mobile}
       );
       // 
-      if (response.statusCode == 200 && response.data["message"] == "OTP generated and stored successfully") {
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
         await store.write(key: "alumni_mobile", value: mobile.toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
@@ -95,30 +98,6 @@ class  AuthenticateService {
     return false;
   }
 
-  /// Get Alumni profile API 
-  /// It call the API via dio Service and get the User information from the Database
-  /// Before Send the data It encrypt using [EncryptionService]
-  /// Parse the Alumni data from the response using [AlumniModel]
-  /// Store it in the local Storage using [FlutterSecureStorage] for maintain session
-  Future<void> fetchAlumni() async {
-    try {
-      final response = await _dio.post(
-        "${baseApiUrl}alumni/member",
-        data: {"alumni_id": await store.read(key: "alumni_id")}
-      );
-      if (response.statusCode == 200) {
-        alumni = AlumniModel.fromJson(response.data);
-        String alumniId =  await store.read(key: "alumni_id") ?? " ";
-        if (await store.read(key: alumniId) == null && alumni != null) {
-          await store.write(key: alumniId, value: alumni?.toMap().toString());
-        }
-      }
-    } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
-      log("Something went on Requesting Alumni Profile", stackTrace: st);
-    }
-  }
-
   /// Verify the OTP from their Mobile message
   Future<bool> verifyOtp(String otp) async {
     try {
@@ -129,9 +108,12 @@ class  AuthenticateService {
           "otp": otp
         }
       );
-      if (response.statusCode == 200 && response.data["message"] == "OTP verified successfully") {
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
         await store.write(key: "loggedIn${await store.read(key: "alumni_mobile")}", value: "success");
         await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+        String alumniId = await store.read(key: "alumni_id") ?? " ";
+        await store.write(key: "${alumniId}_role", value: response.data["role"].toString());
+        await store.write(key: "${alumniId}_status", value: response.data["status"].toString());
         // if (await store.read(key: "loggedIn${await store.read(key: "alumni_id")}$mobile") != "success") {
            snackBar.showSnackbar(
               message: response.data["message"], 
@@ -142,7 +124,7 @@ class  AuthenticateService {
         // }
         // }
         return true;
-      }else{
+      } else{
           snackBar.showSnackbar(
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
@@ -156,6 +138,29 @@ class  AuthenticateService {
     }
   }
 
+  /// Get Alumni profile API 
+  /// It call the API via dio Service and get the User information from the Database
+  /// Before Send the data It encrypt using [EncryptionService]
+  /// Parse the Alumni data from the response using [AlumniModel]
+  /// Store it in the local Storage using [FlutterSecureStorage] for maintain session
+  Future<void> fetchAlumni() async {
+    try {
+      final response = await _dio.post(
+        "${baseApiUrl}alumni/member",
+        data: {"alumni_id": await store.read(key: "alumni_id")}
+      );
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        alumni = AlumniModel.fromJson(response.data);
+        String alumniId =  await store.read(key: "alumni_id") ?? " ";
+        if (await store.read(key: alumniId) == null && alumni != null) {
+          await store.write(key: alumniId, value: alumni?.toMap().toString());
+        }
+      }
+    } on DioException catch (err, st) {
+      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
+      log("Something went on Requesting Alumni Profile", stackTrace: st);
+    }
+  }
 
   /// clear the User session from the App
   /// Delete their ID and Profile
@@ -165,25 +170,28 @@ class  AuthenticateService {
   }
   
   /// Get all the College from the API and Store it in local storage 
-  Future<void> colleges() async {
+  /// checked Working
+  Future<List<CollegesModel>> colleges() async {
     try {
       final response = await _dio.get(
         "${baseApiUrl}college"
       );
-      if (response.statusCode == 200 && response.data["success"] == "Success") {
+      if (response.statusCode == 200 && response.data["status"] == "Ok") {
         List<dynamic> collegesRepsponse =  (response.data["collegeWithDepartments"] ?? []) as List<dynamic>;
         collegesList = collegesRepsponse.map((college) => CollegesModel.fromMap(college) ,).toList();
         debugPrint("Colleges: ${collegesList.length}");
+        return collegesList;
       }else{
         snackBar.showSnackbar(
           message: "Can't get colleges", 
           duration: const Duration(milliseconds: 1200)
         );
         log("Something went on getting colleges", error: response.data["message"]);
+        return [];
       }
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
-      log("Something went on getting colleges", stackTrace: st);
+      log("Something went on getting colleges", stackTrace: st, error: err.toString());
+      return [];
     }
   }
 

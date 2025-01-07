@@ -14,6 +14,7 @@ class EventsView extends StatelessWidget {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => EventsViewModel(),
+      onDispose: (viewModel) => viewModel.dispose(),
       onViewModelReady: (viewModel)  async => await viewModel.apiService.events(),
       builder: (ctx, model, child) {
         return Scaffold(
@@ -102,9 +103,9 @@ class EventsView extends StatelessWidget {
                           Expanded(
                             child: TabBarView(
                               children: [
-                                EventListWidget(onTap: () => model.navigateToEventDetail()),
-                                EventListWidget(onTap: () => model.navigateToEventDetail()),
-                                EventListWidget(onTap: () => model.navigateToEventDetail()),
+                                EventListWidget(events: model.eventsList.where((element) => element.eventDate == DateTime.now().toString(),).toList(), onTap: () => model.navigateToEventDetail()),
+                                EventListWidget(events: model.eventsList.where((element) => element.eventDate == DateTime.now().toString(),).toList(), onTap: () => model.navigateToEventDetail()),
+                                EventListWidget(events: model.eventsList.where((element) => element.eventDate == DateTime.now().toString(),).toList(), onTap: () => model.navigateToEventDetail()),
                               ]
                             )
                           ),
@@ -119,8 +120,8 @@ class EventsView extends StatelessWidget {
           ),
           // Create event buttton 
           floatingActionButton: FloatingActionButton(
-            onPressed: (){
-              model.navigateToCreateEvent();
+            onPressed: ()async{
+             model.navigateToCreateEvent();
             },
             backgroundColor: Theme.of(context).primaryColor,
             tooltip: "Create event",

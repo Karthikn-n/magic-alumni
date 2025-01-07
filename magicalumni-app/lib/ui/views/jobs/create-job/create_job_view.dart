@@ -186,7 +186,8 @@ class CreateJobView extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () async {
                               model.isFormValid
-                                ? model.jobs.jobCreate(await model.jobData())
+                                ? await model.jobs.jobCreate(await model.jobData()).then((value) => value ? Navigator.pop(context) : null,)
+                                  
                                 : model.showSnackBar();
                             },
                             child: Text(

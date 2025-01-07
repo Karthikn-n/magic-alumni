@@ -4,15 +4,16 @@ import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/peoples/people_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../model/alumni_model.dart';
+
 class PeopleWidget extends StatelessWidget {
-  final List<String> names;
-  final List<String> jobRoles;
-  const PeopleWidget({super.key, required this.names, required this.jobRoles});
+  final List<AlumniProfileModel> peoples;
+  const PeopleWidget({super.key, required this.peoples});
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      itemCount: names.length,
+      itemCount: peoples.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 10,
@@ -38,7 +39,7 @@ class PeopleWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 10,),
                   Text(
-                    names[index], 
+                    peoples[index].name, 
                     maxLines: 2,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -49,7 +50,7 @@ class PeopleWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    jobRoles[index],
+                    peoples[index].designation,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
@@ -68,7 +69,7 @@ class PeopleWidget extends StatelessWidget {
                     viewModelBuilder: () => PeopleViewmodel(),
                     builder: (ctx, model, child) {
                       return ElevatedButton(
-                        onPressed: () => showConnectionBottomSheet(context, names[index]), 
+                        onPressed: () => showConnectionBottomSheet(context, peoples[index].name), 
                         child: Text("Connect", style: textStyle,)
                       );
                     }
