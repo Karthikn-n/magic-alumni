@@ -3,6 +3,7 @@ const fs = require("fs");
 const Event = require("../models/Event");
 const EventPeople = require("../models/EventPeople");
 const mongoose = require("mongoose");
+const AlumniMember = require("../models/AlumniMember");
 const path = require("path");
 
 const createEvent = async (req, res) => {
@@ -11,6 +12,7 @@ const createEvent = async (req, res) => {
       alumni_id,
       college_id,
       event_title,
+      description,
       date,
       approval_status,
       event_type,
@@ -18,6 +20,7 @@ const createEvent = async (req, res) => {
       location,
       criteria,
       event_image,
+      created_by,
     } = req.body;
 
     const imagePath = req.file ? `/uploads/${req.file.filename}` : event_image;
@@ -32,18 +35,22 @@ const createEvent = async (req, res) => {
     const rsvpArray = Array.isArray(rsvp_options)
       ? rsvp_options
       : [rsvp_options || "no"];
+    const creatorName = await AlumniMember.findById(alumni_id);
 
+    const createdBy = creatorName.name;
     const newEvent = new Event({
       alumni_id,
       college_id,
       event_image: imagePath,
       event_title,
+      description,
       date,
       approval_status,
       event_type,
       rsvp_options: rsvpArray,
       location,
       criteria,
+      created_by: createdBy,
     });
 
     const savedEvent = await newEvent.save();

@@ -19,7 +19,7 @@ router.get("/test", (req, res) => {
 });
 
 router.post("/member/register", registerMember);
-router.get("/alumni", getAllAlumni);
+router.post("/alumni", getAllAlumni);
 router.post("/alumni/update", updateAlumni);
 router.post("/alumni/delete", deleteAlumni);
 router.get("/alumnimemberslist", alumnimembersList);
