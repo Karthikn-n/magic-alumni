@@ -32,10 +32,18 @@ const jobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    job_url: {
+      type: String,
+      required: true,
+    },
     tag: {
       type: String,
       required: true,
     },
+    // status: {
+    //   type: String,
+    //   default: "Active",
+    // },
   },
   { timestamps: true }
 );
