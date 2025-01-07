@@ -20,9 +20,12 @@ const AlumniCollegeSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  current_year: {
+    type: String,
+    required: false,
+  },
   status: {
     type: String,
-    default: "not approved",
   },
 });
 
