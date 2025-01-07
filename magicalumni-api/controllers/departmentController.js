@@ -11,9 +11,10 @@ const createDepartment = async (req, res) => {
     });
 
     if (existingDepartment) {
-      return res
-        .status(400)
-        .json({ message: "Department already exists for this college" });
+      return res.status(400).json({
+        status: "not ok",
+        message: "Department already exists for this college",
+      });
     }
 
     const newDepartment = new Department({
@@ -24,10 +25,12 @@ const createDepartment = async (req, res) => {
     await newDepartment.save();
 
     res.status(201).json({
+      status: "ok",
       message: "Department created successfully",
     });
   } catch (error) {
     res.status(500).json({
+      status: "error",
       message: "Error creating department",
       error: error.message,
     });

@@ -80,9 +80,6 @@ class  AuthenticateService {
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
         );
-        if (alumni == null) {
-          await fetchAlumni();
-        }
         return true;
       } else{
         snackBar.showSnackbar(
@@ -140,6 +137,9 @@ class  AuthenticateService {
               message: response.data["message"], 
               duration: const Duration(milliseconds: 1200)
           );
+        // if (alumni == null) {
+        //   await fetchAlumni();
+        // }
         // }
         return true;
       }else{

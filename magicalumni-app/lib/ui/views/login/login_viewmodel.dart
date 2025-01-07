@@ -16,6 +16,8 @@ class LoginViewmodel extends BaseViewModel{
   // check the account is exits are not is account is exist change the account verified status
   bool _isAccountVerified = false;
   bool get isAccountVerified => _isAccountVerified;
+  bool _isOTPVerified = false;
+  bool get isOTPVerified => _isOTPVerified;
 
 
   // Use navigation service to navigate between views
@@ -51,11 +53,18 @@ class LoginViewmodel extends BaseViewModel{
     notifyListeners();
   }
   
+  /// Verified the OTP
+  void verifiedOTP(){
+    _isOTPVerified = true;
+    notifyListeners();
+  }
+
+
   // If the mobile is not added show the snackbar
   void mobileSnackBar(){
     if (mobileController.text.isEmpty) {
       _snackbarService.showSnackbar(message: "Enter a Registered Mobile Number", duration: const Duration(milliseconds: 1200));
-    }else if(RegExp(r'^[0-9]{10}$').hasMatch(mobileController.text)){
+    }else if(!RegExp(r'^[0-9]{10}$').hasMatch(mobileController.text)){
       _snackbarService.showSnackbar(message: "Enter a Valid Mobile Number", duration: const Duration(milliseconds: 1200));
     }else{
       return;
@@ -66,7 +75,7 @@ class LoginViewmodel extends BaseViewModel{
   void otpSnackBar(){
     if (otpController.text.isEmpty) {
       _snackbarService.showSnackbar(message: "Enter a OTP", duration: const Duration(milliseconds: 1200));
-    }else if(RegExp(r'^[0-9]{6}$').hasMatch(otpController.text)){
+    }else if(!RegExp(r'^[0-9]{6}$').hasMatch(otpController.text)){
       _snackbarService.showSnackbar(message: "Enter a Valid OTP", duration: const Duration(milliseconds: 1200));
     }else{
       return;
@@ -80,7 +89,12 @@ class LoginViewmodel extends BaseViewModel{
  
 
   Future<void> verifyOtp(String otp) async 
-    => await auth.verifyOtp(otp).then((value) => value ? navigateHome() : null,);
+    => await auth.verifyOtp(otp).then((value) {
+      if(value) {
+        verifiedOTP();
+        _isOTPVerified ? navigateHome() : null;  
+      }
+    });
   
   // Move to signup screen 
   void navigateSignup() => _navigationService.replaceWithSignupView();

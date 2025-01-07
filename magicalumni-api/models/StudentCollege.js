@@ -16,6 +16,10 @@ const StudentCollegeSchema = new mongoose.Schema({
     ref: "Department",
     required: true,
   },
+  current_year: {
+    type: String,
+    required: false,
+  },
   status: {
     type: String,
     default: "approved",

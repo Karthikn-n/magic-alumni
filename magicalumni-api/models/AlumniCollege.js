@@ -16,6 +16,10 @@ const AlumniCollegeSchema = new mongoose.Schema({
     ref: "Department",
     required: true,
   },
+  completed_year: {
+    type: String,
+    required: false,
+  },
   status: {
     type: String,
     default: "not approved",
