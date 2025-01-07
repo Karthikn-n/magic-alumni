@@ -10,6 +10,7 @@ const {
   loginAlumni,
   verifyOtp,
   alumniAddCollege,
+  updateRole,
 } = require("../controllers/alumniController");
 const router = express.Router();
 
@@ -27,5 +28,6 @@ router.post("/alumni/member", getAlumniById);
 router.post("/alumni/login", loginAlumni);
 router.post("/alumni/verifyOtp", verifyOtp);
 router.post("/alumni/addCollege", alumniAddCollege);
+router.post("/alumni/updaterole", updateRole);
 
 module.exports = router;

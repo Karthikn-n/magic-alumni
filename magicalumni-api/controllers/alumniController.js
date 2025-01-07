@@ -423,6 +423,51 @@ const updateAlumniStatus = async (req, res) => {
   }
 };
 
+const updateRole = async (req, res) => {
+  const { alumni_id, role } = req.body;
+
+  try {
+    if (!alumni_id || !role) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "alumni_id, and role are required",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(alumni_id)) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid alumni_id",
+      });
+    }
+
+    const updatedAlumniRole = await AlumniMember.findOneAndUpdate(
+      { _id: alumni_id },
+      { role },
+      { new: true }
+    );
+
+    if (!updatedAlumniRole) {
+      return res.status(404).json({
+        status: "not found",
+        message: "No alumni found with the provided ID",
+      });
+    }
+
+    res.status(200).json({
+      status: "ok",
+      message: "Alumni role updated successfully",
+      alumniRole: updatedAlumniRole,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating alumni role",
+      error: error.message,
+    });
+  }
+};
+
 const loginAlumni = async (req, res) => {
   try {
     const { mobile_number } = req.body;
@@ -598,4 +643,5 @@ module.exports = {
   loginAlumni,
   verifyOtp,
   alumniAddCollege,
+  updateRole,
 };

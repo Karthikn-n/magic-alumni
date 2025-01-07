@@ -16,7 +16,7 @@ const createJob = async (req, res) => {
       location,
       job_url,
       job_image,
-      status,
+      // status,
       tag,
     } = req.body;
 
@@ -53,7 +53,7 @@ const createJob = async (req, res) => {
       location,
       job_url,
       job_image: imagePath,
-      status,
+      // status,
       tag,
     });
 
@@ -85,6 +85,11 @@ const getAllJob = async (req, res) => {
     if (college_id) {
       filter.college_id = college_id;
     }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    filter.last_date = { $gte: today };
 
     const jobList = await Job.find(filter);
 
