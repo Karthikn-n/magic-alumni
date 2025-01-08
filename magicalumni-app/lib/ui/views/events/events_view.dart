@@ -14,7 +14,7 @@ class EventsView extends StatelessWidget {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => EventsViewModel(),
-      onDispose: (viewModel) => viewModel.dispose(),
+      // onDispose: (viewModel) => viewModel.dispose(),
       onViewModelReady: (viewModel)  async => await viewModel.apiService.events(),
       builder: (ctx, model, child) {
         return Scaffold(

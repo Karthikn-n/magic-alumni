@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:stacked/stacked.dart';
 
 class ProfileViewmodel extends BaseViewModel{
@@ -25,6 +29,9 @@ class ProfileViewmodel extends BaseViewModel{
 
   bool get isFormValid => isUserNameValid && isCollegNameValid && isdepNameValid && isYearValid && isLinkedInUrlValid;
 
+  AlumniModel? alumni;
+  final FlutterSecureStorage storage = FlutterSecureStorage();
+
   // change the current student status on the profile screen
   void changeStudentStatus(bool value){
     isCurrentYearStudent = value;
@@ -38,15 +45,20 @@ class ProfileViewmodel extends BaseViewModel{
   }
 
   // Validation for the login form comes in the 
-  void init(){
-    userNameController.text = "Raj kumar";
-    collegeNameController.text = "ABC College"; // Default College Name
-    depNameController.text = "Computer Science"; // Default Department
-    currentOrCcyController.text = "2024"; // Default Year
-    linkedUrlController.text = "https://linkedin.com/in/rajkumar";
-    mobileController.text = "8957859299";
-    emailController.text = "rajkumar@gmail.com";
-    designationController.text = "Software Developer";
+  Future<void> init() async {
+    String alumniId = await storage.read(key: "alumni_id") ?? "";
+    debugPrint(alumniId);
+    final detail = json.decode(await storage.read(key: alumniId) ?? "");
+    alumni = AlumniModel.fromJson(json.decode(await storage.read(key: alumniId) ?? ""));
+    debugPrint("Alumni profile from storgae: $detail");
+    userNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Raj kumar";
+    collegeNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "ABC College"; // Default College Name
+    depNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Computer Science"; // Default Department
+    currentOrCcyController.text = alumni != null ? alumni!.alumniProfileDetail.name : "2024"; // Default Year
+    linkedUrlController.text = alumni != null ? alumni!.alumniProfileDetail.linkedUrl : "https://linkedin.com/in/rajkumar";
+    mobileController.text = alumni != null ? alumni!.alumniProfileDetail.mobile : "8957859299";
+    emailController.text = alumni != null ? alumni!.alumniProfileDetail.email : "rajkumar@gmail.com";
+    designationController.text = alumni != null ? alumni!.alumniProfileDetail.designation : "Software Developer";
     // Name controller validation
     userNameController.addListener(() {
       if (userNameController.text.isNotEmpty) {

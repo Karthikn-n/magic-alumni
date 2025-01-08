@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
@@ -44,7 +45,10 @@ class HomeViewmodel extends BaseViewModel {
 
   Future<void> init() async {
     String alumniId = await storage.read(key: "alumni_id") ?? "";
+    debugPrint(alumniId);
+    final detail = json.decode(await storage.read(key: alumniId) ?? "");
     alumni = AlumniModel.fromJson(json.decode(await storage.read(key: alumniId) ?? ""));
+    debugPrint("Alumni profile from storgae: $detail");
     notifyListeners();
   }
 
