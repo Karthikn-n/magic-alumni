@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -42,13 +43,6 @@ class  AuthenticateService {
             duration: const Duration(milliseconds: 1200)
         );
         return true;
-      } else if(response.data["status"] == "not ok" && response.statusCode == 400) {
-         await snackBar.showCustomSnackBar(
-            variant: SnackBartype.custom,
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
-        return true;
       } else{
         snackBar.showSnackbar(
             message: response.data["message"], 
@@ -58,6 +52,17 @@ class  AuthenticateService {
       }
     } on DioException catch (err, st) {
       log("Something went on registering", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
     }
     return false;
   }
@@ -92,8 +97,18 @@ class  AuthenticateService {
         return false;
       }
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
       log("Something went on request login", stackTrace: st);
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
     }
     return false;
   }
@@ -113,18 +128,21 @@ class  AuthenticateService {
         await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
         String alumniId = await store.read(key: "alumni_id") ?? " ";
         await store.write(key: "${alumniId}_role", value: response.data["role"].toString());
-        await store.write(key: "${alumniId}_status", value: response.data["status"].toString());
-        // if (await store.read(key: "loggedIn${await store.read(key: "alumni_id")}$mobile") != "success") {
-           snackBar.showSnackbar(
-              message: response.data["message"], 
-              duration: const Duration(milliseconds: 1200)
-          );
-        // if (alumni == null) {
-        //   await fetchAlumni();
-        // }
-        // }
+        await store.write(key: "${alumniId}_status", value: response.data["approvalStatus"].toString());
+        await store.write(key: "${alumniId}_college_id", value: response.data["college_id"].toString());
+        snackBar.showSnackbar(
+          message: response.data["message"], 
+          duration: const Duration(milliseconds: 1200)
+        );
+        debugPrint('Alumni ID : $alumniId');
+        debugPrint('Alumni Role : ${await store.read(key: "${alumniId}_role")}');
+        debugPrint('Alumni Status : ${await store.read(key: "${alumniId}_status")}');
+        debugPrint('Alumni College ID : ${await store.read(key: "${alumniId}_college_id")}');
+        if (alumni == null) {
+          await fetchAlumni();
+        }
         return true;
-      } else{
+      }  else {
           snackBar.showSnackbar(
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
@@ -132,8 +150,18 @@ class  AuthenticateService {
       }
       return false;
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
       log("Something went on Verify OTP", stackTrace: st);
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
       return false;
     }
   }
@@ -152,13 +180,24 @@ class  AuthenticateService {
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         alumni = AlumniModel.fromJson(response.data);
         String alumniId =  await store.read(key: "alumni_id") ?? " ";
-        if (await store.read(key: alumniId) == null && alumni != null) {
-          await store.write(key: alumniId, value: alumni?.toMap().toString());
+        if (alumni != null) {
+          await store.write(key: alumniId, value: json.encode(alumni?.toMap()));
+          debugPrint("Alumni Details: ${await store.read(key: alumniId)}");
         }
       }
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
-      log("Something went on Requesting Alumni Profile", stackTrace: st);
+      log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
     }
   }
 

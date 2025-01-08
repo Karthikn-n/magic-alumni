@@ -4,12 +4,14 @@ class CollegesModel {
   final String address;
   final String city;
   final List<DepartmentModel> departments;
+  final String status;
   CollegesModel({
     required this.id,
     required this.collegeName,
     required this.address,
     required this.city,
     required this.departments,
+    required this.status,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class CollegesModel {
     result.addAll({'address': address});
     result.addAll({'city': city});
     result.addAll({'departments': departments.map((x) => x.toMap()).toList()});
+    result.addAll({'status': status});
   
     return result;
   }
@@ -30,6 +33,7 @@ class CollegesModel {
       collegeName: map['name'] ?? '',
       address: map['address'] ?? '',
       city: map['city'] ?? '',
+      status: map['approval_status'] ?? '',
       departments: (map['departments'] ?? []).map<DepartmentModel>((department) => DepartmentModel.fromMap(department)).toList(), 
     );
   }
