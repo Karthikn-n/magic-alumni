@@ -225,19 +225,18 @@ const getAlumniById = async (req, res) => {
 
     const alumniCollegeData = await AlumniCollege.find({
       alumni_id,
-      status: "approved",
     });
 
     const alumniProfile = await AlumniMember.findOne({ _id: alumni_id });
 
-    if (alumniCollegeData.length === 0) {
-      return res.status(200).json({
-        status: "ok",
-        message: "No approved colleges for this alumni",
-        alumniProfile: alumniProfile,
-        colleges: [],
-      });
-    }
+    // if (alumniCollegeData.length === 0) {
+    //   return res.status(200).json({
+    //     status: "ok",
+    //     message: "No approved colleges for this alumni",
+    //     alumniProfile: alumniProfile,
+    //     colleges: [],
+    //   });
+    // }
 
     // const alumni = await AlumniMember.findOne({ _id: alumni_id });
 
