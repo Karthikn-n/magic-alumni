@@ -17,7 +17,7 @@ class HomeView extends StatelessWidget {
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => HomeViewmodel(),
       onViewModelReady: (viewModel) async  {
-        viewModel.newsList.isEmpty ? await viewModel.news() : null;
+        // viewModel.newsList.isEmpty ? await viewModel.news() : null;
         await viewModel.init();
       },
       builder: (ctx, model, child) {

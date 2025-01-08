@@ -10,7 +10,7 @@ class AlumniModel {
 
   factory AlumniModel.fromJson(Map<String, dynamic> json){
     return AlumniModel(
-      alumniProfileDetail: AlumniProfileModel.fromJson(json['alumniProfileDetail']),
+      alumniProfileDetail: AlumniProfileModel.fromJson(json['alumniProfile']),
       colleges: (json["colleges"] ?? []).map<CollegesModel>((college) => CollegesModel.fromMap(college)).toList(), 
     );
   }
@@ -18,7 +18,7 @@ class AlumniModel {
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
   
-    result.addAll({'alumniProfileDetail': alumniProfileDetail.toMap()});
+    result.addAll({'alumniProfile': alumniProfileDetail.toMap()});
     result.addAll({'colleges': colleges.map((x) => x.toMap()).toList()});
   
     return result;

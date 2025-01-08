@@ -114,6 +114,7 @@ class LoginView extends StatelessWidget {
                                 height: 48.0,
                                 child: ElevatedButton(
                                   onPressed: () async {
+                                    debugPrint("Otp Verified: ${model.isOTPVerified}");
                                     //await model.auth.fetchAlumni();
                                     model.isOTPVerified
                                     ? model.navigateHome()

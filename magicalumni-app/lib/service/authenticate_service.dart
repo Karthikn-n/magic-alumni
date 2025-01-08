@@ -138,6 +138,7 @@ class  AuthenticateService {
         debugPrint('Alumni Role : ${await store.read(key: "${alumniId}_role")}');
         debugPrint('Alumni Status : ${await store.read(key: "${alumniId}_status")}');
         debugPrint('Alumni College ID : ${await store.read(key: "${alumniId}_college_id")}');
+        alumni = null;
         if (alumni == null) {
           await fetchAlumni();
         }
@@ -178,12 +179,13 @@ class  AuthenticateService {
         data: {"alumni_id": await store.read(key: "alumni_id")}
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
+        debugPrint("Alumni Profile: ${response.data}");
         alumni = AlumniModel.fromJson(response.data);
         String alumniId =  await store.read(key: "alumni_id") ?? " ";
-        if (alumni != null) {
-          await store.write(key: alumniId, value: json.encode(alumni?.toMap()));
-          debugPrint("Alumni Details: ${await store.read(key: alumniId)}");
-        }
+        await store.write(key: alumniId, value: json.encode(alumni?.toMap()));
+        debugPrint("Alumni Details: ${await store.read(key: alumniId)}");
+        
+        debugPrint("Login Response: ${response.data}");
       }
     } on DioException catch (err, st) {
       log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
@@ -193,10 +195,7 @@ class  AuthenticateService {
       if((status == "not ok" && statusCode == 400) 
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
-         snackBar.showSnackbar(
-            message: message, 
-            duration: const Duration(milliseconds: 1200)
-        );
+          log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
       } 
     }
   }

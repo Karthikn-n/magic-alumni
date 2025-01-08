@@ -15,7 +15,7 @@ class ProfileView extends StatelessWidget {
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => ProfileViewmodel(),
       onDispose: (viewModel) => viewModel.disposeProfile(),
-      onViewModelReady: (viewModel) => viewModel.init(),
+      onViewModelReady: (viewModel)async => await viewModel.init(),
       builder: (ctx, model, child) {
         return Scaffold(
           body: Stack(
@@ -29,9 +29,22 @@ class ProfileView extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   child: Padding(
                     padding: const EdgeInsets.only(top: kToolbarHeight),
-                    child: Text(
-                      "Profile", 
-                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Profile", 
+                          style: TextStyle(fontSize: 14, color: Colors.white),
+                        ),
+                        IconButton(
+                          onPressed: (){}, 
+                          icon: SizedBox(
+                            height: 24, 
+                            width: 24, 
+                            child: Image.asset("assets/icon/out.png"),
+                          )
+                        )
+                      ],
                     ),
                   ),
                 ),
@@ -243,7 +256,7 @@ class ProfileView extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                "Raj kumar",
+                                model.alumni != null ? model.alumni!.alumniProfileDetail.name : "Raj",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500
@@ -260,7 +273,7 @@ class ProfileView extends StatelessWidget {
                                   children: [
                                     Icon(CupertinoIcons.check_mark_circled_solid, size: 14, color: Colors.green,),
                                     Text(
-                                      "Your alumni status have been approved",
+                                      model.alumni != null ? model.alumni!.alumniProfileDetail.name : "Your alumni status have been approved",
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500

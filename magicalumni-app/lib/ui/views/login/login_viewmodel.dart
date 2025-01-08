@@ -62,6 +62,7 @@ class LoginViewmodel extends BaseViewModel{
   /// Verified the OTP
   void verifiedOTP(){
     _isOTPVerified = true;
+    debugPrint("OTP verified here: $_isOTPVerified");
     notifyListeners();
   }
 
