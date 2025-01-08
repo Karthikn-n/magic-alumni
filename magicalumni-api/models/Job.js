@@ -30,7 +30,7 @@ const jobSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: false,
     },
     company_name: {
       type: String,
