@@ -89,6 +89,13 @@ const getAllEvent = async (req, res) => {
   try {
     const { college_id } = req.body;
 
+    if (!college_id) {
+      return res.status(404).json({
+        status: "not found",
+        message: "College ID required",
+      });
+    }
+
     if (college_id && !mongoose.Types.ObjectId.isValid(college_id)) {
       return res.status(400).json({
         status: "not ok",

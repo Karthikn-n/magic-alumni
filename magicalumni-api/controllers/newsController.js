@@ -14,6 +14,7 @@ const createNews = async (req, res) => {
       description,
       news_posted,
       creator_name,
+      location,
       image,
       news_link,
     } = req.body;
@@ -34,6 +35,7 @@ const createNews = async (req, res) => {
       description,
       news_posted,
       creator_name,
+      location,
       image: imagePath,
       news_link,
     });
