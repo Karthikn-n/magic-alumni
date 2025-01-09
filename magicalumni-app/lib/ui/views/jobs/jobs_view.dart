@@ -74,7 +74,7 @@ class JobsView extends StatelessWidget {
                                   onReportTap: () => showReportDialog(context),
                                 ),
                                 JobListWidget(
-                                  jobs: model.jobsList,
+                                  jobs: model.jobsList.where((element) => element.jobType == "Intern",).toList(),
                                   onReportTap: () => showReportDialog(context),
                                 ),
                               ]
@@ -125,7 +125,7 @@ class JobsView extends StatelessWidget {
                   spacing: 10,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(onPressed: (){}, child: Text("Cancel", style: textStyle,)),
+                    ElevatedButton(onPressed: () => Navigator.pop(context), child: Text("Cancel", style: textStyle,)),
                     ElevatedButton(onPressed: (){}, child: Text("Report", style: textStyle,)),
                   ],
                 ),

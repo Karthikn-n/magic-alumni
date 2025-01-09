@@ -131,9 +131,8 @@ class CreateEventViewmodel extends BaseViewModel {
     };
   }  
 
-  @override
-  void dispose() {
-    super.dispose();
+
+  void onDispose() {
     titleController.dispose();
     dateController.dispose();
     eventTypeController.dispose();

@@ -21,7 +21,7 @@ class EventsViewModel extends BaseViewModel {
   
 
   /// Call the Events API and store if the events get from the API or return empty list
-  Future<void> news() async {
+  Future<void> events() async {
     if (eventsList.isEmpty) {
       apiService.events().then(
         (value) {

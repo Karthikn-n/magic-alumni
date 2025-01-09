@@ -7,7 +7,7 @@ class JobsModel {
   final String location;
   final String lastDate;
   final String jobType;
-  final String tags;
+  final List<String> tags;
   final String applyLink;
   final String email;
 
@@ -34,7 +34,7 @@ class JobsModel {
       title: map['job_title'] ?? '',
       companyName: map["company_name"] ?? "",
       location: map['location'] ?? '',
-      tags: map["tag"] ?? '',
+      tags: List<String>.from(map["tag"] ?? []),
       lastDate: map['last_date'] ?? '',
       jobType: map['job_type'] ?? '',
       applyLink: map['job_url'] ?? '',

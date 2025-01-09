@@ -3,6 +3,8 @@ class CollegesModel {
   final String collegeName;
   final String address;
   final String city;
+  final String currentYear;
+  final String completedYear;
   final List<DepartmentModel> departments;
   final String status;
   CollegesModel({
@@ -10,6 +12,8 @@ class CollegesModel {
     required this.collegeName,
     required this.address,
     required this.city,
+    required this.completedYear,
+    required this.currentYear,
     required this.departments,
     required this.status,
   });
@@ -22,7 +26,9 @@ class CollegesModel {
     result.addAll({'address': address});
     result.addAll({'city': city});
     result.addAll({'departments': departments.map((x) => x.toMap()).toList()});
-    result.addAll({'status': status});
+    result.addAll({'approvalStatus': status});
+    result.addAll({'completed_year': completedYear});
+    result.addAll({'current_year': currentYear});
   
     return result;
   }
@@ -33,7 +39,9 @@ class CollegesModel {
       collegeName: map['name'] ?? '',
       address: map['address'] ?? '',
       city: map['city'] ?? '',
-      status: map['approval_status'] ?? '',
+      currentYear: map["current_year"] ?? "",
+      completedYear: map["completed_year"] ?? '',
+      status: map['approvalStatus'] ?? '',
       departments: (map['departments'] ?? []).map<DepartmentModel>((department) => DepartmentModel.fromMap(department)).toList(), 
     );
   }

@@ -18,6 +18,7 @@ class HomeViewmodel extends BaseViewModel {
   List<NewsModel> newsList = [];
   /// Use API Service to get the news from the API
   final ApiService apiService = ApiService();
+  bool isInitialized = false;
 
   final NavigationService _navigationService = locator<NavigationService>();
   final FlutterSecureStorage storage = FlutterSecureStorage();
@@ -35,7 +36,7 @@ class HomeViewmodel extends BaseViewModel {
   Future<void> news() async {
     if (newsList.isEmpty) {
       apiService.news().then(
-        (value) {
+        (value) async {
           newsList = value;
           notifyListeners();
         } ,
@@ -48,18 +49,17 @@ class HomeViewmodel extends BaseViewModel {
     debugPrint(alumniId);
     final detail = json.decode(await storage.read(key: alumniId) ?? "");
     alumni = AlumniModel.fromJson(json.decode(await storage.read(key: alumniId) ?? ""));
-    debugPrint("Alumni profile from storgae: $detail");
     notifyListeners();
+    debugPrint("IS empty : ${alumni == null}");
+    debugPrint("Alumni profile from storgae: $detail");
+
+    
   }
 
   void navigateToNewsDetail(NewsModel news, int index) 
     => _navigationService.navigateToNewsDetailView(news: news, index: index);
 
-  void showDialog()
-    => diologService.showCustomDialog(
-      variant: DialogType.custom,
-      title: alumni!=null ? alumni!.alumniProfileDetail.name : "",
-      description: "Your request is not approved by the college"
-    );
   
+  
+
 }

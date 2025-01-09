@@ -193,7 +193,7 @@ class CreateEventView extends StatelessWidget {
                           height: 50.0,
                           child: ElevatedButton(
                             onPressed: () async {
-                              print(await model.eventData());
+                              debugPrint("${await model.eventData()}");
                               model.formValid
                               ? await model.events.eventCreate(await model.eventData()).then((value) => value ? Navigator.pop(context) : null,)// Call the API 
                               : model.showSnackbar(); // Show snack bar message

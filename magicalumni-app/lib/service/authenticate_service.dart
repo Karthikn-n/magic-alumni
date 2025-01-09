@@ -126,18 +126,17 @@ class  AuthenticateService {
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         await store.write(key: "loggedIn${await store.read(key: "alumni_mobile")}", value: "success");
         await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
-        String alumniId = await store.read(key: "alumni_id") ?? " ";
-        await store.write(key: "${alumniId}_role", value: response.data["role"].toString());
-        await store.write(key: "${alumniId}_status", value: response.data["approvalStatus"].toString());
-        await store.write(key: "${alumniId}_college_id", value: response.data["college_id"].toString());
+        await store.write(key: "alumni_role", value: response.data["role"].toString());
+        await store.write(key: "alumni_status", value: response.data["approvalStatus"].toString());
+        await store.write(key: "college_id", value: response.data["college_id"].toString());
         snackBar.showSnackbar(
           message: response.data["message"], 
           duration: const Duration(milliseconds: 1200)
         );
-        debugPrint('Alumni ID : $alumniId');
-        debugPrint('Alumni Role : ${await store.read(key: "${alumniId}_role")}');
-        debugPrint('Alumni Status : ${await store.read(key: "${alumniId}_status")}');
-        debugPrint('Alumni College ID : ${await store.read(key: "${alumniId}_college_id")}');
+        debugPrint('Alumni ID : ${await store.read(key: "alumni_id")}');
+        debugPrint('Alumni Role : ${await store.read(key: "alumni_role")}');
+        debugPrint('Alumni Status : ${await store.read(key: "alumni_status")}');
+        debugPrint('Alumni College ID : ${await store.read(key: "college_id")}');
         alumni = null;
         if (alumni == null) {
           await fetchAlumni();
@@ -199,6 +198,44 @@ class  AuthenticateService {
       } 
     }
   }
+
+  Future<bool> update(Map<String, dynamic> data) async {
+    try{
+      final response = await _dio.post(
+        "${baseApiUrl}alumni/update",
+        data: data
+      );
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+        await fetchAlumni();
+        return true;
+      } else{
+        snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+        return false;
+      }
+    } on DioException catch (err, st) {
+      log("Something went on registering", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
+    }
+    return false;
+  }
+
 
   /// clear the User session from the App
   /// Delete their ID and Profile
