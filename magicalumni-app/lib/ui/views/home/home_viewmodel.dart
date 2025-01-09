@@ -34,14 +34,14 @@ class HomeViewmodel extends BaseViewModel {
 
   /// Call the news API and store if the news get from the API or return empty list
   Future<void> news() async {
-    if (newsList.isEmpty) {
-      apiService.news().then(
-        (value) async {
-          newsList = value;
-          notifyListeners();
-        } ,
-      );
-    }
+    await apiService.news().then(
+      (value) async {
+        print("News length: ${value.length}");
+        newsList = value;
+        notifyListeners();
+      } ,
+    );
+    
   }
 
   Future<void> init() async {

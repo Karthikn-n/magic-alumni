@@ -27,6 +27,7 @@ class HomeView extends StatelessWidget {
           if (!model.isInitialized) {
            await model.init();
           }
+          print(model.newsList.isEmpty);
           if (model.newsList.isEmpty) {
             await model.news();
           }

@@ -36,6 +36,7 @@ class EventsViewModel extends BaseViewModel {
   /// Send the Feedback for attendance to the event
   Future<void> givePresent(String option, String eventId) async {
     await apiService.giveRsvp(eventId, option).then((value) {
+      print("sent $value");
       if (value) {
         isSent = value;
       }
