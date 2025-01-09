@@ -87,6 +87,10 @@ class ApiService {
   // Get all the news for the college from the API
   // Checked
   Future<List<NewsModel>> news() async {
+    print("NEWS Detail:${{
+          "alumni_id": await storage.read(key: "alumni_id"),
+          "college_id": "${await storage.read(key: "college_id")}",
+        }}");
     try{
       final response = await _dio.post(
         "${baseApiUrl}news/list",
@@ -161,7 +165,7 @@ class ApiService {
         data: {
           "alumni_id": await storage.read(key: "alumni_id"),
           "event_id": eventId,
-          "interested": feedback,
+          "status": feedback,
         }
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {

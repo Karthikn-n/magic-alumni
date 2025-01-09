@@ -25,6 +25,14 @@ class SignupViewmodel extends BaseViewModel{
 
   final AuthenticateService auth = locator<AuthenticateService>();
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  set isLoad(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  
   bool isUserNameValid = false;
   bool isCollegNameValid = false;
   bool isdepNameValid = false;
@@ -116,6 +124,8 @@ class SignupViewmodel extends BaseViewModel{
   /// Set true for the current year student to change the field hint
   void currentYear(bool isCurrentYearStudent){
     this.isCurrentYearStudent = isCurrentYearStudent;
+    currentOrCcyController.clear();
+    designationController.clear();
     notifyListeners();
   }
 

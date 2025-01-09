@@ -42,6 +42,7 @@ class  AuthenticateService {
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
         );
+        await fetchAlumni();
         return true;
       } else{
         snackBar.showSnackbar(

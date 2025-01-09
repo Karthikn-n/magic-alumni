@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/login/login_viewmodel.dart';
+import 'package:magic_alumni/widgets/common/loading_button_widget.dart';
 import 'package:magic_alumni/widgets/common/text_field.dart';
 import 'package:stacked/stacked.dart';
 
@@ -113,10 +114,10 @@ class LoginView extends StatelessWidget {
                               SizedBox(
                                 width: size.width,
                                 height: 48.0,
-                                child: ElevatedButton(
+                                child: model.isLoading
+                                ? LoadingButtonWidget()
+                                : ElevatedButton(
                                   onPressed: () async {
-                                    debugPrint("Otp Verified: ${model.isOTPVerified}");
-                                    //await model.auth.fetchAlumni();
                                     model.isOTPVerified
                                     ? model.navigateHome()
                                     : !model.isAccountVerified
@@ -140,7 +141,7 @@ class LoginView extends StatelessWidget {
                                 height: 48.0,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    model.navigateHome();
+                                    // model.isLoad = false;
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
