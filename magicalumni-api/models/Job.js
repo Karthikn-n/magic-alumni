@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const jobSchema = new mongoose.Schema(
   {
     alumni_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "AlumniMember",
+      ref: "Member",
       required: true,
     },
     college_id: {
@@ -59,6 +59,5 @@ const jobSchema = new mongoose.Schema(
 function arrayLimit(val) {
   return val.length > 0;
 }
-const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
 
-module.exports = Job;
+export default mongoose.model("Job", jobSchema);
