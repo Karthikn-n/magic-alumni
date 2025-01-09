@@ -1,12 +1,7 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const newsSchema = new mongoose.Schema(
   {
-    alumni_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AlumniMember",
-      required: true,
-    },
     college_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "College",
@@ -44,5 +39,4 @@ const newsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const News = mongoose.model("News", newsSchema);
-module.exports = News;
+export default mongoose.model("News", newsSchema);

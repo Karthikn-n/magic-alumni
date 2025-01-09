@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema(
   {
     alumni_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "AlumniMember",
+      ref: "Member",
       required: true,
     },
     college_id: {
@@ -34,7 +34,7 @@ const eventSchema = new mongoose.Schema(
     },
     event_type: {
       type: String,
-      required: true,
+      required: false,
     },
     rsvp_options: {
       type: [String],
@@ -56,5 +56,4 @@ const eventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Event = mongoose.model("Event", eventSchema);
-module.exports = Event;
+export default mongoose.model("Event", eventSchema);
