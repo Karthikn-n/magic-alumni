@@ -65,6 +65,7 @@ class SignupView extends StatelessWidget {
                             TextFieldWidget(
                               controller: model.linkedUrlController,
                               hintText: "LinkedIn Profile URL",
+                              maxLines: 1,
                               prefixIcon: Icon(CupertinoIcons.link, color: Theme.of(context).primaryColor, size: 20,),
                               textInputAction: TextInputAction.next,
                             ),
@@ -181,11 +182,10 @@ class SignupView extends StatelessWidget {
                             TextFieldWidget(
                               controller: model.currentOrCcyController,
                               prefixIcon: Icon(CupertinoIcons.calendar, color: Theme.of(context).primaryColor, size: 20,),
-                              hintText: model.isCurrentYearStudent ? "Current year" : "Passed Out Year",
+                              hintText: model.isCurrentYearStudent ? "Current Academic Year" : "Passed Out Year",
                               textInputAction: TextInputAction.next,
-                              keyboardType: model.isCurrentYearStudent 
-                                ? null
-                                : TextInputType.number,
+                              maxLength: model.isCurrentYearStudent ? 1: 4,
+                              keyboardType: TextInputType.number,
                             ),
                             !model.isCurrentYearStudent
                             ? TextFieldWidget(
@@ -214,7 +214,7 @@ class SignupView extends StatelessWidget {
                               child: ElevatedButton(
                                 onPressed: () async {
                                   model.isFormValid
-                                  ? await model.auth.register(model.userData()).then((value){
+                                  ? await model.auth.register( model.userData()).then((value){
                                     value ? model.navigateHome() : null;
                                   })
                                   : model.snackBarMessage();
@@ -253,6 +253,7 @@ class SignupView extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            Container(),
                             // Login Navigation
                             InkWell(
                               onTap: () {

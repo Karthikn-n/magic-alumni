@@ -35,9 +35,14 @@ class CreateEventViewmodel extends BaseViewModel {
     => _isTitleAdded && _isdateAdded && _isTypeAdded && _imageAdded && _criteriaAdded && _locationAdded && _desAdded;
 
   // Store the Selected Rsvp Options
-  void selectOption(int index){
-    selectedRsvpOptions.add(rsvpOptions[index]);
-    rsvpOptions.removeAt(index);
+  void selectOption(int index, {bool? removeOption}){
+    if (removeOption != null) {
+      rsvpOptions.add(selectedRsvpOptions[index]);
+      selectedRsvpOptions.removeAt(index);
+    } else {
+      selectedRsvpOptions.add(rsvpOptions[index]);
+      rsvpOptions.removeAt(index);
+    }
     notifyListeners();
   }
 
@@ -113,7 +118,7 @@ class CreateEventViewmodel extends BaseViewModel {
   Future<Map<String, dynamic>> eventData() async {
     return {
       "alumni_id": await _storage.read(key: "alumni_id"),
-      "college_id": await _storage.read(key: "college_id") ?? "",
+      "college_id": "677b6d5fb2a89b1437ba3853",//await _storage.read(key: "college_id") ?? "",
       "event_title": titleController.text,
       "date": dateController.text,
       // "approval_status": "",
@@ -124,6 +129,18 @@ class CreateEventViewmodel extends BaseViewModel {
       "descrtipion": descriptionController.text,
       "event_image": imageController.text,
     };
+  }  
+
+
+  void onDispose() {
+    titleController.dispose();
+    dateController.dispose();
+    eventTypeController.dispose();
+    imageController.dispose();
+    criteriaController.dispose();
+    locationController.dispose();
+    descriptionController.dispose();
+    selectedRsvpOptions.clear();
   }
 }
  

@@ -16,6 +16,8 @@ class SignupViewmodel extends BaseViewModel{
   final TextEditingController emailController = TextEditingController();
   final TextEditingController designationController = TextEditingController();
 
+  List<CollegesModel> collegesList = [];
+
   // Navigator router to navigate next screens without context
   final NavigationService _navigationService = locator<NavigationService>();
   // Snackbar service to show the messages in screen
@@ -52,7 +54,7 @@ class SignupViewmodel extends BaseViewModel{
 
   /// Call the colleges API and notfy the listeners
   Future<void> getColleges() async {
-    await auth.colleges();
+    await auth.colleges().then((value) => collegesList = value);
     notifyListeners();
   }
 
@@ -94,13 +96,16 @@ class SignupViewmodel extends BaseViewModel{
     linkedUrlController.addListener(() {
       if (linkedUrlController.text.isNotEmpty) {
         isLinkedInUrlValid = true;
-      }else{ 
+      } else { 
+        isLinkedInUrlValid = false;
+      }
+      if(!RegExp(r'^http[s]?:\/\/www\.linkedin\.com\/in\/[a-zA-Z0-9_-]+$').hasMatch(linkedUrlController.text)) { 
         isLinkedInUrlValid = false;
       }
     },);
 
   }
-
+  
   /// Navigate to home screen once the [isFormValid] is true
   void navigateHome() => _navigationService.replaceWithAppView();
   
@@ -116,10 +121,17 @@ class SignupViewmodel extends BaseViewModel{
 
   // Validate snack bar
   void snackBarMessage(){
-   _snackbar.showSnackbar(
+   if (linkedUrlController.text.isNotEmpty && !isLinkedInUrlValid) {
+    _snackbar.showSnackbar(
+      message: "Enter a Valid LinkedIn Profile URL",
+      duration: const Duration(milliseconds: 1500),
+    );
+   }else{
+    _snackbar.showSnackbar(
       message: "All fields are required",
       duration: const Duration(milliseconds: 1500),
     );
+   }
   }
   
   Map<String, dynamic> userData(){

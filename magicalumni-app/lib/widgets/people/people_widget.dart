@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/peoples/people_viewmodel.dart';
 import 'package:stacked/stacked.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../model/alumni_model.dart';
 
 class PeopleWidget extends StatelessWidget {
-  final List<String> names;
-  final List<String> jobRoles;
-  const PeopleWidget({super.key, required this.names, required this.jobRoles});
+  final List<AlumniProfileModel> peoples;
+  const PeopleWidget({super.key, required this.peoples});
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      itemCount: names.length,
+      itemCount: peoples.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 10,
@@ -38,7 +40,7 @@ class PeopleWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 10,),
                   Text(
-                    names[index], 
+                    peoples[index].name, 
                     maxLines: 2,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -49,7 +51,7 @@ class PeopleWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    jobRoles[index],
+                    peoples[index].designation.isEmpty ? "Student" : peoples[index].designation,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
@@ -68,7 +70,11 @@ class PeopleWidget extends StatelessWidget {
                     viewModelBuilder: () => PeopleViewmodel(),
                     builder: (ctx, model, child) {
                       return ElevatedButton(
-                        onPressed: () => showConnectionBottomSheet(context, names[index]), 
+                        onPressed: () => showConnectionBottomSheet(
+                          context, 
+                          peoples[index].name, 
+                          peoples[index].linkedUrl
+                        ), 
                         child: Text("Connect", style: textStyle,)
                       );
                     }
@@ -83,97 +89,97 @@ class PeopleWidget extends StatelessWidget {
     
   }
 
-  void showConnectionBottomSheet(BuildContext context, String name){
+  void showConnectionBottomSheet(BuildContext context, String name, String url){
     showModalBottomSheet(
       context: context, 
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
       ),
       builder: (sheetctx) {
-        return Flexible(
-          flex: 1,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            width: double.infinity,
-            // height: 150,
-            child: Column(
-              spacing: 10,
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                const SizedBox(height: 15,),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    text: "Connect with ",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                    ),
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          width: double.infinity,
+          // height: 150,
+          child: Column(
+            spacing: 10,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const SizedBox(height: 15,),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: "Connect with ",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  ]
+                )
+              ),
+              const SizedBox(height: 5,),
+              SizedBox(
+                width: MediaQuery.sizeOf(context).width,
+                height: 48.0,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    // if (await canLaunchUrl(Uri.parse(url))) {
+                      await launchUrl(Uri.parse(url));
+                    // }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 10.0,
                     children: [
-                      TextSpan(
-                        text: name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    ]
-                  )
-                ),
-                const SizedBox(height: 5,),
-                SizedBox(
-                  width: MediaQuery.sizeOf(context).width,
-                  height: 48.0,
-                  child: ElevatedButton(
-                    onPressed: () {
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 10.0,
-                      children: [
-                        SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: Image.asset(
-                            "assets/icon/linkedin_circle.png",
-                            fit: BoxFit.cover,
-                          )
-                        ),
-                        Text(
-                          'Connect via LinkedIn',
-                          style: textStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+                      SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: Image.asset(
+                          "assets/icon/linkedin_circle.png",
+                          fit: BoxFit.cover,
+                        )
+                      ),
+                      Text(
+                        'Connect via LinkedIn',
+                        style: textStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(
-                  width: MediaQuery.sizeOf(context).width,
-                  height: 48.0,
-                  child: ElevatedButton(
-                    onPressed: () {
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 10.0,
-                      children: [
-                       Icon(Icons.wechat_sharp, size: 24, color: Colors.white,),
-                        Text(
-                          'Request Mobile Number',
-                          style: textStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+              ),
+              SizedBox(
+                width: MediaQuery.sizeOf(context).width,
+                height: 48.0,
+                child: ElevatedButton(
+                  onPressed: () {
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 10.0,
+                    children: [
+                     Icon(Icons.wechat_sharp, size: 24, color: Colors.white,),
+                      Text(
+                        'Request Mobile Number',
+                        style: textStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 15,),
-              ],
-            ),
+              ),
+              const SizedBox(height: 15,),
+            ],
           ),
         );
       },

@@ -12,8 +12,9 @@ class LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
     bool isKeyVisible = MediaQuery.of(context).viewInsets.bottom > 0;
-    return ViewModelBuilder.reactive(
+    return ViewModelBuilder<LoginViewmodel>.reactive(
       viewModelBuilder: () => LoginViewmodel(),
+      onDispose: (viewModel) => viewModel.onDispose(),
       onViewModelReady: (viewModel) => viewModel.init(),
       builder: (ctx, model, child) {
         return Scaffold(
@@ -40,7 +41,7 @@ class LoginView extends StatelessWidget {
               ),
               // The stack hold the forms
               Positioned(
-                top: isKeyVisible ? size.height * 0.3 : size.height * 0.45,
+                top: isKeyVisible ? size.height * 0.25 : size.height * 0.4,
                 bottom: 0,
                 right: 0,
                 left: 0,
@@ -62,7 +63,7 @@ class LoginView extends StatelessWidget {
                         children: [
                           const SizedBox(height: 35,),
                           Text("Login", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                          Text("Enter your credentials", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black45),),
+                          Text("Enter your Mobile Number", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black45),),
                           // Form for Login
                           Column(
                             spacing: 15,
@@ -83,16 +84,39 @@ class LoginView extends StatelessWidget {
                                   controller: model.otpController,
                                   hintText: "6 Digit OTP",
                                   maxLength: 6,
+                                  prefixIcon: Icon(Icons.password, size: 20, color: Theme.of(context).primaryColor,),
                                   textInputAction: TextInputAction.done,
                                   keyboardType: TextInputType.visiblePassword,
                                 )
                               : Container(),
+                              model.isResendClicked
+                              ?  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("Resend OTP in: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
+                                      Text(model.formatTime(model.time), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFFF7CA18)),),
+                                    ],
+                                  )
+                              : !model.isAccountVerified ? Container(): Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("Didn't receive OTP: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
+                                  InkWell(
+                                    onTap: () async {
+                                      await model.login(model.mobileController.text);
+                                      model.startTimer();
+                                    },
+                                    child: Text("Resend", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFFF7CA18)),)
+                                  ),
+                                ],
+                              ),
                               SizedBox(
                                 width: size.width,
                                 height: 48.0,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                   
+                                    debugPrint("Otp Verified: ${model.isOTPVerified}");
+                                    //await model.auth.fetchAlumni();
                                     model.isOTPVerified
                                     ? model.navigateHome()
                                     : !model.isAccountVerified

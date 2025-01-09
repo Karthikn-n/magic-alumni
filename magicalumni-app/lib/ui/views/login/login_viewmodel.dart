@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
@@ -19,6 +21,10 @@ class LoginViewmodel extends BaseViewModel{
   bool _isOTPVerified = false;
   bool get isOTPVerified => _isOTPVerified;
 
+  // Resend OTP timer varaibles
+  bool isResendClicked = false;
+  int time = 30;
+  Timer? timer;
 
   // Use navigation service to navigate between views
   final NavigationService _navigationService = locator<NavigationService>();
@@ -56,6 +62,7 @@ class LoginViewmodel extends BaseViewModel{
   /// Verified the OTP
   void verifiedOTP(){
     _isOTPVerified = true;
+    debugPrint("OTP verified here: $_isOTPVerified");
     notifyListeners();
   }
 
@@ -83,9 +90,41 @@ class LoginViewmodel extends BaseViewModel{
     notifyListeners();
   }
 
+  /// Start the timer once the Login is verified
+  void startTimer() {
+    isResendClicked = true;
+    time = 30;
+
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+       if (time > 0) {
+          time--;
+        } else {
+          isResendClicked = false;
+          timer.cancel(); // Stop the timer when it reaches 0
+        }
+        notifyListeners();
+    },);
+    notifyListeners();
+  }
+
+  String formatTime(int seconds) {
+    final duration = Duration(seconds: seconds);
+    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final secs = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "$minutes:$secs";
+  }
+
   // Call the API 
   Future<void> login(String mobile) async 
-    => await auth.login(mobile).then((value) => value ? verifyAccount() : null,);
+    => await auth.login(mobile).then(
+      (value){
+        if(value){
+          verifyAccount();
+          startTimer();
+        }
+        notifyListeners();
+      }
+    );
  
 
   Future<void> verifyOtp(String otp) async 
@@ -94,6 +133,7 @@ class LoginViewmodel extends BaseViewModel{
         verifiedOTP();
         _isOTPVerified ? navigateHome() : null;  
       }
+      notifyListeners();
     });
   
   // Move to signup screen 
@@ -102,5 +142,12 @@ class LoginViewmodel extends BaseViewModel{
   // Navigate to home screen view
   void navigateHome()  => _navigationService.replaceWithAppView();
 
+
+  
+  void onDispose() {
+    mobileController.dispose();
+    otpController.dispose();
+    timer?.cancel();
+  }
 }
 

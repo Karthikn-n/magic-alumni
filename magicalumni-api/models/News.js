@@ -32,6 +32,10 @@ const newsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    location: {
+      type: String,
+      required: true,
+    },
     news_link: {
       type: String,
       required: true,

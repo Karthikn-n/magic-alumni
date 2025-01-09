@@ -1,21 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:magic_alumni/model/jobs_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JobListWidget extends StatelessWidget {
-  final List<String> jobTitles;
-  final List<String> locations;
+  final List<JobsModel> jobs;
   final VoidCallback? onReportTap;
   const JobListWidget({
     super.key, 
-    required this.jobTitles, 
-    required this.locations, 
+    required this.jobs, 
     this.onReportTap
   });
 
   @override
   Widget build(BuildContext context) {
     return  ListView.builder(
-      itemCount: jobTitles.length,
+      itemCount: jobs.length,
       itemBuilder: (context, index) {
         return Material(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -48,7 +49,7 @@ class JobListWidget extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  jobTitles[index], 
+                                  jobs[index].title, 
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color(0xFF161719),
@@ -56,7 +57,7 @@ class JobListWidget extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  locations[index],
+                                  jobs[index].location,
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
@@ -78,7 +79,7 @@ class JobListWidget extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: "13 Mar 2025",
+                                text: DateFormat("dd MMM yyyy").format(DateTime.parse(jobs[index].lastDate)),
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
@@ -100,8 +101,8 @@ class JobListWidget extends StatelessWidget {
                             splashColor: Colors.transparent.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                             radius: 20,
-                            onTap: () {
-                              
+                            onTap: () async {
+                              await launchUrl(Uri.parse(jobs[index].applyLink));
                             }, 
                             child: Icon(CupertinoIcons.link, color: Theme.of(context).primaryColor, size: 20,)
                           ),
@@ -115,7 +116,7 @@ class JobListWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: index == jobTitles.length - 1 ? 66: 10,)
+              SizedBox(height: index == jobs.length - 1 ? 66: 10,)
             ],
           ),
         );

@@ -15,7 +15,7 @@ class CreateJobView extends StatelessWidget {
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => CreateJobViewmodel(),
       onViewModelReady: (viewModel) => viewModel.init(),
-      onDispose: (viewModel) => viewModel.dispose(),
+      onDispose: (viewModel) => viewModel.onDispose(),
       builder: (ctx, model, child) {
         return Scaffold(
           body: Stack(
@@ -185,8 +185,10 @@ class CreateJobView extends StatelessWidget {
                           height: 50.0,
                           child: ElevatedButton(
                             onPressed: () async {
+                              debugPrint("${await model.jobData()}");
                               model.isFormValid
-                                ? model.jobs.jobCreate(await model.jobData())
+                                ? await model.jobs.jobCreate(await model.jobData()).then((value) => value ? Navigator.pop(context) : null,)
+                                  
                                 : model.showSnackBar();
                             },
                             child: Text(

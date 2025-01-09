@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:magic_alumni/ui/views/events/events_viewmodel.dart';
 import 'package:magic_alumni/widgets/events/event_list_widget.dart';
 import 'package:stacked/stacked.dart';
@@ -12,9 +13,9 @@ class EventsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
-    return ViewModelBuilder.reactive(
+    return ViewModelBuilder<EventsViewModel>.reactive(
       viewModelBuilder: () => EventsViewModel(),
-      onViewModelReady: (viewModel)  async => await viewModel.apiService.events(),
+      onViewModelReady: (viewModel)  async => await viewModel.events(),
       builder: (ctx, model, child) {
         return Scaffold(
           body: DefaultTabController(
@@ -55,40 +56,6 @@ class EventsView extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 20),
                       child: Column(
                         children: [
-                          // Material(
-                          //   color: Theme.of(context).scaffoldBackgroundColor,
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //     children: [
-                          //       Row(
-                          //         spacing: 10,
-                          //         children: [
-                          //           FilterButton(
-                          //             buttonName: "Past", 
-                          //             // backgroundColor: Theme.of(context).primaryColor,
-                          //             onPressed: (){}
-                          //           ),
-                          //           FilterButton(
-                          //             buttonName: "Up Coming", 
-                          //             onPressed: (){}
-                          //           ),
-                          //           FilterButton(
-                          //             buttonName: "Today", 
-                          //             onPressed: (){}
-                          //           ),
-                          //         ],
-                          //       ),
-                          //       // IconButton(
-                          //       //   onPressed: () {} , 
-                          //       //   icon: Icon(CupertinoIcons.search, color: Theme.of(context).primaryColor,)
-                          //       // )
-                          //       // FilterButton(
-                          //       //   buttonName: "Clear", 
-                          //       //   onPressed: (){}
-                          //       // )
-                          //     ],
-                          //   ),
-                          // ),
                           TabBar(
                               padding: EdgeInsets.zero,
                               tabAlignment: TabAlignment.center,
@@ -102,9 +69,9 @@ class EventsView extends StatelessWidget {
                           Expanded(
                             child: TabBarView(
                               children: [
-                                EventListWidget(onTap: () => model.navigateToEventDetail()),
-                                EventListWidget(onTap: () => model.navigateToEventDetail()),
-                                EventListWidget(onTap: () => model.navigateToEventDetail()),
+                                EventListWidget(events: model.eventsList.where((element) => DateFormat("dd-MM-yyyy").format(DateTime.parse(element.eventDate)) == DateFormat("dd-MM-yyyy").format(DateTime.now())).toList(),),
+                                EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isAfter(DateTime.now())).toList(), ),
+                                EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isBefore(DateTime.now())).toList()),
                               ]
                             )
                           ),
@@ -119,8 +86,8 @@ class EventsView extends StatelessWidget {
           ),
           // Create event buttton 
           floatingActionButton: FloatingActionButton(
-            onPressed: (){
-              model.navigateToCreateEvent();
+            onPressed: ()async{
+             model.navigateToCreateEvent();
             },
             backgroundColor: Theme.of(context).primaryColor,
             tooltip: "Create event",

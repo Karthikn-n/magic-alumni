@@ -38,12 +38,12 @@ class EventsModel {
       image: map['event_image'] ?? '',
       description: map['description'] ?? '',
       eventDate: map['date'] ?? '',
-      eventType: map['event_type'] ?? '',
+      eventType: map['event_type'] ?? "",
       criteria: map['criteria'] ?? '',
       createdBy: map['created_by'] ?? '',
       location: map['location'] ?? '',
       approvalStatus: map['approval_status'] ?? '',
-      revpOptions: List<String>.from(map['rsvp_options']),
+      revpOptions: List.from(map['rsvp_options'] ?? []),
     );
   }
 

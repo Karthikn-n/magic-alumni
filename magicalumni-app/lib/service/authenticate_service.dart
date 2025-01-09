@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -26,26 +27,22 @@ class  AuthenticateService {
 
   /// Register API for the Alumni 
   /// Store the Alumni id and alumni approval Status from response for future use
+  /// Checked Working
   Future<bool> register(Map<String, dynamic> data) async {
     try{
       final response = await _dio.post(
         "${baseApiUrl}member/register",
         data: data
       );
-      // 
-      if (response.statusCode == 201 && response.data["status"] == "Okay") {
-        // await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+      if (response.statusCode == 201 && response.data["status"] == "ok") {
+        await store.write(key: "alumni_id", value: response.data["_id"].toString());
+        await store.write(key: "college_id", value: response.data["collegeid"].toString());
+        await store.write(key: "alumni_role", value: response.data["role"].toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
         );
         return true;
-      } else if(response.data["message"] == "Alumni member already exists" && response.statusCode == 400) {
-         await snackBar.showCustomSnackBar(
-            variant: SnackBartype.custom,
-            message: "Member registered Login", 
-            duration: const Duration(milliseconds: 1200)
-        );
       } else{
         snackBar.showSnackbar(
             message: response.data["message"], 
@@ -54,8 +51,18 @@ class  AuthenticateService {
         return false;
       }
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
-      log("Something went on registering", stackTrace: st);
+      log("Something went on registering", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
     }
     return false;
   }
@@ -67,6 +74,7 @@ class  AuthenticateService {
   /// Get the Alumni ID from the local storage
   /// Call the Alumni profile API to check their approval status
   /// store the message in the log
+  /// Checked Working
   Future<bool> login(String mobile) async {
     try{
       final response = await _dio.post(
@@ -74,7 +82,7 @@ class  AuthenticateService {
         data: {"mobile_number": mobile}
       );
       // 
-      if (response.statusCode == 200 && response.data["message"] == "OTP generated and stored successfully") {
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
         await store.write(key: "alumni_mobile", value: mobile.toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
@@ -89,10 +97,73 @@ class  AuthenticateService {
         return false;
       }
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
       log("Something went on request login", stackTrace: st);
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
     }
     return false;
+  }
+
+  /// Verify the OTP from their Mobile message
+  Future<bool> verifyOtp(String otp) async {
+    try {
+      final response = await _dio.post(
+        "${baseApiUrl}alumni/verifyOtp",
+        data: {
+          "mobile_number": await store.read(key: "alumni_mobile"),
+          "otp": otp
+        }
+      );
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        await store.write(key: "loggedIn${await store.read(key: "alumni_mobile")}", value: "success");
+        await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
+        await store.write(key: "alumni_role", value: response.data["role"].toString());
+        await store.write(key: "alumni_status", value: response.data["approvalStatus"].toString());
+        await store.write(key: "college_id", value: response.data["college_id"].toString());
+        snackBar.showSnackbar(
+          message: response.data["message"], 
+          duration: const Duration(milliseconds: 1200)
+        );
+        debugPrint('Alumni ID : ${await store.read(key: "alumni_id")}');
+        debugPrint('Alumni Role : ${await store.read(key: "alumni_role")}');
+        debugPrint('Alumni Status : ${await store.read(key: "alumni_status")}');
+        debugPrint('Alumni College ID : ${await store.read(key: "college_id")}');
+        alumni = null;
+        if (alumni == null) {
+          await fetchAlumni();
+        }
+        return true;
+      }  else {
+          snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+      }
+      return false;
+    } on DioException catch (err, st) {
+      log("Something went on Verify OTP", stackTrace: st);
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
+      return false;
+    }
   }
 
   /// Get Alumni profile API 
@@ -106,54 +177,63 @@ class  AuthenticateService {
         "${baseApiUrl}alumni/member",
         data: {"alumni_id": await store.read(key: "alumni_id")}
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        debugPrint("Alumni Profile: ${response.data}");
         alumni = AlumniModel.fromJson(response.data);
         String alumniId =  await store.read(key: "alumni_id") ?? " ";
-        if (await store.read(key: alumniId) == null && alumni != null) {
-          await store.write(key: alumniId, value: alumni?.toMap().toString());
-        }
+        await store.write(key: alumniId, value: json.encode(alumni?.toMap()));
+        debugPrint("Alumni Details: ${await store.read(key: alumniId)}");
+        
+        debugPrint("Login Response: ${response.data}");
       }
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
-      log("Something went on Requesting Alumni Profile", stackTrace: st);
+      log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
+      } 
     }
   }
 
-  /// Verify the OTP from their Mobile message
-  Future<bool> verifyOtp(String otp) async {
-    try {
+  Future<bool> update(Map<String, dynamic> data) async {
+    try{
       final response = await _dio.post(
-        "${baseApiUrl}alumni/verifyOtp",
-        data: {
-          "mobile_number": await store.read(key: "alumni_mobile"),
-          "otp": otp
-        }
+        "${baseApiUrl}alumni/update",
+        data: data
       );
-      if (response.statusCode == 200 && response.data["message"] == "OTP verified successfully") {
-        await store.write(key: "loggedIn${await store.read(key: "alumni_mobile")}", value: "success");
-        await store.write(key: "alumni_id", value: response.data["alumni_id"].toString());
-        // if (await store.read(key: "loggedIn${await store.read(key: "alumni_id")}$mobile") != "success") {
-           snackBar.showSnackbar(
-              message: response.data["message"], 
-              duration: const Duration(milliseconds: 1200)
-          );
-        // if (alumni == null) {
-        //   await fetchAlumni();
-        // }
-        // }
-        return true;
-      }else{
-          snackBar.showSnackbar(
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        snackBar.showSnackbar(
             message: response.data["message"], 
             duration: const Duration(milliseconds: 1200)
         );
+        await fetchAlumni();
+        return true;
+      } else{
+        snackBar.showSnackbar(
+            message: response.data["message"], 
+            duration: const Duration(milliseconds: 1200)
+        );
+        return false;
       }
-      return false;
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
-      log("Something went on Verify OTP", stackTrace: st);
-      return false;
+      log("Something went on registering", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+         snackBar.showSnackbar(
+            message: message, 
+            duration: const Duration(milliseconds: 1200)
+        );
+      } 
     }
+    return false;
   }
 
 
@@ -165,25 +245,28 @@ class  AuthenticateService {
   }
   
   /// Get all the College from the API and Store it in local storage 
-  Future<void> colleges() async {
+  /// checked Working
+  Future<List<CollegesModel>> colleges() async {
     try {
       final response = await _dio.get(
         "${baseApiUrl}college"
       );
-      if (response.statusCode == 200 && response.data["success"] == "Success") {
+      if (response.statusCode == 200 && response.data["status"] == "Ok") {
         List<dynamic> collegesRepsponse =  (response.data["collegeWithDepartments"] ?? []) as List<dynamic>;
         collegesList = collegesRepsponse.map((college) => CollegesModel.fromMap(college) ,).toList();
         debugPrint("Colleges: ${collegesList.length}");
+        return collegesList;
       }else{
         snackBar.showSnackbar(
           message: "Can't get colleges", 
           duration: const Duration(milliseconds: 1200)
         );
         log("Something went on getting colleges", error: response.data["message"]);
+        return [];
       }
     } on DioException catch (err, st) {
-      snackBar.showSnackbar(message: "Error: $err", duration: const Duration(milliseconds: 1200));
-      log("Something went on getting colleges", stackTrace: st);
+      log("Something went on getting colleges", stackTrace: st, error: err.toString());
+      return [];
     }
   }
 

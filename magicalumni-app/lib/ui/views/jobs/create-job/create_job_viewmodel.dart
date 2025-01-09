@@ -109,20 +109,20 @@ class CreateJobViewmodel extends BaseViewModel {
   Future<Map<String, dynamic>> jobData() async {
     return {
       "alumni_id": await _storage.read(key: "alumni_id") ?? "",
-      "college_id": await _storage.read(key: "colleg_id") ?? "",
+      "college_id": "677b6d5fb2a89b1437ba3853", //await _storage.read(key: "college_id") ?? "",
       "job_title": titleController.text,
       "last_date": dateController.text,
-      "company_name": companyNameController.text,
+      "job_image" : " ",
       "location": locationController.text,
-      "job_link": jobLinkController.text,
-      "job_type": selectedJobType ?? "",
-      "tag": tags,
+      "company_name": companyNameController.text,
+      "job_url": jobLinkController.text,
+      "tag": tags.toString(),
+      "job_type": selectedJobType ?? ""
     };
   }
 
-  @override
-  void dispose(){
-    super.dispose();
+  
+  void onDispose(){
     titleController.dispose();
     dateController.dispose();
     companyNameController.dispose();
@@ -130,6 +130,5 @@ class CreateJobViewmodel extends BaseViewModel {
     jobLinkController.dispose();
     tags.clear();
     selectedJobType = null;
-    notifyListeners();
   }
 }

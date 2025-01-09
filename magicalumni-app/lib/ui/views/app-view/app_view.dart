@@ -21,12 +21,9 @@ class AppView extends StatelessWidget {
       ProfileView(),
     ];
     
-    return ViewModelBuilder.reactive(
+    return ViewModelBuilder<AppViewModel>.reactive(
       viewModelBuilder: () => AppViewModel(), 
-      onViewModelReady: (viewModel) async {
-        await viewModel.apiService.events();
-      },
-      builder: (context, model, child) {
+      builder: (ctx, model, child) {
         return Scaffold(
           body: views.elementAt(model.index),
           bottomNavigationBar: ClipRRect(
@@ -81,7 +78,7 @@ class AppView extends StatelessWidget {
                 
                 ],
                 currentIndex: model.index,
-                onTap: (value) => model.onTapped(value),
+                onTap: model.onTapped,
               ),
             ),
           ),

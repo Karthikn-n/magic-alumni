@@ -20,6 +20,10 @@ const eventSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+      required: true,
+    },
     approval_status: {
       type: String,
       default: "not approved",
@@ -29,9 +33,8 @@ const eventSchema = new mongoose.Schema(
       required: true,
     },
     event_type: {
-      type: [String],
-      enum: ["seminar", "workshop", "meetup"],
-      required: false,
+      type: String,
+      required: true,
     },
     rsvp_options: {
       type: [String],
@@ -44,6 +47,10 @@ const eventSchema = new mongoose.Schema(
     criteria: {
       type: String,
       required: true,
+    },
+    created_by: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true }
