@@ -57,7 +57,7 @@ class HomeViewmodel extends BaseViewModel {
   }
 
   void navigateToNewsDetail(NewsModel news, int index) 
-    => _navigationService.navigateToNewsDetailView(news: news, index: index);
+    => _navigationService.navigateToNewsDetailView(news: news,);
 
   
   

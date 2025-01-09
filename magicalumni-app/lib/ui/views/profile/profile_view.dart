@@ -106,6 +106,7 @@ class ProfileView extends StatelessWidget {
                             TextFieldWidget(
                               controller: model.collegeNameController,
                               hintText: "College Name",
+                              readOnly: true,
                               textInputAction: TextInputAction.next,
                               onChanged: (value) => model.isEditing = true
                             ),
@@ -113,6 +114,7 @@ class ProfileView extends StatelessWidget {
                             TextFieldWidget(
                               controller: model.depNameController,
                               hintText: "Department Name",
+                              readOnly: true,
                               textInputAction: TextInputAction.next,
                               onChanged: (value) => model.isEditing = true
                             ),
@@ -120,6 +122,7 @@ class ProfileView extends StatelessWidget {
                             TextFieldWidget(
                               controller: model.currentOrCcyController,
                               hintText: "Current year/ Passed Out Year",
+                              readOnly: true,
                               keyboardType: model.isCurrentYearStudent ? null: TextInputType.number,
                               textInputAction: TextInputAction.next,
                               onChanged: (value) => model.isEditing = true
@@ -141,14 +144,18 @@ class ProfileView extends StatelessWidget {
                               onChanged: (value) => model.isEditing = true
                             ),
                             // Designation text field
-                            TextFieldWidget(
+                            model.alumni != null && model.alumni!.alumniProfileDetail.role == "Student"
+                            ? Container()
+                            : TextFieldWidget(
                               controller: model.designationController,
                               hintText: "Desgination",
                               textInputAction: TextInputAction.next,
                               onChanged: (value) => model.isEditing = true
                             ),
                             // Add new college Section if the user need to add new college
-                            ExpansionTile(
+                            model.alumni != null && model.alumni!.alumniProfileDetail.role == "Student"
+                            ? Container()
+                            : ExpansionTile(
                               collapsedBackgroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 side: BorderSide.none,

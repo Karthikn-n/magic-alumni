@@ -1,13 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:magic_alumni/model/events_model.dart';
 import 'package:magic_alumni/ui/views/events/events_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../../widgets/people/filter_button.dart';
 
 class EventsDetailView extends StatelessWidget {
-  const EventsDetailView({super.key});
+  final EventsModel event;
+  const EventsDetailView({super.key, required this.event});
 
    @override
   Widget build(BuildContext context) {
@@ -38,7 +41,7 @@ class EventsDetailView extends StatelessWidget {
                           onPressed: () => Navigator.pop(context),
                         ),
                         title: Text(
-                          "Event Title", 
+                          event.title, 
                           style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -53,30 +56,26 @@ class EventsDetailView extends StatelessWidget {
                 top: size.height * 0.15,
                 child: Column(
                   children: [
-                    Hero(
-                      tag: "event",
-                      transitionOnUserGestures: true,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                        ),
-                        child: SizedBox(
-                          width: size.width,
-                          height: size.height * 0.3,
-                          child: CachedNetworkImage(
-                            imageUrl: "https://hire4event.com/blogs/wp-content/uploads/2019/02/hire4event.com_-1.jpg",
-                            imageBuilder: (context, imageProvider) => Ink(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius:  BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    topRight: Radius.circular(30)
-                                  ),
-                                  image: DecorationImage(
-                                    image: imageProvider,
-                                    fit: BoxFit.cover,
-                                  ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                      child: SizedBox(
+                        width: size.width,
+                        height: size.height * 0.3,
+                        child: CachedNetworkImage(
+                          imageUrl: event.image,
+                          imageBuilder: (context, imageProvider) => Ink(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius:  BorderRadius.only(
+                                  topLeft: Radius.circular(30),
+                                  topRight: Radius.circular(30)
+                                ),
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
@@ -84,7 +83,6 @@ class EventsDetailView extends StatelessWidget {
                         ),
                       ),
                     ),
-                        
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -99,7 +97,7 @@ class EventsDetailView extends StatelessWidget {
                               const SizedBox(height: 5,),
                               // event title text field
                               Text(
-                                "Event Title", 
+                                event.title, 
                                 style: TextStyle(
                                   fontSize: 16, 
                                   fontWeight: FontWeight.w500, 
@@ -111,7 +109,7 @@ class EventsDetailView extends StatelessWidget {
                                 children: [
                                   Icon(CupertinoIcons.clock, color: Theme.of(context).primaryColor, size: 20,),
                                   Text(
-                                    "Start at 13 Mar 2025", 
+                                    DateFormat("dd MMM yyyy").format(DateTime.parse(event.eventDate)), 
                                     style: TextStyle(
                                       fontSize: 14, 
                                       fontWeight: FontWeight.w400, 
@@ -127,7 +125,7 @@ class EventsDetailView extends StatelessWidget {
                                   Icon(Icons.location_pin, color: Theme.of(context).primaryColor, size: 20,),
                                   Expanded(
                                     child: Text(
-                                      "Hiveword, Writer's Knowledge Base, and Knockout Novel are trademarks of Zecura, LLC", 
+                                     event.location, 
                                       style: TextStyle(
                                         fontSize: 14, 
                                         fontWeight: FontWeight.w400, 
@@ -138,7 +136,23 @@ class EventsDetailView extends StatelessWidget {
                                 ],
                               ),
                               Text(
-                                "Free Download Linkedin Circle SVG vector file in monocolor and multicolor type for Sketch and Figma from Linkedin Circle Vectors svg vector collection. Linkedin Circle Vectors SVG vector illustration graphic art design format.",
+                                event.description,
+                                style: TextStyle(
+                                  fontSize: 12, 
+                                  fontWeight: FontWeight.w400, 
+                                  color: Colors.black
+                                ),
+                              ),
+                              Text(
+                                "Who can attend", 
+                                style: TextStyle(
+                                  fontSize: 14, 
+                                  fontWeight: FontWeight.w500, 
+                                  color: Colors.black
+                                ),
+                              ),
+                              Text(
+                                event.criteria,
                                 style: TextStyle(
                                   fontSize: 12, 
                                   fontWeight: FontWeight.w400, 
@@ -153,40 +167,25 @@ class EventsDetailView extends StatelessWidget {
                                   color: Colors.black
                                 ),
                               ),
-                              Material(
+                              model.isSent
+                              ? Text("You status has been Updated to the Event Organizer")
+                              : Material(
                                 color: Theme.of(context).scaffoldBackgroundColor,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       spacing: 10,
-                                      children: [
-                                        FilterButton(
+                                      children: List.generate(event.revpOptions.length, (index) {
+                                        return FilterButton(
                                           width: size.width * 0.25,
-                                          buttonName: "Yes", 
-                                          // backgroundColor: Theme.of(context).primaryColor,
-                                          onPressed: (){}
-                                        ),
-                                        FilterButton(
-                                          width: size.width * 0.25,
-                                          buttonName: "No", 
-                                          onPressed: (){}
-                                        ),
-                                        FilterButton(
-                                          width: size.width * 0.25,
-                                          buttonName: "Maybe", 
-                                          onPressed: (){}
-                                        ),
-                                      ],
+                                          buttonName: event.revpOptions[index], 
+                                          onPressed: () async {
+                                            await model.givePresent(event.revpOptions[index], event.id);
+                                          }
+                                        );
+                                      },) ,
                                     ),
-                                    // IconButton(
-                                    //   onPressed: () {} , 
-                                    //   icon: Icon(CupertinoIcons.search, color: Theme.of(context).primaryColor,)
-                                    // )
-                                    // FilterButton(
-                                    //   buttonName: "Clear", 
-                                    //   onPressed: (){}
-                                    // )
                                   ],
                                 ),
                               ),
@@ -204,20 +203,9 @@ class EventsDetailView extends StatelessWidget {
                                 leading: CircleAvatar(
                                   child: Icon(Icons.person_rounded),
                                 ),
-                                title: Text("John Doe", style: TextStyle(fontSize: 14),),
-                                subtitle: Text("10 Dec 2025", style: TextStyle(fontSize: 12),),
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    
-                                  }, 
-                                  icon: SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: Image.asset(
-                                      "assets/icon/linkedin.png"
-                                    ),
-                                  )
-                                ),
+                                title: Text(event.createdBy, style: TextStyle(fontSize: 14),),
+                                // subtitle: Text(event.c, style: TextStyle(fontSize: 12),),
+                                
                               ),
                               // Container(),
                             ],
