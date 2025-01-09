@@ -12,6 +12,7 @@ class TextFieldWidget extends StatelessWidget {
   final String? counterText;
   final TextInputAction? textInputAction;
   final VoidCallback? onTap;
+  final Function(String value)? onChanged;
   const TextFieldWidget({
     super.key,
     this.keyboardType,
@@ -22,6 +23,7 @@ class TextFieldWidget extends StatelessWidget {
     this.prefixIcon,
     this.readOnly,
     this.suffixIcon,
+    this.onChanged,
     this.counterText = "",
     this.textInputAction,
     this.onTap,
@@ -45,6 +47,7 @@ class TextFieldWidget extends StatelessWidget {
         maxLines: maxLines,
         textInputAction: textInputAction,
         keyboardType:  keyboardType,
+        onChanged: onChanged,
         decoration: InputDecoration(
           prefixIcon: prefixIcon,
           suffixIcon: suffixIcon,

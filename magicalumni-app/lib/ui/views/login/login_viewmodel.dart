@@ -131,7 +131,7 @@ class LoginViewmodel extends BaseViewModel{
     => await auth.verifyOtp(otp).then((value) {
       if(value) {
         verifiedOTP();
-        // _isOTPVerified ? navigateHome() : null;  
+        _isOTPVerified ? navigateHome() : null;  
       }
       notifyListeners();
     });
@@ -143,9 +143,8 @@ class LoginViewmodel extends BaseViewModel{
   void navigateHome()  => _navigationService.replaceWithAppView();
 
 
-  @override
-  void dispose() {
-    super.dispose();
+  
+  void onDispose() {
     mobileController.dispose();
     otpController.dispose();
     timer?.cancel();

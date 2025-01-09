@@ -35,10 +35,10 @@ class EventListWidget extends StatelessWidget {
                         width: double.infinity,
                         child: Ink(
                           child: Hero(
-                            tag: "event",
+                            tag: "event$index",
                             transitionOnUserGestures: true,
                             child: CachedNetworkImage(
-                              imageUrl: "https://hire4event.com/blogs/wp-content/uploads/2019/02/hire4event.com_-1.jpg",
+                              imageUrl: events[index].image,
                               imageBuilder: (context, imageProvider) => Ink(
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -65,7 +65,7 @@ class EventListWidget extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Sports day",
+                              events[index].title,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF161719),

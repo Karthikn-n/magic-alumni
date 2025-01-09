@@ -12,8 +12,9 @@ class LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
     bool isKeyVisible = MediaQuery.of(context).viewInsets.bottom > 0;
-    return ViewModelBuilder.reactive(
+    return ViewModelBuilder<LoginViewmodel>.reactive(
       viewModelBuilder: () => LoginViewmodel(),
+      onDispose: (viewModel) => viewModel.onDispose(),
       onViewModelReady: (viewModel) => viewModel.init(),
       builder: (ctx, model, child) {
         return Scaffold(
@@ -62,7 +63,7 @@ class LoginView extends StatelessWidget {
                         children: [
                           const SizedBox(height: 35,),
                           Text("Login", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                          Text("Enter your credentials", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black45),),
+                          Text("Enter your Mobile Number", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black45),),
                           // Form for Login
                           Column(
                             spacing: 15,

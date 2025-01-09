@@ -5,6 +5,8 @@ import 'package:magic_alumni/widgets/common/text_field.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../../constants/app_constants.dart';
+import '../../../model/colleges_model.dart';
+import '../../../widgets/common/dot_indicator.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -15,7 +17,7 @@ class ProfileView extends StatelessWidget {
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => ProfileViewmodel(),
       onDispose: (viewModel) => viewModel.disposeProfile(),
-      onViewModelReady: (viewModel)async => await viewModel.init(),
+      onViewModelReady: (viewModel) async => await viewModel.init(),
       builder: (ctx, model, child) {
         return Scaffold(
           body: Stack(
@@ -28,23 +30,34 @@ class ProfileView extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: kToolbarHeight),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Profile", 
-                          style: TextStyle(fontSize: 14, color: Colors.white),
-                        ),
-                        IconButton(
-                          onPressed: (){}, 
-                          icon: SizedBox(
-                            height: 24, 
-                            width: 24, 
-                            child: Image.asset("assets/icon/out.png"),
-                          )
-                        )
-                      ],
+                    padding: const EdgeInsets.only(top: kToolbarHeight  - 16),
+                    child: SizedBox(
+                      height: kToolbarHeight,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Spacer(),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 55),
+                            child: Text(
+                              "Profile", 
+                              style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          Spacer(),
+                          IconButton(
+                            tooltip: "Log out",
+                            onPressed: () async {
+                              await model.confirmLogout();
+                            }, 
+                              icon: SizedBox(
+                                height: 24, 
+                                width: 24, 
+                                child: Image.asset("assets/icon/out.png", color: Colors.white,),
+                              )
+                            )
+                        ],
+                      )
                     ),
                   ),
                 ),
@@ -80,24 +93,28 @@ class ProfileView extends StatelessWidget {
                               controller: model.userNameController,
                               hintText: "Full Name",
                               textInputAction: TextInputAction.next,
+                              onChanged: (value) => model.isEditing = true,
                             ),
                             // LinkedIn profile URL text field
                             TextFieldWidget(
                               controller: model.linkedUrlController,
                               hintText: "LinkedIn Profile URL",
                               textInputAction: TextInputAction.next,
+                              onChanged: (value) => model.isEditing = true
                             ),
                             // college name field
                             TextFieldWidget(
                               controller: model.collegeNameController,
                               hintText: "College Name",
                               textInputAction: TextInputAction.next,
+                              onChanged: (value) => model.isEditing = true
                             ),
                             // Department name field
                             TextFieldWidget(
                               controller: model.depNameController,
                               hintText: "Department Name",
                               textInputAction: TextInputAction.next,
+                              onChanged: (value) => model.isEditing = true
                             ),
                             // current year or passed out year text field
                             TextFieldWidget(
@@ -105,6 +122,7 @@ class ProfileView extends StatelessWidget {
                               hintText: "Current year/ Passed Out Year",
                               keyboardType: model.isCurrentYearStudent ? null: TextInputType.number,
                               textInputAction: TextInputAction.next,
+                              onChanged: (value) => model.isEditing = true
                             ),
                             // Email text field
                             TextFieldWidget(
@@ -112,6 +130,7 @@ class ProfileView extends StatelessWidget {
                               hintText: "Email",
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
+                              onChanged: (value) => model.isEditing = true
                             ),
                             // Mobile text field
                             TextFieldWidget(
@@ -119,12 +138,14 @@ class ProfileView extends StatelessWidget {
                               hintText: "Mobile number",
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
+                              onChanged: (value) => model.isEditing = true
                             ),
                             // Designation text field
                             TextFieldWidget(
                               controller: model.designationController,
                               hintText: "Desgination",
                               textInputAction: TextInputAction.next,
+                              onChanged: (value) => model.isEditing = true
                             ),
                             // Add new college Section if the user need to add new college
                             ExpansionTile(
@@ -133,30 +154,115 @@ class ProfileView extends StatelessWidget {
                                 side: BorderSide.none,
                                 borderRadius: BorderRadius.circular(8)
                               ),
-                              onExpansionChanged: (value) {
+                              collapsedShape: RoundedRectangleBorder(
+                                side: BorderSide.none,
+                                borderRadius: BorderRadius.circular(8)
+                              ),
+                              onExpansionChanged: (value) async{
                                 model.checkExpanded(value);
+                                model.collegesList.isEmpty ? await model.getColleges() : null;
                               },
                               title: Text("Add College", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
                               children: [
                                 const SizedBox(height: 10,),
                                 // New college Name text Field
-                                TextFieldWidget(
-                                  controller: model.newCollegeController,
-                                  hintText: "College Name",
-                                  textInputAction: TextInputAction.next,
+                                Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8)
+                                  ),
+                                  child: DropdownButton<CollegesModel>(
+                                    isExpanded: true,
+                                    hint: Row(
+                                      spacing: 15,
+                                      children: [
+                                        SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: Image.asset(
+                                            "assets/icon/college.png", color: Theme.of(context).primaryColor,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                        Text(
+                                          model.selectedCollege != null ? model.selectedCollege!.collegeName : "Colleges", 
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400, 
+                                            fontSize: model.selectedCollege != null ? 14 :12, 
+                                            color: model.selectedCollege != null ? Colors.black : Colors.black45
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    // value: model.selectedCollege!,
+                                    underline: Container(),
+                                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                                    items: model.auth.collegesList.map((value) {
+                                      return DropdownMenuItem<CollegesModel>(
+                                        value: value,
+                                        child: Text(value.collegeName, style: TextStyle(fontSize: 14),)
+                                      );
+                                    },).toList(), 
+                                    onChanged: (value) {
+                                      if(value != null){
+                                        model.setCollege(value);
+                                      }
+                                    },
+                                  ),
                                 ),
                                 const SizedBox(height: 10,),
-                                // New College Department text field
-                                TextFieldWidget(
-                                  controller: model.newDepartmentController,
-                                  hintText: "Department Name",
-                                  textInputAction: TextInputAction.next,
+                                // Department Drop down button 
+                                Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8)
+                              ),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                hint: Row(
+                                  spacing: 15,
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: Image.asset(
+                                        "assets/icon/department.png", color: Theme.of(context).primaryColor,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    Text(
+                                      model.selectedDepartment != null ? model.selectedDepartment! : "Select Department", 
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w400, 
+                                        fontSize: model.selectedDepartment != null ? 14 : 12, 
+                                        color: model.selectedDepartment != null ? Colors.black : Colors.black45
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                                // value: model.selectedCollege!,
+                                underline: Container(),
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                items:  model.selectedCollege?.departments.map((value) {
+                                  return DropdownMenuItem<DepartmentModel>(
+                                    value: value,
+                                    child: Text(value.departmentName, style: TextStyle(fontSize: 14),)
+                                  );
+                                },).toList(), 
+                                onChanged: (value) {
+                                  if(value != null){
+                                    model.setDepartment(value);
+                                  }
+                                },
+                              ),
+                            ),
                                 const SizedBox(height: 10,),
                                 // Current year or passed out year text field
                                 TextFieldWidget(
-                                  controller: model.newDepartmentController,
-                                  hintText: "Department Name",
+                                  controller: model.newCurrentYearOrAlumniController,
+                                  hintText: "Passed out Year",
                                   textInputAction: TextInputAction.next,
                                 ),
                                 const SizedBox(height: 10,),
@@ -177,8 +283,8 @@ class ProfileView extends StatelessWidget {
                                 ),
                                 // Send to permission to the admin
                                 ElevatedButton(
-                                  onPressed: () {
-                                    
+                                  onPressed: () async {
+                                    await model.addCollege();
                                   },
                                   child: Text(
                                     'Send Request to Admin',
@@ -198,7 +304,14 @@ class ProfileView extends StatelessWidget {
                                     child: SizedBox(
                                       height: 50.0,
                                       child: ElevatedButton(
-                                        onPressed: () { },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: model.isEdited ? null : Theme.of(context).primaryColor.withValues(alpha: 0.4)
+                                        ),
+                                        onPressed: () async { 
+                                          model.isEdited
+                                          ? await model.update()
+                                          : null;
+                                        },
                                         child: Text(
                                           'Save',
                                           style: textStyle,
@@ -211,8 +324,12 @@ class ProfileView extends StatelessWidget {
                                     child: SizedBox(
                                       height: 50.0,
                                       child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: model.isEdited ? null : Theme.of(context).primaryColor.withValues(alpha: 0.4)
+                                        ),
                                         onPressed: () {
-                                          
+                                          model.isEditing = false;
+                                          FocusScope.of(context).unfocus();
                                         },
                                         child: Text(
                                           'Cancel',
@@ -234,63 +351,105 @@ class ProfileView extends StatelessWidget {
               ),
               // // Profile card and status card
               Positioned(
-                top: 120,
+                top: 100,
                 left: 16,
                 right: 16,
                 child: SizedBox(
-                  // height: size.height * 0.2,
-                  child: Card(
-                    color: Color(0xFFFCFCFF),
-                    child: Padding(
-                      padding: const EdgeInsets.all(commonPadding),
-                      child: Row(
-                        children: [
-                          Column(
-                            spacing: 5,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Welcome back to the hut,",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                model.alumni != null ? model.alumni!.alumniProfileDetail.name : "Raj",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(5.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(5)
-                                ),
-                                child: Row(
-                                  spacing: 10,
-                                  children: [
-                                    Icon(CupertinoIcons.check_mark_circled_solid, size: 14, color: Colors.green,),
-                                    Text(
-                                      model.alumni != null ? model.alumni!.alumniProfileDetail.name : "Your alumni status have been approved",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500
+                  height: size.height * 0.18,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      PageView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount:  model.alumni != null ? model.alumni!.colleges.length : 2,
+                        onPageChanged: (value) {
+                          // model.selectOtherCollege(value);
+                        },
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Color(0xFFFCFCFF),
+                            child: Padding(
+                              padding: const EdgeInsets.all(commonPadding),
+                              child: Row(
+                                children: [
+                                  Column(
+                                    spacing: 5,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        model.alumni !=  null ? model.alumni!.alumniProfileDetail.name : "",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
+                                      Text(
+                                        model.alumni != null && model.alumni!.colleges.isEmpty 
+                                          ? "Not approved" 
+                                          : "${model.alumni!.colleges[index].departments[index].departmentName}, ${model.alumni!.colleges[index].collegeName}",
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          overflow: TextOverflow.ellipsis,
+                                          color: Colors.black45,
+                                          fontWeight: FontWeight.w500
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5,),
+                                      Container(
+                                        padding: EdgeInsets.all(5.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade300,
+                                          borderRadius: BorderRadius.circular(5)
+                                        ),
+                                        child: Row(
+                                          spacing: 10,
+                                          children: [
+                                            Icon(
+                                             model.alumni != null && model.alumni!.colleges[index].status == "approved" 
+                                              ? CupertinoIcons.check_mark_circled_solid
+                                              : CupertinoIcons.info_circle, 
+                                              size: model.alumni != null && model.alumni!.colleges[index].status == "approved" ? 14 : 18, 
+                                              color: model.alumni != null && model.alumni!.colleges[index].status == "approved" ? Colors.green : Colors.red,
+                                            ),
+                                            Text(
+                                              model.alumni !=  null && model.alumni!.colleges.isEmpty
+                                                ? "nothing" 
+                                                : model.alumni!.colleges[index].status == "approved" ? "You are approved Alumni now" : "You are not approved by your college",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          );
+                        },
                       ),
-                    ),
+                      model.alumni != null && model.alumni!.colleges.isEmpty
+                      ? Container()
+                      : Positioned(
+                        bottom: 10,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 5,
+                          children: List.generate( model.alumni != null ? model.alumni!.colleges.length : 1, 
+                          (index) {
+                            return DotIndicator(isActive: index == model.selectedIndex,);
+                          },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            
             ],
           ),
         );

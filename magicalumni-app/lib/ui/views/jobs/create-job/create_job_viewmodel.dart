@@ -121,9 +121,8 @@ class CreateJobViewmodel extends BaseViewModel {
     };
   }
 
-  @override
-  void dispose(){
-    super.dispose();
+  
+  void onDispose(){
     titleController.dispose();
     dateController.dispose();
     companyNameController.dispose();
@@ -131,6 +130,5 @@ class CreateJobViewmodel extends BaseViewModel {
     jobLinkController.dispose();
     tags.clear();
     selectedJobType = null;
-    notifyListeners();
   }
 }

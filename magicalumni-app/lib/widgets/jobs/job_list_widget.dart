@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:magic_alumni/model/jobs_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JobListWidget extends StatelessWidget {
   final List<JobsModel> jobs;
@@ -100,8 +101,8 @@ class JobListWidget extends StatelessWidget {
                             splashColor: Colors.transparent.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                             radius: 20,
-                            onTap: () {
-                              
+                            onTap: () async {
+                              await launchUrl(Uri.parse(jobs[index].applyLink));
                             }, 
                             child: Icon(CupertinoIcons.link, color: Theme.of(context).primaryColor, size: 20,)
                           ),
