@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/model/colleges_model.dart';
 import 'package:magic_alumni/ui/views/signup/signup_viewmodel.dart';
+import 'package:magic_alumni/widgets/common/loading_button_widget.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../../widgets/common/text_field.dart';
@@ -211,10 +212,14 @@ class SignupView extends StatelessWidget {
                             SizedBox(
                               width: size.width,
                               height: 50.0,
-                              child: ElevatedButton(
+                              child: model.isLoading
+                              ? LoadingButtonWidget()
+                              : ElevatedButton(
                                 onPressed: () async {
+                                  model.isLoad = true;
                                   model.isFormValid
                                   ? await model.auth.register( model.userData()).then((value){
+                                    model.isLoad = false;
                                     value ? model.navigateHome() : null;
                                   })
                                   : model.snackBarMessage();

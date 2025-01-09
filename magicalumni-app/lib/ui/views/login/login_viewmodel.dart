@@ -26,6 +26,13 @@ class LoginViewmodel extends BaseViewModel{
   int time = 30;
   Timer? timer;
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  set isLoad(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
   // Use navigation service to navigate between views
   final NavigationService _navigationService = locator<NavigationService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
@@ -115,26 +122,32 @@ class LoginViewmodel extends BaseViewModel{
   }
 
   // Call the API 
-  Future<void> login(String mobile) async 
-    => await auth.login(mobile).then(
+  Future<void> login(String mobile) async {
+    isLoad = true;
+     await auth.login(mobile).then(
       (value){
         if(value){
           verifyAccount();
           startTimer();
+          isLoad = false;
         }
         notifyListeners();
       }
     );
+  }
  
 
-  Future<void> verifyOtp(String otp) async 
-    => await auth.verifyOtp(otp).then((value) {
+  Future<void> verifyOtp(String otp) async {
+    isLoad = true;
+    await auth.verifyOtp(otp).then((value) {
       if(value) {
         verifiedOTP();
         _isOTPVerified ? navigateHome() : null;  
+        isLoad = false;
       }
       notifyListeners();
     });
+  }
   
   // Move to signup screen 
   void navigateSignup() => _navigationService.replaceWithSignupView();

@@ -6,6 +6,8 @@ import 'package:magic_alumni/widgets/common/text_field.dart';
 import 'package:magic_alumni/widgets/jobs/job_list_widget.dart';
 import 'package:stacked/stacked.dart';
 
+import '../profile/profile_viewmodel.dart';
+
 class JobsView extends StatelessWidget {
   const JobsView({super.key});
 
@@ -89,11 +91,18 @@ class JobsView extends StatelessWidget {
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => model.navigateToCreateJob(),
-            backgroundColor: Theme.of(context).primaryColor,
-            tooltip: "Create Job",
-            child: Icon(CupertinoIcons.plus, color: Colors.white,),
+          floatingActionButton: ViewModelBuilder.reactive(
+            viewModelBuilder: () => ProfileViewmodel(),
+            builder: (ctx, role, child) {
+              return role.alumni != null && role.alumni!.alumniProfileDetail.role == "Alumni coordinator"
+               ? FloatingActionButton(
+                onPressed: () => model.navigateToCreateJob(),
+                backgroundColor: Theme.of(context).primaryColor,
+                tooltip: "Create Job",
+                child: Icon(CupertinoIcons.plus, color: Colors.white,),
+              )
+              : Container();
+            }
           ),
         );
       }

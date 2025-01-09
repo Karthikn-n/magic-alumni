@@ -14,7 +14,8 @@ class LatestNewsWidget extends StatelessWidget {
     return ViewModelBuilder.nonReactive(
       viewModelBuilder: () => HomeViewmodel(),
       builder: (ctx, model, child) {
-        return ListView.builder(
+        return ListView.separated(
+          separatorBuilder: (context, index) => Container(),
           physics: const NeverScrollableScrollPhysics(),
           itemCount: news.length,
           shrinkWrap: true,
