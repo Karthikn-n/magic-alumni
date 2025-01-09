@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const departmentSchema = new mongoose.Schema(
   {
@@ -15,7 +15,4 @@ const departmentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Department =
-  mongoose.models.Department || mongoose.model("Department", departmentSchema);
-
-module.exports = Department;
+export default mongoose.model("Department", departmentSchema);

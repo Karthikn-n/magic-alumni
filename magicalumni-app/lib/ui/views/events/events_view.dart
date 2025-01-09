@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:magic_alumni/ui/views/events/events_viewmodel.dart';
+import 'package:magic_alumni/ui/views/profile/profile_viewmodel.dart';
 import 'package:magic_alumni/widgets/events/event_list_widget.dart';
 import 'package:stacked/stacked.dart';
 
@@ -71,7 +72,7 @@ class EventsView extends StatelessWidget {
                               children: [
                                 EventListWidget(events: model.eventsList.where((element) => DateFormat("dd-MM-yyyy").format(DateTime.parse(element.eventDate)) == DateFormat("dd-MM-yyyy").format(DateTime.now())).toList(),),
                                 EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isAfter(DateTime.now())).toList(), ),
-                                EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isBefore(DateTime.now())).toList()),
+                                EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isBefore(DateTime.now().subtract(const Duration(days: 1)))).toList()),
                               ]
                             )
                           ),
@@ -85,13 +86,20 @@ class EventsView extends StatelessWidget {
             ),
           ),
           // Create event buttton 
-          floatingActionButton: FloatingActionButton(
-            onPressed: ()async{
-             model.navigateToCreateEvent();
-            },
-            backgroundColor: Theme.of(context).primaryColor,
-            tooltip: "Create event",
-            child: Icon(CupertinoIcons.plus, color: Colors.white,),
+          floatingActionButton:  ViewModelBuilder.reactive(
+            viewModelBuilder: () => ProfileViewmodel(),
+            builder: (ctx, role, child) {
+              return role.alumni != null && role.alumni!.alumniProfileDetail.role == "Alumni coordinator"
+              ? FloatingActionButton(
+                onPressed: ()async{
+                  model.navigateToCreateEvent();
+                },
+                backgroundColor: Theme.of(context).primaryColor,
+                tooltip: "Create event",
+                child: Icon(CupertinoIcons.plus, color: Colors.white,),
+              )
+             : Container();
+            }
           ),
         );
       }

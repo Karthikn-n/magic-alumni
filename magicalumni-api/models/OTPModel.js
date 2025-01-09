@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const otpSchema = new mongoose.Schema({
   alumni_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "AlumniMember",
+    ref: "Member",
     required: true,
   },
   mobile_number: {
@@ -20,4 +20,4 @@ const otpSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("OTP", otpSchema);
+export default mongoose.model("OTP", otpSchema);
