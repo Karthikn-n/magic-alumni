@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:magic_alumni/model/news_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsDetailView extends StatelessWidget {
   final NewsModel news;
-  final int index;
-  const NewsDetailView({super.key, required this.news, required this.index});
+  const NewsDetailView({super.key, required this.news});
 
    @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class NewsDetailView extends StatelessWidget {
             child: Column(
               children: [
                 Hero(
-                  tag: "news_$index",
+                  tag: news.id,
                   transitionOnUserGestures: true,
                   child: ClipRRect(
                     borderRadius: BorderRadius.only(
@@ -107,11 +108,33 @@ class NewsDetailView extends StatelessWidget {
                             children: [
                               Icon(CupertinoIcons.clock, color: Theme.of(context).primaryColor, size: 20,),
                               Text(
-                                news.postedDate, 
+                                DateFormat("dd MMM yyyy").format(DateTime.parse(news.postedDate)), 
                                 style: TextStyle(
                                   fontSize: 14, 
                                   fontWeight: FontWeight.w400, 
                                   color: Colors.black
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            spacing: 10,
+                            children: [
+                              Icon(CupertinoIcons.link, color: Theme.of(context).primaryColor, size: 20,),
+                              Material(
+                                color: Theme.of(context).scaffoldBackgroundColor,
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  onTap: () async => await launchUrl(Uri.parse(news.link)) ,
+                                  child: Text(
+                                    news.link, 
+                                    style: TextStyle(
+                                      fontSize: 14, 
+                                      decoration: TextDecoration.underline,
+                                      fontWeight: FontWeight.w400, 
+                                      color: Colors.black
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -157,18 +180,7 @@ class NewsDetailView extends StatelessWidget {
                             ),
                             title: Text(news.createdBy, style: TextStyle(fontSize: 14),),
                             subtitle: Text(news.postedDate, style: TextStyle(fontSize: 12),),
-                            trailing: IconButton(
-                              onPressed: () {
-                                
-                              }, 
-                              icon: SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: Image.asset(
-                                  "assets/icon/linkedin.png"
-                                ),
-                              )
-                            ),
+                            
                           ),
                           // Container(),
                         ],

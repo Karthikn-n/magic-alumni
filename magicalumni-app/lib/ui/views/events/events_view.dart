@@ -69,9 +69,9 @@ class EventsView extends StatelessWidget {
                           Expanded(
                             child: TabBarView(
                               children: [
-                                EventListWidget(events: model.eventsList.where((element) => DateFormat("dd-MM-yyyy").format(DateTime.parse(element.eventDate)) == DateFormat("dd-MM-yyyy").format(DateTime.now())).toList(), onTap: () => model.navigateToEventDetail()),
-                                EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isAfter(DateTime.now())).toList(), onTap: () => model.navigateToEventDetail()),
-                                EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isBefore(DateTime.now())).toList(), onTap: () => model.navigateToEventDetail()),
+                                EventListWidget(events: model.eventsList.where((element) => DateFormat("dd-MM-yyyy").format(DateTime.parse(element.eventDate)) == DateFormat("dd-MM-yyyy").format(DateTime.now())).toList(),),
+                                EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isAfter(DateTime.now())).toList(), ),
+                                EventListWidget(events: model.eventsList.where((element) => DateTime.parse(element.eventDate).isBefore(DateTime.now())).toList()),
                               ]
                             )
                           ),

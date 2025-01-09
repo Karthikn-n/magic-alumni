@@ -79,6 +79,12 @@ class ProfileViewmodel extends BaseViewModel{
   // check the new college is expanded or not
   void checkExpanded(bool value){
     isExpanded = value;
+    if(!value) {
+      newCollegeController.clear();
+      newDepartmentController.clear();
+      newCurrentYearOrAlumniController.clear();
+      isCurrentYearStudent = false;
+    } 
     notifyListeners();
   }
 

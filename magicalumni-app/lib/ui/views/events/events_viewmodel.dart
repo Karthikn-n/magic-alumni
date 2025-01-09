@@ -14,6 +14,7 @@ class EventsViewModel extends BaseViewModel {
   final ApiService apiService = ApiService();
 
   List<EventsModel> eventsList = [];
+  bool isSent = false;
 
   // Navigate to create event view
   void navigateToCreateEvent()
@@ -23,7 +24,7 @@ class EventsViewModel extends BaseViewModel {
   /// Call the Events API and store if the events get from the API or return empty list
   Future<void> events() async {
     if (eventsList.isEmpty) {
-      apiService.events().then(
+      await apiService.events().then(
         (value) {
           eventsList = value;
           notifyListeners();
@@ -32,10 +33,21 @@ class EventsViewModel extends BaseViewModel {
     }
   }
 
+  /// Send the Feedback for attendance to the event
+  Future<void> givePresent(String option, String eventId) async {
+    await apiService.giveRsvp(eventId, option).then((value) {
+      if (value) {
+        isSent = value;
+      }
+      notifyListeners();
+    },);
+  }
+
+
   // Navigate to Event Detail view
-  void navigateToEventDetail(){
+  void navigateToEventDetail(EventsModel event){
     _navigationService.navigateWithTransition(
-      EventsDetailView(), 
+      EventsDetailView(event: event,), 
       transitionStyle: Transition.downToUp
     );
   }
