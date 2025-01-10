@@ -13,95 +13,76 @@ class JobsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => JobViewModel(),
       onViewModelReady: (viewModel) async => await viewModel.jobs(),
       builder: (ctx, model, child) {
         return Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).primaryColor,
+            title:  Text(
+              "Jobs", 
+              style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+            ) ,
+            centerTitle: true,
+          ),
           body: DefaultTabController(
             length: 2,
-            child: Stack(
-              children: [
-                // Background color and title
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                )
+              ),
+              child: Column(
+                spacing: 10,
+                children: [
+                  Container(),
+                  // List of jobs
+                  TabBar(
+                    padding: EdgeInsets.zero,
+                    tabAlignment: TabAlignment.center,
+                    dividerColor: Colors.transparent,
+                    tabs: [
+                      Tab(text: "Jobs",),
+                      Tab(text: "Internship",),
+                    ]
                   ),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: kToolbarHeight),
-                      child: Text(
-                        "Jobs", 
-                        style: TextStyle(fontSize: 14, color: Colors.white),
-                      ),
-                    ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        JobListWidget(
+                          jobs: model.jobsList.where((element) => element.jobType == "Job",).toList(),
+                          onReportTap: () => showReportDialog(context),
+                        ),
+                        JobListWidget(
+                          jobs: model.jobsList.where((element) => element.jobType == "Intern",).toList(),
+                          onReportTap: () => showReportDialog(context),
+                        ),
+                      ]
+                    )
                   ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  top: size.height * 0.15,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      )
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Column(
-                        spacing: 10,
-                        children: [
-                          // List of jobs
-                          TabBar(
-                            padding: EdgeInsets.zero,
-                            tabAlignment: TabAlignment.center,
-                            dividerColor: Colors.transparent,
-                            tabs: [
-                              Tab(text: "Jobs",),
-                              Tab(text: "Internship",),
-                            ]
-                          ),
-                          Expanded(
-                            child: TabBarView(
-                              children: [
-                                JobListWidget(
-                                  jobs: model.jobsList.where((element) => element.jobType == "Job",).toList(),
-                                  onReportTap: () => showReportDialog(context),
-                                ),
-                                JobListWidget(
-                                  jobs: model.jobsList.where((element) => element.jobType == "Intern",).toList(),
-                                  onReportTap: () => showReportDialog(context),
-                                ),
-                              ]
-                            )
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                    
-              ],
+                ],
+              ),
             ),
           ),
           floatingActionButton: ViewModelBuilder.reactive(
             viewModelBuilder: () => ProfileViewmodel(),
             builder: (ctx, role, child) {
-              return role.alumni != null && role.alumni!.alumniProfileDetail.role == "Alumni coordinator"
-               ? FloatingActionButton(
+              return 
+              // role.alumni != null && role.alumni!.alumniProfileDetail.role != "1"
+              //  ?
+                FloatingActionButton(
                 onPressed: () => model.navigateToCreateJob(),
                 backgroundColor: Theme.of(context).primaryColor,
                 tooltip: "Create Job",
                 child: Icon(CupertinoIcons.plus, color: Colors.white,),
-              )
-              : Container();
+              );
+              // : Container();
             }
           ),
         );

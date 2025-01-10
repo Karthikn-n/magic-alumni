@@ -79,10 +79,9 @@ class  AuthenticateService {
   Future<bool> login(String mobile) async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}alumni/login",
-        data: {"mobile_number": mobile}
+        "${baseApiUrl}member/login",
+        data: {"mobile_number": mobile},
       );
-      // 
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         await store.write(key: "alumni_mobile", value: mobile.toString());
         snackBar.showSnackbar(
@@ -98,8 +97,16 @@ class  AuthenticateService {
         return false;
       }
     } on DioException catch (err, st) {
-      log("Something went on request login", stackTrace: st);
-      final statusCode = err.response!.statusCode;
+      log("Something went on request login", error: err.toString(), stackTrace: st);
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(
+          message: "Request timed out. Please try again.",
+          duration: const Duration(milliseconds: 1200),
+        );
+        return false;
+      } 
+      final statusCode = err.response!.statusCode ?? 100;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
       if((status == "not ok" && statusCode == 400) 
@@ -118,7 +125,7 @@ class  AuthenticateService {
   Future<bool> verifyOtp(String otp) async {
     try {
       final response = await _dio.post(
-        "${baseApiUrl}alumni/verifyOtp",
+        "${baseApiUrl}member/verifyOtp",
         data: {
           "mobile_number": await store.read(key: "alumni_mobile"),
           "otp": otp
@@ -151,7 +158,15 @@ class  AuthenticateService {
       }
       return false;
     } on DioException catch (err, st) {
-      log("Something went on Verify OTP", stackTrace: st);
+      log("Something went on Verify OTP", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(
+          message: "Request timed out. Please try again.",
+          duration: const Duration(milliseconds: 1200),
+        );
+        return false;
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
@@ -175,7 +190,7 @@ class  AuthenticateService {
   Future<void> fetchAlumni() async {
     try {
       final response = await _dio.post(
-        "${baseApiUrl}alumni/member",
+        "${baseApiUrl}member/profile",
         data: {"alumni_id": await store.read(key: "alumni_id")}
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
@@ -200,10 +215,11 @@ class  AuthenticateService {
     }
   }
 
+  /// Update the alumni || Student profile If they want to edit after approval
   Future<bool> update(Map<String, dynamic> data) async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}alumni/update",
+        "${baseApiUrl}member/update",
         data: data
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
@@ -250,7 +266,7 @@ class  AuthenticateService {
   Future<List<CollegesModel>> colleges() async {
     try {
       final response = await _dio.get(
-        "${baseApiUrl}college"
+        "${baseApiUrl}colleges"
       );
       if (response.statusCode == 200 && response.data["status"] == "Ok") {
         List<dynamic> collegesRepsponse =  (response.data["collegeWithDepartments"] ?? []) as List<dynamic>;
@@ -271,6 +287,7 @@ class  AuthenticateService {
     }
   }
 
+  /// Factory constructor that gives same instance of this Service across the App
   factory AuthenticateService(){
     return _authenticateService;
   }

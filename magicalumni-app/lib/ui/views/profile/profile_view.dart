@@ -20,54 +20,36 @@ class ProfileView extends StatelessWidget {
       onViewModelReady: (viewModel) async => await viewModel.init(),
       builder: (ctx, model, child) {
         return Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).primaryColor,
+            title:  Text(
+              "Profile", 
+              style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+            ) ,
+            actions: [
+               IconButton(
+              tooltip: "Log out",
+              onPressed: () async {
+                await model.confirmLogout();
+              }, 
+                icon: SizedBox(
+                  height: 24, 
+                  width: 24, 
+                  child: Image.asset("assets/icon/out.png", color: Colors.white,),
+                )
+              )
+            ],
+            centerTitle: true,
+          ),
           body: Stack(
             children: [
-              // Profile card
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor
-                ),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: kToolbarHeight  - 16),
-                    child: SizedBox(
-                      height: kToolbarHeight,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 55),
-                            child: Text(
-                              "Profile", 
-                              style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          Spacer(),
-                          IconButton(
-                            tooltip: "Log out",
-                            onPressed: () async {
-                              await model.confirmLogout();
-                            }, 
-                              icon: SizedBox(
-                                height: 24, 
-                                width: 24, 
-                                child: Image.asset("assets/icon/out.png", color: Colors.white,),
-                              )
-                            )
-                        ],
-                      )
-                    ),
-                  ),
-                ),
-              ),
               // Body of the screen
               Positioned(
                 bottom: 0,
                 right: 0,
                 left: 0,
-                top: size.height * 0.23,
+                top: size.width > 600 ? size.width * 0.15 :  size.height * 0.1,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
@@ -358,11 +340,12 @@ class ProfileView extends StatelessWidget {
               ),
               // // Profile card and status card
               Positioned(
-                top: 100,
+                top: 0,
                 left: 16,
                 right: 16,
                 child: SizedBox(
-                  height: size.height * 0.18,
+                  height: size.width < 600 ? size.height * 0.18 : size.height * 0.4,
+                  width: size.width * 0.8,
                   child: Stack(
                     alignment: Alignment.bottomCenter,
                     children: [

@@ -36,7 +36,6 @@ class HomeViewmodel extends BaseViewModel {
   Future<void> news() async {
     await apiService.news().then(
       (value) async {
-        print("News length: ${value.length}");
         newsList = value;
         notifyListeners();
       } ,

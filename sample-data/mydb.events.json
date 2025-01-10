@@ -1,0 +1,166 @@
+[{
+  "_id": {
+    "$oid": "677cf2bfbd709977b2733b04"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "event_image": "https://i.pinimg.com/originals/88/64/29/88642968d790cd9635b21f7924c781f0.jpg",
+  "event_title": "Events 1",
+  "approval_status": "approved",
+  "date": {
+    "$date": "2025-01-09T00:00:00.000Z"
+  },
+  "event_type": "webinar",
+  "rsvp_options": [
+    "yes",
+    "no",
+    "maybe"
+  ],
+  "location": "college",
+  "criteria": "webinar",
+  "createdAt": {
+    "$date": "2025-01-07T09:24:15.717Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:24:15.717Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cf331bd709977b2733b06"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "event_image": "https://www.compassroseevents.com/wp-content/uploads/2017/09/iStock-476949098.jpg",
+  "event_title": "Events 3",
+  "approval_status": "approved",
+  "date": {
+    "$date": "2025-01-05T00:00:00.000Z"
+  },
+  "event_type": "webinar",
+  "rsvp_options": [
+    "yes",
+    "no",
+    "maybe"
+  ],
+  "location": "college",
+  "criteria": "webinar",
+  "createdAt": {
+    "$date": "2025-01-07T09:26:09.287Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:26:09.287Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cf33db13dd145572f2107"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "event_image": "https://i.ytimg.com/vi/R31xF6r4JJk/maxresdefault.jpg",
+  "event_title": "Events 4",
+  "description": "This event is will held as webinar for student",
+  "approval_status": "approved",
+  "date": {
+    "$date": "2025-01-09T00:00:00.000Z"
+  },
+  "event_type": "webinar",
+  "rsvp_options": [
+    "yes",
+    "no",
+    "maybe"
+  ],
+  "location": "college",
+  "criteria": "webinar",
+  "created_by": "Suriya2",
+  "createdAt": {
+    "$date": "2025-01-07T09:26:21.175Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:26:21.175Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cf5e1703b05c9296a8210"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "event_image": "https://funny-business.com/wp-content/uploads/2017/01/how_to_get_college_students_to_your_campus_event_banner.jpg",
+  "event_title": "Events 5",
+  "description": "This event is will held as webinar for student",
+  "approval_status": "approved",
+  "date": {
+    "$date": "2025-01-09T00:00:00.000Z"
+  },
+  "event_type": "webinar",
+  "rsvp_options": [
+    "yes",
+    "no",
+    "maybe"
+  ],
+  "location": "college",
+  "criteria": "webinar",
+  "created_by": "Suriya",
+  "createdAt": {
+    "$date": "2025-01-07T09:37:37.201Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:37:37.201Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cf70de2c525a61c5cf525"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "event_image": "https://i.iheart.com/v3/re/assets.getty/60623a3aec85858a41dcf005?ops=contain(1480,0)",
+  "event_title": "Events 6",
+  "description": "This event is will held as webinar for student",
+  "approval_status": "approved",
+  "date": {
+    "$date": "2025-01-17T00:00:00.000Z"
+  },
+  "event_type": "webinar",
+  "rsvp_options": [
+    "yes",
+    "no",
+    "maybe"
+  ],
+  "location": "college",
+  "criteria": "webinar",
+  "created_by": "Suriya2",
+  "createdAt": {
+    "$date": "2025-01-07T09:42:37.934Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:42:37.934Z"
+  },
+  "__v": 0
+}]
