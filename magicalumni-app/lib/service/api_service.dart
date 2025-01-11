@@ -27,6 +27,7 @@ class ApiService {
   AlumniModel? alumni;
   List<CollegesModel> collegesList = [];
 
+  /// Use snackbar service to show the messages to the User
   final SnackbarService _snackbarService = locator<SnackbarService>();
 
   /// Get Alumni profile API 
@@ -60,13 +61,11 @@ class ApiService {
     }
   }
 
-
   /// Get all the College from the API and Store it in local storage 
-  /// checked Working
   Future<List<CollegesModel>> colleges() async {
     try {
       final response = await _dio.get(
-        "${baseApiUrl}college"
+        "${baseApiUrl}colleges"
       );
       if (response.statusCode == 200 && response.data["status"] == "Ok") {
         List<dynamic> collegesRepsponse =  (response.data["collegeWithDepartments"] ?? []) as List<dynamic>;
@@ -79,18 +78,20 @@ class ApiService {
       }
     } on DioException catch (err, st) {
       log("Something went on getting colleges", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on getting colleges $message", stackTrace: st, error: err.toString());
+      } 
       return [];
     }
   }
 
-
   // Get all the news for the college from the API
-  // Checked
   Future<List<NewsModel>> news() async {
-    print("NEWS Detail:${{
-          "alumni_id": await storage.read(key: "alumni_id"),
-          "college_id": "${await storage.read(key: "college_id")}",
-        }}");
     try{
       final response = await _dio.post(
         "${baseApiUrl}news/list",
@@ -109,15 +110,23 @@ class ApiService {
       }
     } on DioException catch (err, st) {
       log("Something went on getting news", stackTrace: st,error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on getting news $message", stackTrace: st, error: err.toString());
+      } 
       return [];
     }
   }
 
-  // Get all the events for the college from the API
+  /// Get all the events for the college from the API
   Future<List<EventsModel>> events() async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}events/",
+        "${baseApiUrl}event/list",
         data: {
           "college_id": "${await storage.read(key: "college_id")}",
         }
@@ -133,6 +142,14 @@ class ApiService {
       }
     } on DioException catch (err, st) {
       log("Something went on getting events", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on getting news $message", stackTrace: st, error: err.toString());
+      } 
       return [];
     }
   }
@@ -141,7 +158,7 @@ class ApiService {
   Future<bool> eventCreate(Map<String, dynamic> data) async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}events/create",
+        "${baseApiUrl}event/create",
         data: data
       );
       if (response.statusCode == 201 && response.data["status"] == "ok") {
@@ -149,10 +166,18 @@ class ApiService {
         return true;
       }else{
         _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
-        log("Something went on creating events  ${response.data["message"]}", error: response.data["message"]);
+        log("Something went on creating event  ${response.data["message"]}", error: response.data["message"]);
       }
     } on DioException catch (err, st) {
-      log("Something went on creating events $err", stackTrace: st, error: err.toString());
+      log("Something went on creating event $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on creating event $message", stackTrace: st, error: err.toString());
+      } 
     }
     return false;
   }
@@ -161,11 +186,11 @@ class ApiService {
   Future<bool> giveRsvp(String eventId, String feedback) async {
      try{
       final response = await _dio.post(
-        "${baseApiUrl}events/updatePeople",
+        "${baseApiUrl}event/eventPeople",
         data: {
           "alumni_id": await storage.read(key: "alumni_id"),
           "event_id": eventId,
-          "status": feedback,
+          "interested": feedback,
         }
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
@@ -177,6 +202,14 @@ class ApiService {
       }
     } on DioException catch (err, st) {
       log("Something went on events feedback  $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on feedback giving $message", stackTrace: st, error: err.toString());
+      } 
     }
     return false;
   }
@@ -185,7 +218,7 @@ class ApiService {
   Future<String> eventPeopleCount(String eventId, String feedback) async {
      try{
       final response = await _dio.post(
-        "${baseApiUrl}events/eventpeople",
+        "${baseApiUrl}event/eventPeopleCount",
         data: {
           "event_id": eventId,
         }
@@ -193,10 +226,18 @@ class ApiService {
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         return response.data["eventPeople"].toString();
       }else{
-        log("Something went on events feedback  ${response.data["message"]}", error: response.data["message"]);
+        log("Something went on event people count  ${response.data["message"]}", error: response.data["message"]);
       }
     } on DioException catch (err, st) {
       log("Something went on events feedback  $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on event people count $message", stackTrace: st, error: err.toString());
+      } 
     }
     return "0";
   }
@@ -205,14 +246,11 @@ class ApiService {
   Future<List<JobsModel>> jobs() async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}jobs",
+        "${baseApiUrl}job/list",
         data: {
           "college_id": "${await storage.read(key: "college_id")}",
         }
       );
-      print({
-          "college_id": "${await storage.read(key: "college_id")}",
-        });
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         List<dynamic> jobsResponse =  (response.data["jobList"] ?? []) as List<dynamic>;
         jobsList = jobsResponse.map((job) => JobsModel.fromMap(job) ,).toList();
@@ -224,6 +262,15 @@ class ApiService {
       }
     } on DioException catch (err, st) {
       log("Something went on getting jobs", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
+          
+      } 
       return [];
     }
   }
@@ -232,9 +279,10 @@ class ApiService {
   Future<List<AlumniProfileModel>> peoples() async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}alumni",
+        "${baseApiUrl}member/allMembers",
         data: {
-          "college_id": "${await storage.read(key: "college_id")}",
+          "college_id": await storage.read(key: "college_id"),
+          "alumni_id": await storage.read(key: "alumni_id")
         }
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
@@ -248,6 +296,14 @@ class ApiService {
       }
     } on DioException catch (err, st) {
       log("Something went on getting peoples", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on getting peoples $message", stackTrace: st, error: err.toString());
+      } 
       return [];
     }
   }
@@ -256,7 +312,7 @@ class ApiService {
   Future<bool> jobCreate(Map<String, dynamic> data) async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}jobs/create",
+        "${baseApiUrl}job/create",
         data: data
       );
       if (response.statusCode == 201) {
@@ -282,6 +338,39 @@ class ApiService {
     }
   }
 
+  /// Report any job is not valid 
+   Future<bool> reportJob(String jobId, String reason) async {
+    try{
+      final response = await _dio.post(
+        "${baseApiUrl}job/report",
+        data: {
+          "job_id": jobId,
+          "alumni_id": await storage.read(key: "alumni_id"),
+          "reason": reason
+        }
+      );
+      if (response.statusCode == 201) {
+        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        return true;
+      }else{
+        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        debugPrint("Something went on reporting Job ${response.data["message"]}");
+        return false;
+      }
+    } on DioException catch (err, st) {
+      log("Something went on reporting Job $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+        log("Something went on reporting Job $err", stackTrace: st, error: message);
+      } 
+      return false;
+    }
+  }
+
   /// Add new college to the Alumni list
   Future<bool> addCollege(Map<String, dynamic> data) async {
      try{
@@ -299,16 +388,119 @@ class ApiService {
       }
     } on DioException catch (err, st) {
       log("Something went on add college $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
+      } 
     }
     return false;
   }
 
+  /// Send the REquest to the alumni for the mobil number request and
+  Future<bool> requestMobile(String reciever) async {
+     try{
+      final response = await _dio.post(
+        "${baseApiUrl}alumni/requestMobile",
+        data: {
+          "sender": await storage.read(key: "alumni_id"),
+          "receiver": reciever,
+        }
+      );
+      if (response.statusCode == 201 && response.data["status"] == "ok") {
+        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        // TODO: check the response and change the value
+        await storage.write(key: "${await storage.read(key: "alumni_id")}_$reciever", value: response.data["request"][""]);
+        return true;
+      }else{
+        debugPrint("Something went on requesting mobile number ${response.data["message"]}");
+        return false;
+      }
+    } on DioException catch (err, st) {
+      log("Something went on requesting mobile number $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on Requesting mobile number $message", stackTrace: st, error: err.toString());
+      } 
+    }
+    return false;
+  }
 
-  // Factory constructor to return the instance of the ApiService
+  /// Check the requesting status from from thre reciever
+  Future<bool> updateMobileRequest(String status) async {
+     try{
+      final response = await _dio.post(
+        "${baseApiUrl}alumni/requestStatusUpdate",
+        data: {
+          /// TODO: Check the response from the [requestMobile] APi and change the data field
+          "request_id": "request_id",
+          "status": status
+        }
+      );
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        return true;
+      }else{
+        debugPrint("Something went on updating status ${response.data["message"]}");
+        return false;
+      }
+    } on DioException catch (err, st) {
+      log("Something went on updating status $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+        log("Something went on reporting Job $err", stackTrace: st, error: message);
+      } 
+      return false;
+    }
+  }
+
+  /// Check the requesting status from from thre reciever
+  Future<bool> requestStatus() async {
+     try{
+      final response = await _dio.post(
+        "${baseApiUrl}alumni/requestStatus",
+        data: {
+          /// TODO: Check the response from the [requestMobile] APi and change the data field
+          "request_id": "request_id",
+        }
+      );
+      if (response.statusCode == 201 && response.data["status"] == "ok") {
+        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        return true;
+      }else{
+        debugPrint("Something went on getting status ${response.data["message"]}");
+        return false;
+      }
+    } on DioException catch (err, st) {
+      log("Something went on getting status $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+        log("Something went on getting status $err", stackTrace: st, error: message);
+      } 
+      return false;
+    }
+  }
+
+  /// Factory constructor to return the instance of the ApiService
   factory ApiService() {
     return _apiService;
   }
 
-  // private constructor for the singleton
+  /// private constructor for the singleton
   ApiService._internal();
 }

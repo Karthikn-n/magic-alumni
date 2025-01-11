@@ -10,7 +10,6 @@ class LatestNewsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.nonReactive(
       viewModelBuilder: () => HomeViewmodel(),
       builder: (ctx, model, child) {
@@ -32,13 +31,13 @@ class LatestNewsWidget extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10)
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // News image
                         Hero(
                           tag: "news_$index",
-                          child: SizedBox(
-                            height: size.height * 0.2,
-                            width: double.infinity,
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
                             child: ClipRRect(
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(10),

@@ -19,204 +19,184 @@ class EventsDetailView extends StatelessWidget {
       viewModelBuilder: () => EventsViewModel(),
       builder: (ctx, model, child) {
         return Scaffold(
-          body: Stack(
-            children: [
-              // Background color and title
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor
-                ),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: kToolbarHeight  - 16),
-                    child: SizedBox(
-                      height: kToolbarHeight,
-                      child: ListTile(
-                        // dense: true,
-                        minLeadingWidth: size.width * 0.3,
-                        titleAlignment: ListTileTitleAlignment.titleHeight,
-                        leading: BackButton(
-                          color: Colors.white,
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        title: Text(
-                          event.title, 
-                          style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                  ),
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).primaryColor,
+            leading:  BackButton(
+              color: Colors.white,
+              onPressed: () => Navigator.pop(context),
+            ),
+            title:  Text(
+              event.title, 
+              style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+            ) ,
+            centerTitle: true,
+          ),
+          body: Material(
+            color: Theme.of(context).primaryColor,
+            child: Container(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
               ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                left: 0,
-                top: size.height * 0.15,
+              height: size.height,
+              child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                      ),
-                      child: SizedBox(
-                        width: size.width,
-                        height: size.height * 0.3,
-                        child: CachedNetworkImage(
-                          imageUrl: event.image,
-                          imageBuilder: (context, imageProvider) => Ink(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius:  BorderRadius.only(
-                                  topLeft: Radius.circular(30),
-                                  topRight: Radius.circular(30)
-                                ),
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
-                                ),
+                    AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: CachedNetworkImage(
+                        imageUrl: event.image,
+                        imageBuilder: (context, imageProvider) => Ink(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius:  BorderRadius.only(
+                                topLeft: Radius.circular(30),
+                                topRight: Radius.circular(30)
+                              ),
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                        ),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 10,
+                        children: [
+                          const SizedBox(height: 5,),
+                          // event title text field
+                          Text(
+                            event.title, 
+                            style: TextStyle(
+                              fontSize: 16, 
+                              fontWeight: FontWeight.w500, 
+                              color: Colors.black
+                            ),
+                          ),
+                          Row(
                             spacing: 10,
                             children: [
-                              const SizedBox(height: 5,),
-                              // event title text field
+                              Icon(CupertinoIcons.clock, color: Theme.of(context).primaryColor, size: 20,),
                               Text(
-                                event.title, 
+                                DateFormat("dd MMM yyyy").format(DateTime.parse(event.eventDate)), 
                                 style: TextStyle(
-                                  fontSize: 16, 
-                                  fontWeight: FontWeight.w500, 
-                                  color: Colors.black
-                                ),
-                              ),
-                              Row(
-                                spacing: 10,
-                                children: [
-                                  Icon(CupertinoIcons.clock, color: Theme.of(context).primaryColor, size: 20,),
-                                  Text(
-                                    DateFormat("dd MMM yyyy").format(DateTime.parse(event.eventDate)), 
-                                    style: TextStyle(
-                                      fontSize: 14, 
-                                      fontWeight: FontWeight.w400, 
-                                      color: Colors.black
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                spacing: 10,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.location_pin, color: Theme.of(context).primaryColor, size: 20,),
-                                  Expanded(
-                                    child: Text(
-                                     event.location, 
-                                      style: TextStyle(
-                                        fontSize: 14, 
-                                        fontWeight: FontWeight.w400, 
-                                        color: Colors.black
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                event.description,
-                                style: TextStyle(
-                                  fontSize: 12, 
+                                  fontSize: 14, 
                                   fontWeight: FontWeight.w400, 
                                   color: Colors.black
                                 ),
                               ),
-                              Text(
-                                "Who can attend", 
-                                style: TextStyle(
-                                  fontSize: 14, 
-                                  fontWeight: FontWeight.w500, 
-                                  color: Colors.black
-                                ),
-                              ),
-                              Text(
-                                event.criteria,
-                                style: TextStyle(
-                                  fontSize: 12, 
-                                  fontWeight: FontWeight.w400, 
-                                  color: Colors.black
-                                ),
-                              ),
-                              Text(
-                                "Confirm your presence", 
-                                style: TextStyle(
-                                  fontSize: 14, 
-                                  fontWeight: FontWeight.w500, 
-                                  color: Colors.black
-                                ),
-                              ),
-                              model.isSent
-                              ? Text("You status has been Updated to the Event Organizer")
-                              : Material(
-                                color: Theme.of(context).scaffoldBackgroundColor,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      spacing: 10,
-                                      children: List.generate(event.revpOptions.length, (index) {
-                                        return FilterButton(
-                                          width: size.width * 0.25,
-                                          buttonName: event.revpOptions[index], 
-                                          onPressed: () async {
-                                            await model.givePresent(event.revpOptions[index], event.id);
-                                          }
-                                        );
-                                      },) ,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Text(
-                                "Created by", 
-                                style: TextStyle(
-                                  fontSize: 14, 
-                                  fontWeight: FontWeight.w500, 
-                                  color: Colors.black
-                                ),
-                              ),
-                              ListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.zero,
-                                leading: CircleAvatar(
-                                  child: Icon(Icons.person_rounded),
-                                ),
-                                title: Text(event.createdBy, style: TextStyle(fontSize: 14),),
-                                // subtitle: Text(event.c, style: TextStyle(fontSize: 12),),
-                                
-                              ),
-                              // Container(),
                             ],
                           ),
-                        ),
+                          Row(
+                            spacing: 10,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.location_pin, color: Theme.of(context).primaryColor, size: 20,),
+                              Expanded(
+                                child: Text(
+                                 event.location, 
+                                  style: TextStyle(
+                                    fontSize: 14, 
+                                    fontWeight: FontWeight.w400, 
+                                    color: Colors.black
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            event.description,
+                            style: TextStyle(
+                              fontSize: 12, 
+                              fontWeight: FontWeight.w400, 
+                              color: Colors.black
+                            ),
+                          ),
+                          Text(
+                            "Who can attend", 
+                            style: TextStyle(
+                              fontSize: 14, 
+                              fontWeight: FontWeight.w500, 
+                              color: Colors.black
+                            ),
+                          ),
+                          Text(
+                            event.criteria,
+                            style: TextStyle(
+                              fontSize: 12, 
+                              fontWeight: FontWeight.w400, 
+                              color: Colors.black
+                            ),
+                          ),
+                          Text(
+                            "Confirm your presence", 
+                            style: TextStyle(
+                              fontSize: 14, 
+                              fontWeight: FontWeight.w500, 
+                              color: Colors.black
+                            ),
+                          ),
+                          model.isSent
+                          ? Text("You status has been Updated to the Event Organizer")
+                          : Material(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  spacing: 10,
+                                  children: List.generate(event.revpOptions.length, (index) {
+                                    return FilterButton(
+                                      width: size.width * 0.25,
+                                      buttonName: event.revpOptions[index], 
+                                      onPressed: () async {
+                                        await model.givePresent(event.revpOptions[index], event.id);
+                                      }
+                                    );
+                                  },) ,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            "Created by", 
+                            style: TextStyle(
+                              fontSize: 14, 
+                              fontWeight: FontWeight.w500, 
+                              color: Colors.black
+                            ),
+                          ),
+                          ListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              child: Icon(Icons.person_rounded),
+                            ),
+                            title: Text(event.createdBy, style: TextStyle(fontSize: 14),),
+                            // subtitle: Text(event.c, style: TextStyle(fontSize: 12),),
+                            
+                          ),
+                          // Container(),
+                        ],
                       ),
                     ),
                   ],
-                )
+                ),
               ),
-            ],
+            ),
           ),
           
         );

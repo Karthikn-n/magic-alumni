@@ -34,9 +34,8 @@ class EventListWidget extends StatelessWidget {
                       child: Column(
                         children: [
                           // Event image
-                          SizedBox(
-                            height: MediaQuery.sizeOf(context).height * 0.2,
-                            width: double.infinity,
+                          AspectRatio(
+                            aspectRatio: 16 / 9,
                             child: CachedNetworkImage(
                               imageUrl: events[index].image,
                               imageBuilder: (context, imageProvider) => Ink(

@@ -129,8 +129,8 @@ class LoginViewmodel extends BaseViewModel{
         if(value){
           verifyAccount();
           startTimer();
-          isLoad = false;
         }
+        isLoad = false;
         notifyListeners();
       }
     );
@@ -143,8 +143,8 @@ class LoginViewmodel extends BaseViewModel{
       if(value) {
         verifiedOTP();
         _isOTPVerified ? navigateHome() : null;  
-        isLoad = false;
       }
+      isLoad = false;
       notifyListeners();
     });
   }
