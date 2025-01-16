@@ -81,8 +81,8 @@ class EventsDetailView extends StatelessWidget {
                           Text(
                             event.title, 
                             style: TextStyle(
-                              fontSize: 16, 
-                              fontWeight: FontWeight.w500, 
+                              fontSize: 18, 
+                              fontWeight: FontWeight.w600, 
                               color: Colors.black
                             ),
                           ),
@@ -118,6 +118,14 @@ class EventsDetailView extends StatelessWidget {
                             ],
                           ),
                           Text(
+                            "Notes", 
+                            style: TextStyle(
+                              fontSize: 16, 
+                              fontWeight: FontWeight.w500, 
+                              color: Colors.black
+                            ),
+                          ),
+                          Text(
                             event.description,
                             style: TextStyle(
                               fontSize: 12, 
@@ -128,7 +136,7 @@ class EventsDetailView extends StatelessWidget {
                           Text(
                             "Who can attend", 
                             style: TextStyle(
-                              fontSize: 14, 
+                              fontSize: 16, 
                               fontWeight: FontWeight.w500, 
                               color: Colors.black
                             ),
@@ -142,9 +150,9 @@ class EventsDetailView extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "Confirm your presence", 
+                            "Inform your availability", 
                             style: TextStyle(
-                              fontSize: 14, 
+                              fontSize: 16, 
                               fontWeight: FontWeight.w500, 
                               color: Colors.black
                             ),
@@ -174,7 +182,7 @@ class EventsDetailView extends StatelessWidget {
                           Text(
                             "Created by", 
                             style: TextStyle(
-                              fontSize: 14, 
+                              fontSize: 16, 
                               fontWeight: FontWeight.w500, 
                               color: Colors.black
                             ),
@@ -189,7 +197,7 @@ class EventsDetailView extends StatelessWidget {
                             // subtitle: Text(event.c, style: TextStyle(fontSize: 12),),
                             
                           ),
-                          // Container(),
+                          Container(),
                         ],
                       ),
                     ),

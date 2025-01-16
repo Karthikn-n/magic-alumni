@@ -51,14 +51,6 @@ class NewsView extends StatelessWidget {
                             fontWeight: FontWeight.w400
                           ),
                         ),
-                      //   Text(
-                      //     "23 Jan 2025",
-                      //     style: TextStyle(
-                      //       fontSize: 12,
-                      //       color: Color(0xFF161719),
-                      //       fontWeight: FontWeight.w400
-                      //     ),
-                      //   ),
                       ],
                     ),
                   ),

@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/jobs/job_viewmodel.dart';
-import 'package:magic_alumni/widgets/common/text_field.dart';
 import 'package:magic_alumni/widgets/jobs/job_list_widget.dart';
 import 'package:stacked/stacked.dart';
 
@@ -57,11 +55,9 @@ class JobsView extends StatelessWidget {
                       children: [
                         JobListWidget(
                           jobs: model.jobsList.where((element) => element.jobType == "Job",).toList(),
-                          onReportTap: () => showReportDialog(context),
                         ),
                         JobListWidget(
                           jobs: model.jobsList.where((element) => element.jobType == "Intern",).toList(),
-                          onReportTap: () => showReportDialog(context),
                         ),
                       ]
                     )
@@ -73,16 +69,14 @@ class JobsView extends StatelessWidget {
           floatingActionButton: ViewModelBuilder.reactive(
             viewModelBuilder: () => ProfileViewmodel(),
             builder: (ctx, role, child) {
-              return 
-              // role.alumni != null && role.alumni!.alumniProfileDetail.role != "1"
-              //  ?
-                FloatingActionButton(
-                onPressed: () => model.navigateToCreateJob(),
-                backgroundColor: Theme.of(context).primaryColor,
-                tooltip: "Create Job",
-                child: Icon(CupertinoIcons.plus, color: Colors.white,),
-              );
-              // : Container();
+              return role.alumni != null && role.alumni!.alumniProfileDetail.role == "Alumni Co-ordinator"
+               ? FloatingActionButton(
+                    onPressed: () => model.navigateToCreateJob(),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    tooltip: "Create Job",
+                    child: Icon(CupertinoIcons.plus, color: Colors.white,),
+                  )
+              : Container();
             }
           ),
         );
@@ -90,40 +84,5 @@ class JobsView extends StatelessWidget {
     );
   }
 
-  void showReportDialog(BuildContext context){
-    showDialog(
-      context: context, 
-      builder: (ctx) {
-        return ViewModelBuilder.reactive(
-          viewModelBuilder: () => JobViewModel(),
-          builder: (modelctx, model, child) {
-            return SimpleDialog(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8)
-              ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              title: Text("Report this Job", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
-              children: [
-                TextFieldWidget(
-                  controller: model.reportController,
-                  maxLines: 5,
-                  hintText: "Report the Job...",
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  spacing: 10,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(onPressed: () => Navigator.pop(context), child: Text("Cancel", style: textStyle,)),
-                    ElevatedButton(onPressed: (){}, child: Text("Report", style: textStyle,)),
-                  ],
-                ),
-              ],
-            );
-          }
-        );
-      },
-    );
-  }
+ 
 }

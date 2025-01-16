@@ -79,8 +79,8 @@ class NewsDetailView extends StatelessWidget {
                       Text(
                         news.title, 
                         style: TextStyle(
-                          fontSize: 16, 
-                          fontWeight: FontWeight.w500, 
+                          fontSize: 18, 
+                          fontWeight: FontWeight.w600, 
                           color: Colors.black
                         ),
                       ),
@@ -124,7 +124,7 @@ class NewsDetailView extends StatelessWidget {
                         spacing: 10,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_pin, color: Theme.of(context).primaryColor, size: 20,),
+                          Icon(Icons.pin_drop_outlined, color: Theme.of(context).primaryColor, size: 20,),
                           Expanded(
                             child: Text(
                               news.location, 
@@ -140,7 +140,7 @@ class NewsDetailView extends StatelessWidget {
                       Text(
                         news.description,
                         style: TextStyle(
-                          fontSize: 12, 
+                          fontSize: 14, 
                           fontWeight: FontWeight.w400, 
                           color: Colors.black
                         ),
@@ -148,8 +148,8 @@ class NewsDetailView extends StatelessWidget {
                       Text(
                         "Created by", 
                         style: TextStyle(
-                          fontSize: 14, 
-                          fontWeight: FontWeight.w500, 
+                          fontSize: 16, 
+                          fontWeight: FontWeight.w600, 
                           color: Colors.black
                         ),
                       ),
@@ -160,10 +160,10 @@ class NewsDetailView extends StatelessWidget {
                           child: Icon(Icons.person_rounded),
                         ),
                         title: Text(news.createdBy, style: TextStyle(fontSize: 14),),
-                        subtitle: Text(news.postedDate, style: TextStyle(fontSize: 12),),
+                        // subtitle: Text( DateFormat("dd MMM yyyy").format(DateTime.parse(news.postedDate)), style: TextStyle(fontSize: 12),),
                         
                       ),
-                      // Container(),
+                      Container(),
                     ],
                   ),
                 ),
