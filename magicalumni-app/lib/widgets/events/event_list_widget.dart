@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/events_model.dart';
@@ -36,22 +38,23 @@ class EventListWidget extends StatelessWidget {
                           // Event image
                           AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: CachedNetworkImage(
+                            child:  CachedNetworkImage(
                               imageUrl: events[index].image,
-                              imageBuilder: (context, imageProvider) => Ink(
-                                child: Container(
+                              fit: BoxFit.cover,
+                              imageBuilder: (context, imageProvider) {
+                                return Container(
                                   decoration: BoxDecoration(
-                                    borderRadius:  BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      topRight: Radius.circular(10)
-                                    ),
                                     image: DecorationImage(
                                       image: imageProvider,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
+                              errorWidget: (context, url, error) {
+                                log('Error loading image: $url - featureImage $error');
+                                return const Icon(Icons.error);
+                              },
                             ),
                           ),
                           // Title and other information

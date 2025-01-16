@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -11,8 +10,7 @@ import 'package:magic_alumni/service/dio_service.dart';
 import 'package:magic_alumni/service/encrption_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-import '../model/colleges_model.dart';
-enum SnackBartype { custom }
+
 class  AuthenticateService {
   static final AuthenticateService _authenticateService = AuthenticateService._internal();
   final _dio = DioService.dio;
@@ -21,8 +19,8 @@ class  AuthenticateService {
   // Local storage to store the user informations
   final FlutterSecureStorage store = FlutterSecureStorage();
   
-  AlumniModel? alumni;
-  List<CollegesModel> collegesList = [];
+  AlumniModel? _alumni;
+  AlumniModel? get alumni => _alumni;
 
 
   /// Register API for the Alumni 
@@ -53,6 +51,14 @@ class  AuthenticateService {
       }
     } on DioException catch (err, st) {
       log("Something went on registering", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(
+          message: "Request timed out. Please try again.",
+          duration: const Duration(milliseconds: 1200),
+        );
+        return false;
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
@@ -145,10 +151,8 @@ class  AuthenticateService {
         debugPrint('Alumni Role : ${await store.read(key: "alumni_role")}');
         debugPrint('Alumni Status : ${await store.read(key: "alumni_status")}');
         debugPrint('Alumni College ID : ${await store.read(key: "college_id")}');
-        alumni = null;
-        if (alumni == null) {
-          await fetchAlumni();
-        }
+        final alumni = await fetchAlumni();
+        if(alumni == null) return false;
         return true;
       }  else {
           snackBar.showSnackbar(
@@ -187,23 +191,27 @@ class  AuthenticateService {
   /// Before Send the data It encrypt using [EncryptionService]
   /// Parse the Alumni data from the response using [AlumniModel]
   /// Store it in the local Storage using [FlutterSecureStorage] for maintain session
-  Future<void> fetchAlumni() async {
+  Future<AlumniModel?>? fetchAlumni() async {
     try {
       final response = await _dio.post(
         "${baseApiUrl}member/profile",
         data: {"alumni_id": await store.read(key: "alumni_id")}
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
-        debugPrint("Alumni Profile: ${response.data}");
-        alumni = AlumniModel.fromJson(response.data);
-        String alumniId =  await store.read(key: "alumni_id") ?? " ";
-        await store.write(key: alumniId, value: json.encode(alumni?.toMap()));
-        debugPrint("Alumni Details: ${await store.read(key: alumniId)}");
-        
-        debugPrint("Login Response: ${response.data}");
+        _alumni = AlumniModel.fromJson(response.data);
+        return alumni;
       }
+      return null;
     } on DioException catch (err, st) {
       log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(
+          message: "Request timed out. Please try again.",
+          duration: const Duration(milliseconds: 1200),
+        );
+        return null;
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
@@ -212,6 +220,7 @@ class  AuthenticateService {
         || (status == "error" && status == 500) ) {
           log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
       } 
+      return null;
     }
   }
 
@@ -238,6 +247,14 @@ class  AuthenticateService {
       }
     } on DioException catch (err, st) {
       log("Something went on registering", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(
+          message: "Request timed out. Please try again.",
+          duration: const Duration(milliseconds: 1200),
+        );
+        return false;
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
@@ -261,31 +278,6 @@ class  AuthenticateService {
     await store.delete(key: "alumni_id");
   }
   
-  /// Get all the College from the API and Store it in local storage 
-  /// checked Working
-  Future<List<CollegesModel>> colleges() async {
-    try {
-      final response = await _dio.get(
-        "${baseApiUrl}colleges"
-      );
-      if (response.statusCode == 200 && response.data["status"] == "Ok") {
-        List<dynamic> collegesRepsponse =  (response.data["collegeWithDepartments"] ?? []) as List<dynamic>;
-        collegesList = collegesRepsponse.map((college) => CollegesModel.fromMap(college) ,).toList();
-        debugPrint("Colleges: ${collegesList.length}");
-        return collegesList;
-      }else{
-        snackBar.showSnackbar(
-          message: "Can't get colleges", 
-          duration: const Duration(milliseconds: 1200)
-        );
-        log("Something went on getting colleges", error: response.data["message"]);
-        return [];
-      }
-    } on DioException catch (err, st) {
-      log("Something went on getting colleges", stackTrace: st, error: err.toString());
-      return [];
-    }
-  }
 
   /// Factory constructor that gives same instance of this Service across the App
   factory AuthenticateService(){

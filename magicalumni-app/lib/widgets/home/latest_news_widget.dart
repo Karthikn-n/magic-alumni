@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/news_model.dart';
@@ -22,6 +24,7 @@ class LatestNewsWidget extends StatelessWidget {
             return Column(
               children: [
                 InkWell(
+                  splashColor: Colors.transparent,
                   onTap: () => model.navigateToNewsDetail(news[index], index),
                   child: Container(
                     width: double.infinity,
@@ -46,8 +49,19 @@ class LatestNewsWidget extends StatelessWidget {
                               child: CachedNetworkImage(
                                 imageUrl: news[index].image,
                                 fit: BoxFit.cover,
-                                placeholder: (context, url) {
-                                  return Image.network( "https://www.mheducation.co.uk/media/wysiwyg/first-year_university_student.jpg");
+                                imageBuilder: (context, imageProvider) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                errorWidget: (context, url, error) {
+                                  log('Error loading image: $url - featureImage $error');
+                                  return const Icon(Icons.error);
                                 },
                               ),
                             )

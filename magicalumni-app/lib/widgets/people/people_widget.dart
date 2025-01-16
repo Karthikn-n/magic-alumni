@@ -74,11 +74,14 @@ class PeopleWidget extends StatelessWidget {
                     viewModelBuilder: () => PeopleViewmodel(),
                     builder: (ctx, model, child) {
                       return ElevatedButton(
-                        onPressed: () => showConnectionBottomSheet(
+                        onPressed: () async => await model.api.checkStatus(peoples[index].id).then((value) => showConnectionBottomSheet(
+                          model, 
+                          peoples[index].id,
                           context, 
                           peoples[index].name, 
-                          peoples[index].linkedUrl
-                        ), 
+                          peoples[index].linkedUrl,
+                          value
+                        )), 
                         child: Text("Connect", style: textStyle,)
                       );
                     }
@@ -95,7 +98,11 @@ class PeopleWidget extends StatelessWidget {
     
   }
 
-  void showConnectionBottomSheet(BuildContext context, String name, String url){
+  void showConnectionBottomSheet(
+    PeopleViewmodel model, String receiverId, 
+    BuildContext context, String name, String url,
+    String status,
+  ){
     showModalBottomSheet(
       context: context, 
       constraints: BoxConstraints(
@@ -171,8 +178,12 @@ class PeopleWidget extends StatelessWidget {
                 width: MediaQuery.sizeOf(context).width,
                 height: 48.0,
                 child: ElevatedButton(
-                  onPressed: () {
-                  },
+                  onPressed: () async 
+                    => await model.api.requestMobile(receiverId).then((value) {
+                      if (value) {
+                        Navigator.pop(context);
+                      }
+                    },),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 10.0,

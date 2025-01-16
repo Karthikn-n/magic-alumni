@@ -103,7 +103,7 @@ class SignupView extends StatelessWidget {
                                 // value: model.selectedCollege!,
                                 underline: Container(),
                                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                                items: model.auth.collegesList.map((value) {
+                                items: model.api.collegesList.map((value) {
                                   return DropdownMenuItem<CollegesModel>(
                                     value: value,
                                     child: Text(value.collegeName, style: TextStyle(fontSize: 14),)
@@ -222,10 +222,7 @@ class SignupView extends StatelessWidget {
                                 onPressed: () async {
                                   model.isLoad = true;
                                   model.isFormValid
-                                  ? await model.auth.register( model.userData()).then((value){
-                                    model.isLoad = false;
-                                    value ? model.navigateHome() : null;
-                                  })
+                                  ? await model.register()
                                   : model.snackBarMessage();
                                 },
                                 child: Text(
@@ -240,6 +237,7 @@ class SignupView extends StatelessWidget {
                               height: 50.0,
                               child: ElevatedButton(
                                 onPressed: () {
+                                  model.isLoad = false;
                                 },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
