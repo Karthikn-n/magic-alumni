@@ -101,7 +101,7 @@ class PeopleWidget extends StatelessWidget {
   void showConnectionBottomSheet(
     PeopleViewmodel model, String receiverId, 
     BuildContext context, String name, String url,
-    String status,
+    String? status,
   ){
     showModalBottomSheet(
       context: context, 
@@ -179,7 +179,7 @@ class PeopleWidget extends StatelessWidget {
                 height: 48.0,
                 child: ElevatedButton(
                   onPressed: () async 
-                    => await model.api.requestMobile(receiverId).then((value) {
+                    => status != null ? null : await model.api.requestMobile(receiverId).then((value) {
                       if (value) {
                         Navigator.pop(context);
                       }
@@ -190,7 +190,7 @@ class PeopleWidget extends StatelessWidget {
                     children: [
                      Icon(Icons.wechat_sharp, size: 24, color: Colors.white,),
                       Text(
-                        'Request Mobile Number',
+                        status ?? 'Request Mobile Number',
                         style: textStyle,
                         textAlign: TextAlign.center,
                       ),

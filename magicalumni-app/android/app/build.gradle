@@ -35,10 +35,24 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
-        }
+            /*
+                ERROR: Missing classes detected while running R8. Please add the missing classes or apply additional keep rules that are generated in D:\Projects\magicalumni\magicalumni-app\build\app\outputs\mapping\release\missing_rules.txt.
+                ERROR: R8: Missing class com.google.errorprone.annotations.CanIgnoreReturnValue (referenced from: com.google.crypto.tink.KeysetManager com.google.crypto.tink.KeysetManager.add(com.google.crypto.tink.KeyTemplate) and 52 other contexts)
+                Missing class com.google.errorprone.annotations.CheckReturnValue (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 1 other context)
+                Missing class com.google.errorprone.annotations.Immutable (referenced from: com.google.crypto.tink.InsecureSecretKeyAccess and 40 other contexts)  
+                Missing class com.google.errorprone.annotations.RestrictedApi (referenced from: com.google.crypto.tink.aead.AesEaxKey$Builder com.google.crypto.tink.aead.AesEaxKey.builder() and 6 other contexts)
+                Missing class javax.annotation.Nullable (referenced from: java.lang.Object com.google.crypto.tink.PrimitiveSet$Entry.fullPrimitive and 86 other contexts)
+                Missing class javax.annotation.concurrent.GuardedBy (referenced from: com.google.crypto.tink.proto.Keyset$Builder com.google.crypto.tink.KeysetManager.keysetBuilder and 3 other contexts)
+                Solution: https://www.devsecopsnow.com/error-missing-classes-detected-while-running-r8/
+            */
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        } 
     }
 }
 
 flutter {
     source = "../.."
 }
+

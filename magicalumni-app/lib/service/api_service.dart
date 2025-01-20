@@ -8,6 +8,7 @@ import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:magic_alumni/model/events_model.dart';
 import 'package:magic_alumni/model/jobs_model.dart';
+import 'package:magic_alumni/model/mobrequest_model.dart';
 import 'package:magic_alumni/model/news_model.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -27,6 +28,7 @@ class ApiService {
   AlumniModel? _alumni;
   AlumniModel? get alumni => _alumni;
   List<CollegesModel> collegesList = [];
+  List<MobileRequestModel> mobRequestsList = [];
 
   bool isSent = false;
 
@@ -248,6 +250,34 @@ class ApiService {
     return "0";
   }
 
+  /// check the status on Event
+  Future<String> checkEventStatus(String eventId) async {
+    try {
+      final response = await _dio.post(
+        "${baseApiUrl}event/status",
+        data: {
+          "event_id": eventId,
+          "alumni_id": await storage.read(key: "alumni_id"),
+        }
+      );
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        return response.data["your_status"] ?? "";
+      }
+      return "";
+    } on DioException catch (err, st) {
+      log("Something went wrong on checking event status", stackTrace: st, error:  err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+        log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
+      } 
+      return "";
+    }
+  }
+
   /// Create the Jobs API and Get the List of Jobs from the DB send it to the View
   Future<List<JobsModel>> jobs() async {
     try{
@@ -413,17 +443,14 @@ class ApiService {
   }
 
   /// Send the REquest to the alumni for the mobil number request and
-  Future<bool> requestMobile(String reciever) async {
-    debugPrint("${{
-          "sender": await storage.read(key: "alumni_id"),
-          "receiver": reciever,
-        }}");
+  Future<bool> requestMobile(String receiver) async {
      try{
       final response = await _dio.post(
         "${baseApiUrl}member/requestMobile",
         data: {
           "sender": await storage.read(key: "alumni_id"),
-          "receiver": reciever,
+          "receiver": receiver,
+          "request_id": "${await storage.read(key: "alumni_id")}_$receiver",
         }
       );
       if (response.statusCode == 201 && response.data["status"] == "ok") {
@@ -447,6 +474,32 @@ class ApiService {
     return false;
   }
 
+  /// List all the requestes from the alumni and student for their mobile
+  Future<List<MobileRequestModel>> mobileRequestList() async {
+    try{
+      final response = await _dio.post(
+        "${baseApiUrl}member/requestList"
+      );
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        List<dynamic> requests = (response.data["requests"] ?? []) as List<dynamic>;
+        mobRequestsList = requests.map((request) => MobileRequestModel.fromJson(request),).toList();
+        return mobRequestsList;
+      }
+      return [];
+    } on DioException catch(err, st) {
+      log("Somthing went wrong on listing mobile requests", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode ?? 100;
+      final message = err.response!.data["message"] ?? "Unknown";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && statusCode == 500)) {
+          log("Somthing went wrong on listing mobile requests", stackTrace: st, error: message);
+        }
+        return [];
+    }
+  }
+  
   /// Check the requesting status from from thre reciever
   Future<bool> updateMobileRequest(String status, String requestId) async {
      try{

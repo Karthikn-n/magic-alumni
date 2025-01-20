@@ -10,7 +10,8 @@ import '../../../widgets/people/filter_button.dart';
 
 class EventsDetailView extends StatelessWidget {
   final EventsModel event;
-  const EventsDetailView({super.key, required this.event});
+  final String status;
+  const EventsDetailView({super.key, required this.event, required this.status});
 
    @override
   Widget build(BuildContext context) {
