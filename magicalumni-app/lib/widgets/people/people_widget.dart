@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/peoples/people_viewmodel.dart';
+import 'package:magic_alumni/widgets/common/loading_button_widget.dart';
 import 'package:stacked/stacked.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -70,17 +71,19 @@ class PeopleWidget extends StatelessWidget {
                 flex: 2,
                 child: SizedBox(
                   // height: 30,
-                  child: ViewModelBuilder.nonReactive(
+                  child: ViewModelBuilder.reactive(
                     viewModelBuilder: () => PeopleViewmodel(),
                     builder: (ctx, model, child) {
-                      return ElevatedButton(
-                        onPressed: () async => await model.api.checkStatus(peoples[index].id).then((value) => showConnectionBottomSheet(
+                      return model.isLoad 
+                      ? LoadingButtonWidget()
+                      : ElevatedButton(
+                        onPressed: () async => await model.checkStatus(peoples[index].id).then((value) => showConnectionBottomSheet(
                           model, 
                           peoples[index].id,
                           context, 
                           peoples[index].name, 
                           peoples[index].linkedUrl,
-                          value
+                          model.status
                         )), 
                         child: Text("Connect", style: textStyle,)
                       );
@@ -179,18 +182,26 @@ class PeopleWidget extends StatelessWidget {
                 height: 48.0,
                 child: ElevatedButton(
                   onPressed: () async 
-                    => status != null ? null : await model.api.requestMobile(receiverId).then((value) {
-                      if (value) {
-                        Navigator.pop(context);
-                      }
-                    },),
+                    => status.isNotEmpty 
+                      ? status == "Allow" // Check the mobile request is approved
+                        ? await launchUrl(Uri.parse("https://wa.me/+91${model.mobileNumber}")) // Open the whatsapp with this number 
+                        : Navigator.pop(context) // Close the bottom Navigation bar
+                      : await model.api.requestMobile(receiverId).then((value) async { // Request the Alumni Mobile number
+                          if (value) {
+                             Navigator.pop(context);
+                          }
+                        },),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 10.0,
                     children: [
                      Icon(Icons.wechat_sharp, size: 24, color: Colors.white,),
                       Text(
-                        status ?? 'Request Mobile Number',
+                        status!.isEmpty 
+                          ? 'Request Mobile Number' 
+                          : status == "Allow" 
+                            ? "Message at +91${model.mobileNumber}"
+                            : status,
                         style: textStyle,
                         textAlign: TextAlign.center,
                       ),
