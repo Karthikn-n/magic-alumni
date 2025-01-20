@@ -24,12 +24,12 @@ class EventsViewModel extends BaseViewModel {
   /// Call the Events API and store if the events get from the API or return empty list
   Future<void> events() async {
     if(apiService.eventsList.isEmpty) {
-        await apiService.events().then(
-          (value) {
-            eventsList = value;
-            notifyListeners();
-          } ,
-        );
+      await apiService.events().then(
+        (value) {
+          eventsList = value;
+          notifyListeners();
+        } ,
+      );
     } else {
       eventsList = apiService.eventsList;
       notifyListeners(); 
@@ -46,11 +46,13 @@ class EventsViewModel extends BaseViewModel {
     },);
   }
 
+  /// Get the event status if already user send the request
+  
 
   // Navigate to Event Detail view
-  void navigateToEventDetail(EventsModel event){
+  void navigateToEventDetail(EventsModel event, String status){
     _navigationService.navigateWithTransition(
-      EventsDetailView(event: event,), 
+      EventsDetailView(event: event, status: status,), 
       transitionStyle: Transition.downToUp
     );
   }

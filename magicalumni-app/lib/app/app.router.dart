@@ -114,8 +114,8 @@ class StackedRouter extends _i1.RouterBase {
     _i7.EventsDetailView: (data) {
       final args = data.getArgs<EventsDetailViewArguments>(nullOk: false);
       return _i9.MaterialPageRoute<dynamic>(
-        builder: (context) =>
-            _i7.EventsDetailView(key: args.key, event: args.event),
+        builder: (context) => _i7.EventsDetailView(
+            key: args.key, event: args.event, status: args.status),
         settings: data,
       );
     },
@@ -140,26 +140,29 @@ class EventsDetailViewArguments {
   const EventsDetailViewArguments({
     this.key,
     required this.event,
+    required this.status,
   });
 
   final _i10.Key? key;
 
   final _i11.EventsModel event;
 
+  final String status;
+
   @override
   String toString() {
-    return '{"key": "$key", "event": "$event"}';
+    return '{"key": "$key", "event": "$event", "status": "$status"}';
   }
 
   @override
   bool operator ==(covariant EventsDetailViewArguments other) {
     if (identical(this, other)) return true;
-    return other.key == key && other.event == event;
+    return other.key == key && other.event == event && other.status == status;
   }
 
   @override
   int get hashCode {
-    return key.hashCode ^ event.hashCode;
+    return key.hashCode ^ event.hashCode ^ status.hashCode;
   }
 }
 
@@ -264,6 +267,7 @@ extension NavigatorStateExtension on _i13.NavigationService {
   Future<dynamic> navigateToEventsDetailView({
     _i10.Key? key,
     required _i11.EventsModel event,
+    required String status,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -271,7 +275,8 @@ extension NavigatorStateExtension on _i13.NavigationService {
         transition,
   }) async {
     return navigateTo<dynamic>(Routes.eventsDetailView,
-        arguments: EventsDetailViewArguments(key: key, event: event),
+        arguments:
+            EventsDetailViewArguments(key: key, event: event, status: status),
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
@@ -368,6 +373,7 @@ extension NavigatorStateExtension on _i13.NavigationService {
   Future<dynamic> replaceWithEventsDetailView({
     _i10.Key? key,
     required _i11.EventsModel event,
+    required String status,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -375,7 +381,8 @@ extension NavigatorStateExtension on _i13.NavigationService {
         transition,
   }) async {
     return replaceWith<dynamic>(Routes.eventsDetailView,
-        arguments: EventsDetailViewArguments(key: key, event: event),
+        arguments:
+            EventsDetailViewArguments(key: key, event: event, status: status),
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,

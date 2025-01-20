@@ -2,11 +2,8 @@ import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:magic_alumni/service/api_service.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked_services/stacked_services.dart';
 
 class PeopleViewmodel extends BaseViewModel{
-  final BottomSheetService _bottomSheetService = locator<BottomSheetService>();
-
   List<AlumniProfileModel> peoplesList = [];
 
   final ApiService api = locator<ApiService>();
@@ -25,12 +22,5 @@ class PeopleViewmodel extends BaseViewModel{
     notifyListeners();
   }
 
-  void showConnectionBottomSheet(String name, String linkedURL) async {
-    await _bottomSheetService.showBottomSheet(
-      title: "Connect with $name",
-      
-    );
-  }
 
-  /// Get all the alumni memebers who are approved by the management
 }

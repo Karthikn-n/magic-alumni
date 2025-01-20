@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
+import 'package:magic_alumni/model/mobrequest_model.dart';
 import 'package:magic_alumni/model/news_model.dart';
 import 'package:magic_alumni/service/api_service.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
@@ -13,6 +14,8 @@ class HomeViewmodel extends BaseViewModel {
   int selectedIndex = 0;
 
   List<NewsModel> newsList = [];
+  List<MobileRequestModel> mobRequests = [];
+
   /// Use API Service to get the news from the API
   final ApiService apiService = ApiService();
   final AuthenticateService auth = AuthenticateService();
@@ -33,10 +36,10 @@ class HomeViewmodel extends BaseViewModel {
   Future<void> news() async {
     if (apiService.newsList.isEmpty) {
       await apiService.news().then(
-      (value) async {
+      (value) {
         newsList = value;
         notifyListeners();
-      } ,
+      },
     );
     } else {
       newsList = apiService.newsList;
@@ -44,11 +47,23 @@ class HomeViewmodel extends BaseViewModel {
     }
   }
 
+  /// Initialize the alumni profile and check the approval status
   Future<void> init() async {
     alumni = auth.alumni;
+    if (apiService.mobRequestsList.isEmpty) {
+      await apiService.mobileRequestList().then((value) {
+        mobRequests = value;
+        notifyListeners(); 
+      },);
+    } else {
+      mobRequests = apiService.mobRequestsList;
+      notifyListeners();
+    }
     notifyListeners();
   }
 
+
+  /// Move to the News detail screen
   void navigateToNewsDetail(NewsModel news, int index) 
     => _navigationService.navigateToNewsDetailView(news: news,);
 
