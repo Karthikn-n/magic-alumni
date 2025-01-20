@@ -704,18 +704,31 @@ router.post("/requestStatus", async (req, res) => {
       });
     }
 
-    const request = await Request.findById({ request_id: request_id });
-    const requestStatus = request.status;
+    // if (!mongoose.isValidObjectId(request_id)) {
+    //   return res.status(400).json({
+    //     status: "not ok",
+    //     message: "Invalid Request ID format",
+    //   });
+    // }
+
+    const request = await Request.findOne({ request_id });
+
+    if (!request) {
+      return res.status(404).json({
+        status: "not ok",
+        message: "Request not found",
+      });
+    }
 
     res.status(200).json({
       status: "ok",
-      message: "Request status updated successfully",
-      requestStatus: requestStatus,
+      message: "Request status fetched successfully",
+      requestStatus: request.status,
     });
   } catch (error) {
     res.status(500).json({
       status: "error",
-      message: "Error updating request status",
+      message: "Error fetching request status",
       error: error.message,
     });
   }
@@ -734,10 +747,20 @@ router.post("/requestList", async (req, res) => {
 
     const requestList = await Request.find({ receiver: receiver_id });
 
+    const requestsWithSenderProfiles = await Promise.all(
+      requestList.map(async (request) => {
+        const senderProfile = await Member.findOne({ _id: request.sender });
+        return {
+          ...request._doc,
+          senderProfile,
+        };
+      })
+    );
+
     res.status(200).json({
       status: "ok",
       message: "Request list retrieved successfully",
-      requestList: requestList,
+      requestList: requestsWithSenderProfiles,
     });
   } catch (error) {
     res.status(500).json({
