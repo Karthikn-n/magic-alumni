@@ -216,4 +216,5 @@ class PeopleWidget extends StatelessWidget {
       },
     );
   }
+
 }
