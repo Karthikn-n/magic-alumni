@@ -1,0 +1,65 @@
+[{
+  "_id": {
+    "$oid": "677fab94045c3c01a260609c"
+  },
+  "event_id": {
+    "$oid": "677cf5e1703b05c9296a8210"
+  },
+  "alumni_id": {
+    "$oid": "677fa830045c3c01a260602c"
+  },
+  "interested": "yes",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677faba2045c3c01a260609e"
+  },
+  "event_id": {
+    "$oid": "677cf5e1703b05c9296a8210"
+  },
+  "alumni_id": {
+    "$oid": "677fa830045c3c01a260602c"
+  },
+  "interested": "no",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677fabc3045c3c01a26060a0"
+  },
+  "event_id": {
+    "$oid": "677cf5e1703b05c9296a8210"
+  },
+  "alumni_id": {
+    "$oid": "677fa830045c3c01a260602c"
+  },
+  "interested": "no",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677fabc7045c3c01a26060a2"
+  },
+  "event_id": {
+    "$oid": "677cf5e1703b05c9296a8210"
+  },
+  "alumni_id": {
+    "$oid": "677fa830045c3c01a260602c"
+  },
+  "interested": "maybe",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677fabc7045c3c01a26060a4"
+  },
+  "event_id": {
+    "$oid": "677cf5e1703b05c9296a8210"
+  },
+  "alumni_id": {
+    "$oid": "677fa830045c3c01a260602c"
+  },
+  "interested": "maybe",
+  "__v": 0
+}]

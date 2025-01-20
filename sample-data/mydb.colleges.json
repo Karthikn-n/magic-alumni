@@ -1,0 +1,15 @@
+[{
+  "_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "name": "TC Arts",
+  "address": "Theppakulam",
+  "city": "Maduria",
+  "createdAt": {
+    "$date": "2025-01-06T05:42:55.753Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-06T05:42:55.753Z"
+  },
+  "__v": 0
+}]

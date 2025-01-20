@@ -13,85 +13,101 @@ class PeopleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      itemCount: peoples.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+    return GridView.extent(
+        maxCrossAxisExtent: 200,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
-        childAspectRatio: 0.8
-      ),
-      itemBuilder: (context, index) {
+        childAspectRatio: 0.9,
+      shrinkWrap: true,
+      children: List.generate(peoples.length, (index) {
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          // padding: EdgeInsets.symmetric(horizontal: 10,),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black12),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
-            spacing: 20,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Column(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Theme.of(context).canvasColor,
-                    child:  Icon(CupertinoIcons.person),
-                  ),
-                  const SizedBox(height: 10,),
-                  Text(
-                    peoples[index].name, 
-                    maxLines: 2,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      overflow: TextOverflow.ellipsis,
-                      color: Color(0xFF161719),
-                      fontWeight: FontWeight.w600
-                    ),
-                  ),
-                  Text(
-                    peoples[index].designation.isEmpty ? "Student" : peoples[index].designation,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black26,
-                      overflow: TextOverflow.ellipsis
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 10,),
+              Flexible(
+                flex: 3,
+                child: CircleAvatar(
+                  backgroundColor: Theme.of(context).canvasColor,
+                  child:  Icon(CupertinoIcons.person),
+                ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
+              const SizedBox(height: 10,),
+              Flexible(
+                flex: 2,
+                child: Column(
+                  children: [
+                    Text(
+                      peoples[index].name, 
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        overflow: TextOverflow.ellipsis,
+                        color: Color(0xFF161719),
+                        fontWeight: FontWeight.w600
+                      ),
+                    ),
+                    Text(
+                      peoples[index].designation.isEmpty ? "Student" : peoples[index].designation,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black26,
+                        overflow: TextOverflow.ellipsis
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Flexible(
+                flex: 2,
                 child: SizedBox(
-                  height: 30,
+                  // height: 30,
                   child: ViewModelBuilder.nonReactive(
                     viewModelBuilder: () => PeopleViewmodel(),
                     builder: (ctx, model, child) {
                       return ElevatedButton(
-                        onPressed: () => showConnectionBottomSheet(
+                        onPressed: () async => await model.api.checkStatus(peoples[index].id).then((value) => showConnectionBottomSheet(
+                          model, 
+                          peoples[index].id,
                           context, 
                           peoples[index].name, 
-                          peoples[index].linkedUrl
-                        ), 
+                          peoples[index].linkedUrl,
+                          value
+                        )), 
                         child: Text("Connect", style: textStyle,)
                       );
                     }
                   ),
                 ),
-              )
+              ),
+              const SizedBox(height: 10,),
             ],
           ),
         );
       },
+      )
     );
     
   }
 
-  void showConnectionBottomSheet(BuildContext context, String name, String url){
+  void showConnectionBottomSheet(
+    PeopleViewmodel model, String receiverId, 
+    BuildContext context, String name, String url,
+    String? status,
+  ){
     showModalBottomSheet(
       context: context, 
+      constraints: BoxConstraints(
+        maxWidth: double.infinity
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
       ),
@@ -162,15 +178,19 @@ class PeopleWidget extends StatelessWidget {
                 width: MediaQuery.sizeOf(context).width,
                 height: 48.0,
                 child: ElevatedButton(
-                  onPressed: () {
-                  },
+                  onPressed: () async 
+                    => status != null ? null : await model.api.requestMobile(receiverId).then((value) {
+                      if (value) {
+                        Navigator.pop(context);
+                      }
+                    },),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 10.0,
                     children: [
                      Icon(Icons.wechat_sharp, size: 24, color: Colors.white,),
                       Text(
-                        'Request Mobile Number',
+                        status ?? 'Request Mobile Number',
                         style: textStyle,
                         textAlign: TextAlign.center,
                       ),

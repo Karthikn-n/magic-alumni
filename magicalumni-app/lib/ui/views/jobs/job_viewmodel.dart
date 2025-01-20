@@ -8,7 +8,7 @@ import 'package:stacked_services/stacked_services.dart';
 
 class JobViewModel extends BaseViewModel{
   final NavigationService _navigationService = locator<NavigationService>();
-  final DialogService _dialogService = locator<DialogService>();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
 
   final TextEditingController reportController = TextEditingController();
 
@@ -22,18 +22,20 @@ class JobViewModel extends BaseViewModel{
 
   /// Get all the Jobs from the API and store it in the List
   Future<void> jobs() async {
-    await job.jobs().then((value) {
-      debugPrint("Job Length ${value.length}");
-      debugPrint("");
-      jobsList = value;
+    if (job.jobsList.isEmpty) {
+      await job.jobs().then((value) {
+        debugPrint("Job Length ${value.length}");
+        jobsList = value;
+        notifyListeners();
+      });
+    } else{
+      jobsList = job.jobsList;
       notifyListeners();
-    });
+    }
   }
 
-  void showReportDialog(){
-    _dialogService.showDialog(
-      title: "Report this Job",
+  void showReportSnackBar() 
+  => _snackbarService.showSnackbar(message: "Enter a report to send admin", duration: const Duration(milliseconds: 1200));
 
-    );
-  }
+
 }

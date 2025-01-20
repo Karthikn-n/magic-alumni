@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -11,8 +10,7 @@ import 'package:magic_alumni/service/dio_service.dart';
 import 'package:magic_alumni/service/encrption_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-import '../model/colleges_model.dart';
-enum SnackBartype { custom }
+
 class  AuthenticateService {
   static final AuthenticateService _authenticateService = AuthenticateService._internal();
   final _dio = DioService.dio;
@@ -21,8 +19,8 @@ class  AuthenticateService {
   // Local storage to store the user informations
   final FlutterSecureStorage store = FlutterSecureStorage();
   
-  AlumniModel? alumni;
-  List<CollegesModel> collegesList = [];
+  AlumniModel? _alumni;
+  AlumniModel? get alumni => _alumni;
 
 
   /// Register API for the Alumni 
@@ -38,21 +36,23 @@ class  AuthenticateService {
         await store.write(key: "alumni_id", value: response.data["_id"].toString());
         await store.write(key: "college_id", value: response.data["collegeid"].toString());
         await store.write(key: "alumni_role", value: response.data["role"].toString());
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         await fetchAlumni();
         return true;
       } else{
         snackBar.showSnackbar(
             message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
+           
         );
         return false;
       }
     } on DioException catch (err, st) {
       log("Something went on registering", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
+        return false;
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
@@ -61,7 +61,7 @@ class  AuthenticateService {
         || (status == "error" && status == 500) ) {
          snackBar.showSnackbar(
             message: message, 
-            duration: const Duration(milliseconds: 1200)
+           
         );
       } 
     }
@@ -79,36 +79,34 @@ class  AuthenticateService {
   Future<bool> login(String mobile) async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}alumni/login",
-        data: {"mobile_number": mobile}
+        "${baseApiUrl}member/login",
+        data: {"mobile_number": mobile},
       );
-      // 
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         await store.write(key: "alumni_mobile", value: mobile.toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
+           
         );
         return true;
       } else{
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         return false;
       }
     } on DioException catch (err, st) {
-      log("Something went on request login", stackTrace: st);
-      final statusCode = err.response!.statusCode;
+      log("Something went on request login", error: err.toString(), stackTrace: st);
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
+        return false;
+      } 
+      final statusCode = err.response!.statusCode ?? 100;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
       if((status == "not ok" && statusCode == 400) 
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
-         snackBar.showSnackbar(
-            message: message, 
-            duration: const Duration(milliseconds: 1200)
-        );
+         snackBar.showSnackbar(message: message, );
       } 
     }
     return false;
@@ -118,7 +116,7 @@ class  AuthenticateService {
   Future<bool> verifyOtp(String otp) async {
     try {
       final response = await _dio.post(
-        "${baseApiUrl}alumni/verifyOtp",
+        "${baseApiUrl}member/verifyOtp",
         data: {
           "mobile_number": await store.read(key: "alumni_mobile"),
           "otp": otp
@@ -130,38 +128,32 @@ class  AuthenticateService {
         await store.write(key: "alumni_role", value: response.data["role"].toString());
         await store.write(key: "alumni_status", value: response.data["approvalStatus"].toString());
         await store.write(key: "college_id", value: response.data["college_id"].toString());
-        snackBar.showSnackbar(
-          message: response.data["message"], 
-          duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         debugPrint('Alumni ID : ${await store.read(key: "alumni_id")}');
         debugPrint('Alumni Role : ${await store.read(key: "alumni_role")}');
         debugPrint('Alumni Status : ${await store.read(key: "alumni_status")}');
         debugPrint('Alumni College ID : ${await store.read(key: "college_id")}');
-        alumni = null;
-        if (alumni == null) {
-          await fetchAlumni();
-        }
+        final alumni = await fetchAlumni();
+        if(alumni == null) return false;
         return true;
       }  else {
-          snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+          snackBar.showSnackbar(message: response.data["message"], );
       }
       return false;
     } on DioException catch (err, st) {
-      log("Something went on Verify OTP", stackTrace: st);
+      log("Something went on Verify OTP", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
+        return false;
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
       if((status == "not ok" && statusCode == 400) 
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
-         snackBar.showSnackbar(
-            message: message, 
-            duration: const Duration(milliseconds: 1200)
-        );
+         snackBar.showSnackbar(message: message, );
       } 
       return false;
     }
@@ -172,23 +164,24 @@ class  AuthenticateService {
   /// Before Send the data It encrypt using [EncryptionService]
   /// Parse the Alumni data from the response using [AlumniModel]
   /// Store it in the local Storage using [FlutterSecureStorage] for maintain session
-  Future<void> fetchAlumni() async {
+  Future<AlumniModel?>? fetchAlumni() async {
     try {
       final response = await _dio.post(
-        "${baseApiUrl}alumni/member",
+        "${baseApiUrl}member/profile",
         data: {"alumni_id": await store.read(key: "alumni_id")}
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
-        debugPrint("Alumni Profile: ${response.data}");
-        alumni = AlumniModel.fromJson(response.data);
-        String alumniId =  await store.read(key: "alumni_id") ?? " ";
-        await store.write(key: alumniId, value: json.encode(alumni?.toMap()));
-        debugPrint("Alumni Details: ${await store.read(key: alumniId)}");
-        
-        debugPrint("Login Response: ${response.data}");
+        _alumni = AlumniModel.fromJson(response.data);
+        return alumni;
       }
+      return null;
     } on DioException catch (err, st) {
       log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
+        return null;
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
@@ -197,41 +190,39 @@ class  AuthenticateService {
         || (status == "error" && status == 500) ) {
           log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
       } 
+      return null;
     }
   }
 
+  /// Update the alumni || Student profile If they want to edit after approval
   Future<bool> update(Map<String, dynamic> data) async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}alumni/update",
+        "${baseApiUrl}member/update",
         data: data
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         await fetchAlumni();
         return true;
       } else{
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         return false;
       }
     } on DioException catch (err, st) {
       log("Something went on registering", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
+        return false;
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
       if((status == "not ok" && statusCode == 400) 
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
-         snackBar.showSnackbar(
-            message: message, 
-            duration: const Duration(milliseconds: 1200)
-        );
+         snackBar.showSnackbar(message: message, );
       } 
     }
     return false;
@@ -245,32 +236,8 @@ class  AuthenticateService {
     await store.delete(key: "alumni_id");
   }
   
-  /// Get all the College from the API and Store it in local storage 
-  /// checked Working
-  Future<List<CollegesModel>> colleges() async {
-    try {
-      final response = await _dio.get(
-        "${baseApiUrl}college"
-      );
-      if (response.statusCode == 200 && response.data["status"] == "Ok") {
-        List<dynamic> collegesRepsponse =  (response.data["collegeWithDepartments"] ?? []) as List<dynamic>;
-        collegesList = collegesRepsponse.map((college) => CollegesModel.fromMap(college) ,).toList();
-        debugPrint("Colleges: ${collegesList.length}");
-        return collegesList;
-      }else{
-        snackBar.showSnackbar(
-          message: "Can't get colleges", 
-          duration: const Duration(milliseconds: 1200)
-        );
-        log("Something went on getting colleges", error: response.data["message"]);
-        return [];
-      }
-    } on DioException catch (err, st) {
-      log("Something went on getting colleges", stackTrace: st, error: err.toString());
-      return [];
-    }
-  }
 
+  /// Factory constructor that gives same instance of this Service across the App
   factory AuthenticateService(){
     return _authenticateService;
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/model/colleges_model.dart';
+import 'package:magic_alumni/service/api_service.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -24,6 +25,7 @@ class SignupViewmodel extends BaseViewModel{
   final SnackbarService _snackbar = locator<SnackbarService>();
 
   final AuthenticateService auth = locator<AuthenticateService>();
+  final ApiService api = locator<ApiService>();
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -60,11 +62,27 @@ class SignupViewmodel extends BaseViewModel{
     notifyListeners();
   }
 
+
+
   /// Call the colleges API and notfy the listeners
   Future<void> getColleges() async {
-    await auth.colleges().then((value) => collegesList = value);
+    await api.colleges().then((value) => collegesList = value);
     notifyListeners();
   }
+
+  /// Call the Register API 
+  Future<void> register() async {
+    isLoad = true;
+    await auth.register(userData()).then((value) {
+      if (value) {
+       isLoad = false; 
+       navigateHome();
+      }
+      notifyListeners();
+    },);
+    isLoad = false; 
+    notifyListeners();
+  } 
 
   // Validation for the login form comes in the 
   void init(){

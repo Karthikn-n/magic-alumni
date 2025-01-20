@@ -615,7 +615,7 @@ router.post("/addCollege", async (req, res) => {
 
 router.post("/requestMobile", async (req, res) => {
   try {
-    const { sender, receiver, status } = req.body;
+    const { sender, receiver, status, request_id } = req.body;
 
     if (
       !mongoose.Types.ObjectId.isValid(sender) ||
@@ -628,9 +628,7 @@ router.post("/requestMobile", async (req, res) => {
     }
 
     const fakeRequest = await Request.findOne({
-      sender,
-      receiver,
-      status: "Pending",
+      request_id,
     });
 
     if (fakeRequest) {
@@ -645,6 +643,7 @@ router.post("/requestMobile", async (req, res) => {
       sender,
       receiver,
       status,
+      request_id,
     });
 
     await request.save();
@@ -675,7 +674,7 @@ router.post("/requestStatusUpdate", async (req, res) => {
     }
 
     const updateRequestStatus = await Request.findOneAndUpdate(
-      { _id: request_id },
+      { request_id: request_id },
       { status: status },
       { new: true }
     );
@@ -705,7 +704,7 @@ router.post("/requestStatus", async (req, res) => {
       });
     }
 
-    const request = await Request.findById({ _id: request_id });
+    const request = await Request.findById({ request_id: request_id });
     const requestStatus = request.status;
 
     res.status(200).json({
@@ -721,4 +720,32 @@ router.post("/requestStatus", async (req, res) => {
     });
   }
 });
+
+router.post("/requestList", async (req, res) => {
+  try {
+    const { receiver_id } = req.body;
+
+    if (!receiver_id) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Receiver ID is required",
+      });
+    }
+
+    const requestList = await Request.find({ receiver: receiver_id });
+
+    res.status(200).json({
+      status: "ok",
+      message: "Request list retrieved successfully",
+      requestList: requestList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating request status",
+      error: error.message,
+    });
+  }
+});
+
 export default router;

@@ -1,0 +1,78 @@
+[{
+  "_id": {
+    "$oid": "677cb5c22d9243d4c2899447"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "image": "https://news.rcpsg.ac.uk/wp-content/uploads/2019/09/college-news-2016.jpg",
+  "title": "embark news",
+  "description": "karthick from embark created biggest app ever known to human kind - \"Magic alumni\"",
+  "news_posted": {
+    "$date": "2025-01-07T00:00:00.000Z"
+  },
+  "creator_name": "Karthick",
+  "news_link": "https://www.google.com",
+  "createdAt": {
+    "$date": "2025-01-07T05:04:02.424Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T05:04:02.424Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cb5f12d9243d4c2899449"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "image": "https://th.bing.com/th/id/OIP.tuPyXA4E4VQQ11YYgDRKVwAAAA?rs=1&pid=ImgDetMain",
+  "title": "embark morning ews",
+  "description": "karthick from embark created biggest app ever known to human kind - \"Magic alumni\"",
+  "news_posted": {
+    "$date": "2025-01-05T00:00:00.000Z"
+  },
+  "creator_name": "Karthickeyan",
+  "news_link": "https://www.google.com",
+  "createdAt": {
+    "$date": "2025-01-07T05:04:49.141Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T05:04:49.141Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cb6042d9243d4c289944b"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "image": "https://th.bing.com/th/id/OIP.uS6p2-SjCY9cv2cHxU0EoQAAAA?rs=1&pid=ImgDetMain",
+  "title": "embark evening news",
+  "description": "karthick from embark created biggest app ever known to human kind - \"Magic alumni\"",
+  "news_posted": {
+    "$date": "2025-01-06T00:00:00.000Z"
+  },
+  "creator_name": "Karthick Karthickeyan",
+  "news_link": "https://www.google.com",
+  "createdAt": {
+    "$date": "2025-01-07T05:05:08.162Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T05:05:08.162Z"
+  },
+  "__v": 0
+}]

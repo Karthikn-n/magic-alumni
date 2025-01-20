@@ -22,12 +22,16 @@ class LoginView extends StatelessWidget {
           body: Stack(
             children: [
               // background color for the view
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(top: 50),
+              Positioned(
+                top: 0,
+                bottom: 0,
+                right: 0,
+                left: 0,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 100),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor
+                  ),
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: SizedBox(
@@ -42,7 +46,7 @@ class LoginView extends StatelessWidget {
               ),
               // The stack hold the forms
               Positioned(
-                top: isKeyVisible ? size.height * 0.25 : size.height * 0.4,
+                top: isKeyVisible ? size.width > 600 ? size.height * 0.35 :size.height * 0.25 : size.width > 600 ? size.height * 0.5 : size.height * 0.4,
                 bottom: 0,
                 right: 0,
                 left: 0,
@@ -65,9 +69,9 @@ class LoginView extends StatelessWidget {
                           const SizedBox(height: 35,),
                           Text("Login", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
                           Text("Enter your Mobile Number", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black45),),
+                          const SizedBox(height: 15,),
                           // Form for Login
                           Column(
-                            spacing: 15,
                             children: [
                               Container(),
                               // mobile number text field
@@ -79,6 +83,7 @@ class LoginView extends StatelessWidget {
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.phone,
                               ),
+                              const SizedBox(height: 15,),
                               // Otp Text field
                               model.isAccountVerified 
                               ? TextFieldWidget(
@@ -89,6 +94,9 @@ class LoginView extends StatelessWidget {
                                   textInputAction: TextInputAction.done,
                                   keyboardType: TextInputType.visiblePassword,
                                 )
+                              : Container(),
+                              model.isAccountVerified 
+                              ? const SizedBox(height: 15,)
                               : Container(),
                               model.isResendClicked
                               ?  Row(
@@ -111,6 +119,9 @@ class LoginView extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                              model.isAccountVerified 
+                              ? const SizedBox(height: 15,)
+                              : Container(),
                               SizedBox(
                                 width: size.width,
                                 height: 48.0,
@@ -135,6 +146,7 @@ class LoginView extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 15,),
                               // Linked in button to signin
                               SizedBox(
                                 width: size.width,
@@ -147,24 +159,30 @@ class LoginView extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     spacing: 10.0,
                                     children: [
-                                      SizedBox(
-                                        height: 24,
-                                        width: 24,
-                                        child: Image.asset(
-                                          "assets/icon/linkedin_circle.png",
-                                          fit: BoxFit.cover,
-                                        )
+                                      Flexible(
+                                        flex: 1,
+                                        child: SizedBox(
+                                          height: 24,
+                                          width: 24,
+                                          child: Image.asset(
+                                            "assets/icon/linkedin_circle.png",
+                                            fit: BoxFit.cover,
+                                          )
+                                        ),
                                       ),
-                                      Text(
-                                        'Login with LinkedIn',
-                                        style: textStyle,
-                                        textAlign: TextAlign.center,
+                                      Flexible(
+                                        flex: 2,
+                                        child: Text(
+                                          'Login with LinkedIn',
+                                          style: textStyle,
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                              Container(),
+                              const SizedBox(height: 15,),
                               // Signup Navigation
                               InkWell(
                                 onTap: () {
@@ -173,17 +191,24 @@ class LoginView extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      "Don't you have account? ", 
-                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                    Flexible(
+                                      flex: 2,
+                                      child: Text(
+                                        "Don't you have account? ", 
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                      ),
                                     ),
-                                    Text(
-                                      "Signup", 
-                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFF7CA18)),
+                                    Flexible(
+                                      flex: 1,
+                                      child: Text(
+                                        "Signup", 
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFF7CA18)),
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
+                              const SizedBox(height: 15,),
                             ],
                           ),
                         ],

@@ -43,7 +43,7 @@ class SignupView extends StatelessWidget {
                       topRight: Radius.circular(30)
                     )
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: commonPadding),
+                  padding: const EdgeInsets.symmetric(horizontal: commonPadding, vertical: 2.5),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +103,7 @@ class SignupView extends StatelessWidget {
                                 // value: model.selectedCollege!,
                                 underline: Container(),
                                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                                items: model.auth.collegesList.map((value) {
+                                items: model.api.collegesList.map((value) {
                                   return DropdownMenuItem<CollegesModel>(
                                     value: value,
                                     child: Text(value.collegeName, style: TextStyle(fontSize: 14),)
@@ -136,12 +136,16 @@ class SignupView extends StatelessWidget {
                                         fit: BoxFit.contain,
                                       ),
                                     ),
-                                    Text(
-                                      model.selectedDepartment != null ? model.selectedDepartment! : "Select Department", 
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400, 
-                                        fontSize: model.selectedDepartment != null ? 14 : 12, 
-                                        color: model.selectedDepartment != null ? Colors.black : Colors.black45
+                                    Expanded(
+                                      child: Text(
+                                        maxLines: 1,
+                                        model.selectedDepartment != null ? model.selectedDepartment! : "Select Department", 
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400, 
+                                          overflow: TextOverflow.ellipsis,
+                                          fontSize: model.selectedDepartment != null ? 14 : 12, 
+                                          color: model.selectedDepartment != null ? Colors.black : Colors.black45
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -216,12 +220,9 @@ class SignupView extends StatelessWidget {
                               ? LoadingButtonWidget()
                               : ElevatedButton(
                                 onPressed: () async {
-                                  model.isLoad = true;
+                                  // model.isLoad = true;
                                   model.isFormValid
-                                  ? await model.auth.register( model.userData()).then((value){
-                                    model.isLoad = false;
-                                    value ? model.navigateHome() : null;
-                                  })
+                                  ? await model.register()
                                   : model.snackBarMessage();
                                 },
                                 child: Text(
@@ -232,27 +233,34 @@ class SignupView extends StatelessWidget {
                               ),
                             ),
                             SizedBox(
-                              width: size.width,
+                              // width: size.width,
                               height: 50.0,
                               child: ElevatedButton(
                                 onPressed: () {
+                                  model.isLoad = false;
                                 },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   spacing: 15.0,
                                   children: [
-                                    SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: Image.asset(
-                                        "assets/icon/linkedin_circle.png",
-                                        fit: BoxFit.cover,
-                                      )
+                                    Flexible(
+                                      flex: 4,
+                                      child: SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: Image.asset(
+                                          "assets/icon/linkedin_circle.png",
+                                          fit: BoxFit.cover,
+                                        )
+                                      ),
                                     ),
-                                    Text(
-                                      'Fill with LinkedIn',
-                                      style: textStyle,
-                                      textAlign: TextAlign.center,
+                                    Flexible(
+                                      flex: 5,
+                                      child: Text(
+                                        'Fill with LinkedIn',
+                                        style: textStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -267,13 +275,19 @@ class SignupView extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    "Already have an account? ", 
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                  Flexible(
+                                    flex: 4,
+                                    child: Text(
+                                      "Already have an account? ", 
+                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                    ),
                                   ),
-                                  Text(
-                                    "Login", 
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFF7CA18)),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Text(
+                                      "Login", 
+                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFF7CA18)),
+                                    ),
                                   ),
                                 ],
                               ),

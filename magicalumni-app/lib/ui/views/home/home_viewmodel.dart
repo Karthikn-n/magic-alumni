@@ -1,24 +1,24 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
+import 'package:magic_alumni/model/mobrequest_model.dart';
 import 'package:magic_alumni/model/news_model.dart';
 import 'package:magic_alumni/service/api_service.dart';
+import 'package:magic_alumni/service/authenticate_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-enum DialogType {custom}
 
 class HomeViewmodel extends BaseViewModel {
   int selectedIndex = 0;
 
   List<NewsModel> newsList = [];
+  List<MobileRequestModel> mobRequests = [];
+
   /// Use API Service to get the news from the API
   final ApiService apiService = ApiService();
-  bool isInitialized = false;
+  final AuthenticateService auth = AuthenticateService();
 
   final NavigationService _navigationService = locator<NavigationService>();
   final FlutterSecureStorage storage = FlutterSecureStorage();
@@ -34,32 +34,39 @@ class HomeViewmodel extends BaseViewModel {
 
   /// Call the news API and store if the news get from the API or return empty list
   Future<void> news() async {
-    await apiService.news().then(
-      (value) async {
-        print("News length: ${value.length}");
+    if (apiService.newsList.isEmpty) {
+      await apiService.news().then(
+      (value) {
         newsList = value;
         notifyListeners();
-      } ,
+      },
     );
-    
+    } else {
+      newsList = apiService.newsList;
+      notifyListeners();
+    }
   }
 
+  /// Initialize the alumni profile and check the approval status
   Future<void> init() async {
-    String alumniId = await storage.read(key: "alumni_id") ?? "";
-    debugPrint(alumniId);
-    final detail = json.decode(await storage.read(key: alumniId) ?? "");
-    alumni = AlumniModel.fromJson(json.decode(await storage.read(key: alumniId) ?? ""));
+    alumni = auth.alumni;
+    if (apiService.mobRequestsList.isEmpty) {
+      await apiService.mobileRequestList().then((value) {
+        mobRequests = value;
+        notifyListeners(); 
+      },);
+    } else {
+      mobRequests = apiService.mobRequestsList;
+      notifyListeners();
+    }
     notifyListeners();
-    debugPrint("IS empty : ${alumni == null}");
-    debugPrint("Alumni profile from storgae: $detail");
-
-    
   }
 
+
+  /// Move to the News detail screen
   void navigateToNewsDetail(NewsModel news, int index) 
     => _navigationService.navigateToNewsDetailView(news: news,);
 
-  
-  
 
 }
+

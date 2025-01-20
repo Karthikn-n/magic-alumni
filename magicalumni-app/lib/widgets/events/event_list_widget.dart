@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/events_model.dart';
@@ -23,7 +25,8 @@ class EventListWidget extends StatelessWidget {
                   InkWell(
                     borderRadius: BorderRadius.circular(10),
                     splashColor: Colors.white.withValues(alpha: 0.04),
-                    onTap: () => model.navigateToEventDetail(events[index]),
+                    onTap: () async => await model.apiService.checkEventStatus(events[index].id).then(
+                      (value) => model.navigateToEventDetail(events[index], value)),
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -34,25 +37,25 @@ class EventListWidget extends StatelessWidget {
                       child: Column(
                         children: [
                           // Event image
-                          SizedBox(
-                            height: MediaQuery.sizeOf(context).height * 0.2,
-                            width: double.infinity,
-                            child: CachedNetworkImage(
+                          AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child:  CachedNetworkImage(
                               imageUrl: events[index].image,
-                              imageBuilder: (context, imageProvider) => Ink(
-                                child: Container(
+                              fit: BoxFit.cover,
+                              imageBuilder: (context, imageProvider) {
+                                return Container(
                                   decoration: BoxDecoration(
-                                    borderRadius:  BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      topRight: Radius.circular(10)
-                                    ),
                                     image: DecorationImage(
                                       image: imageProvider,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
+                              errorWidget: (context, url, error) {
+                                log('Error loading image: $url - featureImage $error');
+                                return const Icon(Icons.error);
+                              },
                             ),
                           ),
                           // Title and other information

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_alumni/app/app.locator.dart';
@@ -35,7 +33,11 @@ class ProfileViewmodel extends BaseViewModel{
   bool isYearValid = false;
   bool isLinkedInUrlValid = false;
   bool _isEdited = false;
-  
+
+  bool isAddCollegeValid = false;
+
+
+
   bool get isFormValid => isUserNameValid && isCollegNameValid && isdepNameValid && isYearValid && isLinkedInUrlValid;
   bool get isEdited => _isEdited;
 
@@ -50,6 +52,7 @@ class ProfileViewmodel extends BaseViewModel{
   final NavigationService navigation = locator<NavigationService>();
   final ApiService api = locator<ApiService>();
   final DialogService dialogService = locator<DialogService>();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
 
   List<CollegesModel> collegesList = [];
   CollegesModel? selectedCollege;
@@ -63,6 +66,7 @@ class ProfileViewmodel extends BaseViewModel{
     }
     notifyListeners();
   }
+  
   /// Get the Department from selected college
   void setDepartment(DepartmentModel departmentName){
     selectedDepartment = departmentName.departmentName;
@@ -72,6 +76,7 @@ class ProfileViewmodel extends BaseViewModel{
   
   // change the current student status on the profile screen
   void changeStudentStatus(bool value){
+    newCurrentYearOrAlumniController.clear();
     isCurrentYearStudent = value;
     notifyListeners();
   }
@@ -80,6 +85,8 @@ class ProfileViewmodel extends BaseViewModel{
   void checkExpanded(bool value){
     isExpanded = value;
     if(!value) {
+      selectedCollege = null;
+      selectedDepartment = null;
       newCollegeController.clear();
       newDepartmentController.clear();
       newCurrentYearOrAlumniController.clear();
@@ -90,7 +97,7 @@ class ProfileViewmodel extends BaseViewModel{
 
   /// Call the colleges API and notfy the listeners
   Future<void> getColleges() async {
-    await auth.colleges().then((value) => collegesList = value);
+    await api.colleges().then((value) => collegesList = value);
     notifyListeners();
   }
 
@@ -124,12 +131,12 @@ class ProfileViewmodel extends BaseViewModel{
 
   // Validation for the login form comes in the 
   Future<void> init() async {
-    String alumniId = await storage.read(key: "alumni_id") ?? "";
-    debugPrint(alumniId);
-    //  "${model.alumni!.colleges[index].departments[index].departmentName}, ${model.alumni!.colleges[index].collegeName}",
-    final detail = json.decode(await storage.read(key: alumniId) ?? "");
-    alumni = AlumniModel.fromJson(json.decode(await storage.read(key: alumniId) ?? ""));
-    debugPrint("Alumni profile from storgae: $detail");
+    if (auth.alumni != null) {
+      debugPrint("profile is not null");
+      alumni = auth.alumni;
+    }else{
+      await auth.fetchAlumni();
+    }
     userNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Raj kumar";
     collegeNameController.text = alumni != null ? alumni!.colleges[0].collegeName : "ABC College"; // Default College Name
     depNameController.text = alumni != null ? alumni!.colleges[0].departments[0].departmentName : "Computer Science"; // Default Department
@@ -192,11 +199,21 @@ class ProfileViewmodel extends BaseViewModel{
     }
   }
 
+
+  /// Show snackbar if the Alumni is not added the fields in the Profile
+  void validateAddCollege() {
+    isAddCollegeValid = selectedCollege != null || selectedDepartment != null || newCurrentYearOrAlumniController.text.isEmpty;
+    if (!isAddCollegeValid) {
+      _snackbarService.showSnackbar(message: "All field required", duration: const Duration(milliseconds: 1200));
+    }
+    notifyListeners();
+  }
+
+  /// Call the Add college API with Data
   Future<void> addCollege() async {
     Map<String, dynamic> collegeData = {
       "college_id": selectedCollege!.id,
-      "department_id": selectedDepartment,
-      
+      "department_id": selectedCollege!.departments.firstWhere((element) => element.departmentName == selectedDepartment,).id,
       "alumni_id": await storage.read(key: "alumni_id")
     };
     if (isCurrentYearStudent) {
@@ -204,6 +221,7 @@ class ProfileViewmodel extends BaseViewModel{
     }else{
       collegeData["completed_year"] = newCurrentYearOrAlumniController.text;
     }
+    debugPrint("Added college: $collegeData");
     await api.addCollege(collegeData);
   }
 

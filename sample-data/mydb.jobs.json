@@ -1,0 +1,267 @@
+[{
+  "_id": {
+    "$oid": "677cb379b5db8558f4e9d4e1"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_image": "/uploads/jobs/1736225657746_like.png",
+  "job_title": "web developer",
+  "last_date": {
+    "$date": "2025-01-09T00:00:00.000Z"
+  },
+  "company_name": "Zoho",
+  "location": "Kanchi",
+  "job_url": "https://www.google.com",
+  "tag": "Web development",
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-07T04:54:17.750Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T04:54:17.750Z"
+  },
+  "__v": 0,
+  "job_type": "Job"
+},
+{
+  "_id": {
+    "$oid": "677cb4a932eac8eeb8992b32"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_image": "/uploads/jobs/1736225961130_like.png",
+  "job_title": "Designer",
+  "last_date": {
+    "$date": "2025-01-09T00:00:00.000Z"
+  },
+  "company_name": "Canva",
+  "location": "Kanchipuram",
+  "job_url": "https://www.edge.com",
+  "tag": "designer",
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-07T04:59:21.182Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T04:59:21.182Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cb5192d9243d4c2899445"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_image": "/uploads/jobs/1736226073017_like.png",
+  "job_title": "web designer",
+  "last_date": {
+    "$date": "2025-01-17T00:00:00.000Z"
+  },
+  "company_name": "Canvas",
+  "location": "Kanchipurams",
+  "job_url": "https://www.edges.com",
+  "tag": "web designer",
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-07T05:01:13.043Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T05:01:13.043Z"
+  },
+  "__v": 0,
+  "job_type": "Job"
+},
+{
+  "_id": {
+    "$oid": "677cf9ef00b3945036c26f51"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_title": "web developer",
+  "last_date": {
+    "$date": "2025-01-09T00:00:00.000Z"
+  },
+  "company_name": "Zoho",
+  "location": "Kanchi",
+  "job_url": "https://www.google.com",
+  "tag": [
+    "IT",
+    "CSS"
+  ],
+  "createdAt": {
+    "$date": "2025-01-07T09:54:55.273Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:54:55.273Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cfab700b3945036c26f55"
+  },
+  "alumni_id": {
+    "$oid": "677f74f4045c3c01a2605f20"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_title": "web developers",
+  "last_date": {
+    "$date": "2025-01-18T00:00:00.000Z"
+  },
+  "company_name": "Zoho",
+  "location": "Kanchi",
+  "job_url": "https://www.google.com",
+  "tag": [
+    "IT",
+    "CSS"
+  ],
+  "createdAt": {
+    "$date": "2025-01-07T09:58:15.343Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:58:15.343Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677cfac70dd3559641302da7"
+  },
+  "alumni_id": {
+    "$oid": "677bd8522079c2c411155abc"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_title": "web devs",
+  "last_date": {
+    "$date": "2025-01-18T00:00:00.000Z"
+  },
+  "company_name": "Zoho",
+  "location": "Kanchi",
+  "job_url": "https://www.google.com",
+  "tag": [
+    "IT",
+    "CSS"
+  ],
+  "createdAt": {
+    "$date": "2025-01-07T09:58:31.816Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:58:31.816Z"
+  },
+  "__v": 0,
+  "job_type": "Intern"
+},
+{
+  "_id": {
+    "$oid": "677cfaeea884cd3cf3ba40be"
+  },
+  "alumni_id": {
+    "$oid": "677bd8522079c2c411155abc"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_title": "web dev",
+  "last_date": {
+    "$date": "2025-01-28T00:00:00.000Z"
+  },
+  "email": "gmail@email.com",
+  "company_name": "Zoho",
+  "location": "Kanchi",
+  "job_url": "https://www.google.com",
+  "tag": [
+    "IT",
+    "CSS"
+  ],
+  "createdAt": {
+    "$date": "2025-01-07T09:59:10.169Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T09:59:10.169Z"
+  },
+  "__v": 0,
+  "job_type": "Job"
+},
+{
+  "_id": {
+    "$oid": "677cfc85895ff4de4158b5e3"
+  },
+  "alumni_id": {
+    "$oid": "677bd8522079c2c411155abc"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_title": "web designer",
+  "job_type": "Job",
+  "last_date": {
+    "$date": "2025-01-18T00:00:00.000Z"
+  },
+  "email": "gmail@email.com",
+  "company_name": "Zoho",
+  "location": "Kanchi",
+  "job_url": "https://github.com/",
+  "tag": [
+    "IT",
+    "CSS"
+  ],
+  "createdAt": {
+    "$date": "2025-01-07T10:05:57.201Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T10:05:57.201Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677d2b7b599c64d3302c4c6d"
+  },
+  "alumni_id": {
+    "$oid": "677bd8522079c2c411155abc"
+  },
+  "college_id": {
+    "$oid": "677b6d5fb2a89b1437ba3853"
+  },
+  "job_title": "web designers",
+  "job_type": "Intern",
+  "last_date": {
+    "$date": "2025-01-19T00:00:00.000Z"
+  },
+  "email": "gmail@email.com",
+  "company_name": "Zoho",
+  "location": "Kanchi",
+  "job_url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status",
+  "tag": [
+    "IT",
+    "CSS"
+  ],
+  "createdAt": {
+    "$date": "2025-01-07T13:26:19.673Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-07T13:26:19.673Z"
+  },
+  "__v": 0
+}]

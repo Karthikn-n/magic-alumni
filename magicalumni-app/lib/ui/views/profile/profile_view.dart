@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/ui/views/profile/profile_viewmodel.dart';
 import 'package:magic_alumni/widgets/common/text_field.dart';
+import 'package:magic_alumni/widgets/profile/profile_card_widget.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../../constants/app_constants.dart';
 import '../../../model/colleges_model.dart';
-import '../../../widgets/common/dot_indicator.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -20,54 +20,36 @@ class ProfileView extends StatelessWidget {
       onViewModelReady: (viewModel) async => await viewModel.init(),
       builder: (ctx, model, child) {
         return Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).primaryColor,
+            title:  Text(
+              "Profile", 
+              style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+            ) ,
+            actions: [
+               IconButton(
+              tooltip: "Log out",
+              onPressed: () async {
+                await model.confirmLogout();
+              }, 
+                icon: SizedBox(
+                  height: 24, 
+                  width: 24, 
+                  child: Image.asset("assets/icon/out.png", color: Colors.white,),
+                )
+              )
+            ],
+            centerTitle: true,
+          ),
           body: Stack(
             children: [
-              // Profile card
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor
-                ),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: kToolbarHeight  - 16),
-                    child: SizedBox(
-                      height: kToolbarHeight,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 55),
-                            child: Text(
-                              "Profile", 
-                              style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          Spacer(),
-                          IconButton(
-                            tooltip: "Log out",
-                            onPressed: () async {
-                              await model.confirmLogout();
-                            }, 
-                              icon: SizedBox(
-                                height: 24, 
-                                width: 24, 
-                                child: Image.asset("assets/icon/out.png", color: Colors.white,),
-                              )
-                            )
-                        ],
-                      )
-                    ),
-                  ),
-                ),
-              ),
               // Body of the screen
               Positioned(
                 bottom: 0,
                 right: 0,
                 left: 0,
-                top: size.height * 0.23,
+                top: size.width > 600 ? size.width * 0.15 :  size.height * 0.1,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
@@ -205,7 +187,7 @@ class ProfileView extends StatelessWidget {
                                     // value: model.selectedCollege!,
                                     underline: Container(),
                                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                                    items: model.auth.collegesList.map((value) {
+                                    items: model.api.collegesList.map((value) {
                                       return DropdownMenuItem<CollegesModel>(
                                         value: value,
                                         child: Text(value.collegeName, style: TextStyle(fontSize: 14),)
@@ -267,10 +249,13 @@ class ProfileView extends StatelessWidget {
                             ),
                                 const SizedBox(height: 10,),
                                 // Current year or passed out year text field
-                                TextFieldWidget(
+                               TextFieldWidget(
                                   controller: model.newCurrentYearOrAlumniController,
-                                  hintText: "Passed out Year",
+                                  prefixIcon: Icon(CupertinoIcons.calendar, color: Theme.of(context).primaryColor, size: 20,),
+                                  hintText: model.isCurrentYearStudent ? "Current Academic Year" : "Passed Out Year",
                                   textInputAction: TextInputAction.next,
+                                  maxLength: model.isCurrentYearStudent ? 1: 4,
+                                  keyboardType: TextInputType.number,
                                 ),
                                 const SizedBox(height: 10,),
                                 // check box for current year students
@@ -291,7 +276,10 @@ class ProfileView extends StatelessWidget {
                                 // Send to permission to the admin
                                 ElevatedButton(
                                   onPressed: () async {
-                                    await model.addCollege();
+                                    model.validateAddCollege();
+                                    if (model.isAddCollegeValid) {
+                                      await model.addCollege();
+                                    }
                                   },
                                   child: Text(
                                     'Send Request to Admin',
@@ -358,104 +346,10 @@ class ProfileView extends StatelessWidget {
               ),
               // // Profile card and status card
               Positioned(
-                top: 100,
+                top: 0,
                 left: 16,
                 right: 16,
-                child: SizedBox(
-                  height: size.height * 0.18,
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      PageView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount:  model.alumni != null ? model.alumni!.colleges.length : 2,
-                        onPageChanged: (value) {
-                          // model.selectOtherCollege(value);
-                        },
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Color(0xFFFCFCFF),
-                            child: Padding(
-                              padding: const EdgeInsets.all(commonPadding),
-                              child: Row(
-                                children: [
-                                  Column(
-                                    spacing: 5,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        model.alumni !=  null ? model.alumni!.alumniProfileDetail.name : "",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600
-                                        ),
-                                      ),
-                                      Text(
-                                        model.alumni != null && model.alumni!.colleges.isEmpty 
-                                          ? "Not approved" 
-                                          : "${model.alumni!.colleges[index].departments[index].departmentName}, ${model.alumni!.colleges[index].collegeName}",
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          overflow: TextOverflow.ellipsis,
-                                          color: Colors.black45,
-                                          fontWeight: FontWeight.w500
-                                        ),
-                                      ),
-                                      const SizedBox(height: 5,),
-                                      Container(
-                                        padding: EdgeInsets.all(5.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade300,
-                                          borderRadius: BorderRadius.circular(5)
-                                        ),
-                                        child: Row(
-                                          spacing: 10,
-                                          children: [
-                                            Icon(
-                                             model.alumni != null && model.alumni!.colleges[index].status == "approved" 
-                                              ? CupertinoIcons.check_mark_circled_solid
-                                              : CupertinoIcons.info_circle, 
-                                              size: model.alumni != null && model.alumni!.colleges[index].status == "approved" ? 14 : 18, 
-                                              color: model.alumni != null && model.alumni!.colleges[index].status == "approved" ? Colors.green : Colors.red,
-                                            ),
-                                            Text(
-                                              model.alumni !=  null && model.alumni!.colleges.isEmpty
-                                                ? "nothing" 
-                                                : model.alumni!.colleges[index].status == "approved" ? "You are approved Alumni now" : "You are not approved by your college",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      model.alumni != null && model.alumni!.colleges.isEmpty
-                      ? Container()
-                      : Positioned(
-                        bottom: 10,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          spacing: 5,
-                          children: List.generate( model.alumni != null ? model.alumni!.colleges.length : 1, 
-                          (index) {
-                            return DotIndicator(isActive: index == model.selectedIndex,);
-                          },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: ProfileCardWidget()
               ),
             ],
           ),
