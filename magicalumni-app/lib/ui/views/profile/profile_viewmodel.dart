@@ -76,6 +76,7 @@ class ProfileViewmodel extends BaseViewModel{
   
   // change the current student status on the profile screen
   void changeStudentStatus(bool value){
+    newCurrentYearOrAlumniController.clear();
     isCurrentYearStudent = value;
     notifyListeners();
   }
@@ -212,7 +213,7 @@ class ProfileViewmodel extends BaseViewModel{
   Future<void> addCollege() async {
     Map<String, dynamic> collegeData = {
       "college_id": selectedCollege!.id,
-      "department_id": selectedDepartment,
+      "department_id": selectedCollege!.departments.firstWhere((element) => element.departmentName == selectedDepartment,).id,
       "alumni_id": await storage.read(key: "alumni_id")
     };
     if (isCurrentYearStudent) {

@@ -220,7 +220,7 @@ class SignupView extends StatelessWidget {
                               ? LoadingButtonWidget()
                               : ElevatedButton(
                                 onPressed: () async {
-                                  model.isLoad = true;
+                                  // model.isLoad = true;
                                   model.isFormValid
                                   ? await model.register()
                                   : model.snackBarMessage();

@@ -3,6 +3,7 @@ import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/service/dio_service.dart';
 import 'package:magic_alumni/service/encrption_service.dart';
+import 'package:magic_alumni/service/snackbar_service.dart';
 import 'package:magic_alumni/ui/theme/app_theme.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -12,6 +13,7 @@ Future<void> main() async {
   setupLocator();
   await DioService().init();
   await EncryptionService().init();
+  CustomSnackbarService.registerSnackbarService();
   runApp(const MagicAlunmiMobileApp());
 }
 

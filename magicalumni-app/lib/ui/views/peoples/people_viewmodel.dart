@@ -13,7 +13,7 @@ class PeopleViewmodel extends BaseViewModel{
 
   /// Get all the Alumni and Students from the API 
   Future<void> peoples() async {
-    if (api.jobsList.isEmpty) {
+    if (api.peoplesList.isEmpty) {
       await api.peoples().then((value) {
           peoplesList = value;
           notifyListeners();
@@ -22,6 +22,7 @@ class PeopleViewmodel extends BaseViewModel{
       peoplesList = api.peoplesList;
       notifyListeners();
     }
+    notifyListeners();
   }
 
   void showConnectionBottomSheet(String name, String linkedURL) async {
