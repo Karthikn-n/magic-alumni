@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/model/jobs_model.dart';
@@ -66,7 +65,7 @@ class JobListWidget extends StatelessWidget {
                               PopupMenuItem(
                                 child: Text("Report"),
                                 onTap:() async {
-                                  await launchUrl(Uri.parse(jobs[index].applyLink));
+                                  showReportDialog(context, jobs[index].id);
                                 },
                               )
                             ];

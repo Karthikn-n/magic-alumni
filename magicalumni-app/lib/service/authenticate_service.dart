@@ -36,16 +36,13 @@ class  AuthenticateService {
         await store.write(key: "alumni_id", value: response.data["_id"].toString());
         await store.write(key: "college_id", value: response.data["collegeid"].toString());
         await store.write(key: "alumni_role", value: response.data["role"].toString());
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         await fetchAlumni();
         return true;
       } else{
         snackBar.showSnackbar(
             message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
+           
         );
         return false;
       }
@@ -53,10 +50,7 @@ class  AuthenticateService {
       log("Something went on registering", stackTrace: st, error: err.toString());
       if (err.type == DioExceptionType.connectionTimeout ||
           err.type == DioExceptionType.receiveTimeout) {
-        snackBar.showSnackbar(
-          message: "Request timed out. Please try again.",
-          duration: const Duration(milliseconds: 1200),
-        );
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
         return false;
       } 
       final statusCode = err.response!.statusCode;
@@ -67,7 +61,7 @@ class  AuthenticateService {
         || (status == "error" && status == 500) ) {
          snackBar.showSnackbar(
             message: message, 
-            duration: const Duration(milliseconds: 1200)
+           
         );
       } 
     }
@@ -92,24 +86,18 @@ class  AuthenticateService {
         await store.write(key: "alumni_mobile", value: mobile.toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
+           
         );
         return true;
       } else{
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         return false;
       }
     } on DioException catch (err, st) {
       log("Something went on request login", error: err.toString(), stackTrace: st);
       if (err.type == DioExceptionType.connectionTimeout ||
           err.type == DioExceptionType.receiveTimeout) {
-        snackBar.showSnackbar(
-          message: "Request timed out. Please try again.",
-          duration: const Duration(milliseconds: 1200),
-        );
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
         return false;
       } 
       final statusCode = err.response!.statusCode ?? 100;
@@ -118,10 +106,7 @@ class  AuthenticateService {
       if((status == "not ok" && statusCode == 400) 
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
-         snackBar.showSnackbar(
-            message: message, 
-            duration: const Duration(milliseconds: 1200)
-        );
+         snackBar.showSnackbar(message: message, );
       } 
     }
     return false;
@@ -143,10 +128,7 @@ class  AuthenticateService {
         await store.write(key: "alumni_role", value: response.data["role"].toString());
         await store.write(key: "alumni_status", value: response.data["approvalStatus"].toString());
         await store.write(key: "college_id", value: response.data["college_id"].toString());
-        snackBar.showSnackbar(
-          message: response.data["message"], 
-          duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         debugPrint('Alumni ID : ${await store.read(key: "alumni_id")}');
         debugPrint('Alumni Role : ${await store.read(key: "alumni_role")}');
         debugPrint('Alumni Status : ${await store.read(key: "alumni_status")}');
@@ -155,20 +137,14 @@ class  AuthenticateService {
         if(alumni == null) return false;
         return true;
       }  else {
-          snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+          snackBar.showSnackbar(message: response.data["message"], );
       }
       return false;
     } on DioException catch (err, st) {
       log("Something went on Verify OTP", stackTrace: st, error: err.toString());
       if (err.type == DioExceptionType.connectionTimeout ||
           err.type == DioExceptionType.receiveTimeout) {
-        snackBar.showSnackbar(
-          message: "Request timed out. Please try again.",
-          duration: const Duration(milliseconds: 1200),
-        );
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
         return false;
       } 
       final statusCode = err.response!.statusCode;
@@ -177,10 +153,7 @@ class  AuthenticateService {
       if((status == "not ok" && statusCode == 400) 
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
-         snackBar.showSnackbar(
-            message: message, 
-            duration: const Duration(milliseconds: 1200)
-        );
+         snackBar.showSnackbar(message: message, );
       } 
       return false;
     }
@@ -206,10 +179,7 @@ class  AuthenticateService {
       log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
       if (err.type == DioExceptionType.connectionTimeout ||
           err.type == DioExceptionType.receiveTimeout) {
-        snackBar.showSnackbar(
-          message: "Request timed out. Please try again.",
-          duration: const Duration(milliseconds: 1200),
-        );
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
         return null;
       } 
       final statusCode = err.response!.statusCode;
@@ -232,27 +202,18 @@ class  AuthenticateService {
         data: data
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         await fetchAlumni();
         return true;
       } else{
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-            duration: const Duration(milliseconds: 1200)
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
         return false;
       }
     } on DioException catch (err, st) {
       log("Something went on registering", stackTrace: st, error: err.toString());
       if (err.type == DioExceptionType.connectionTimeout ||
           err.type == DioExceptionType.receiveTimeout) {
-        snackBar.showSnackbar(
-          message: "Request timed out. Please try again.",
-          duration: const Duration(milliseconds: 1200),
-        );
+        snackBar.showSnackbar(message: "Request timed out. Please try again.",);
         return false;
       } 
       final statusCode = err.response!.statusCode;
@@ -261,10 +222,7 @@ class  AuthenticateService {
       if((status == "not ok" && statusCode == 400) 
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
-         snackBar.showSnackbar(
-            message: message, 
-            duration: const Duration(milliseconds: 1200)
-        );
+         snackBar.showSnackbar(message: message, );
       } 
     }
     return false;

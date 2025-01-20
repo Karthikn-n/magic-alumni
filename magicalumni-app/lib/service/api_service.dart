@@ -52,10 +52,7 @@ class ApiService {
       log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
       if (err.type == DioExceptionType.connectionTimeout ||
           err.type == DioExceptionType.receiveTimeout) {
-        _snackbarService.showSnackbar(
-          message: "Request timed out. Please try again.",
-          duration: const Duration(milliseconds: 1200),
-        );
+        _snackbarService.showSnackbar(message: "Request timed out. Please try again.",);
         return null;
       } 
       final statusCode = err.response!.statusCode;
@@ -85,10 +82,7 @@ class ApiService {
         debugPrint("Colleges: ${collegesList.length}");
         return collegesList;
       }else{
-        _snackbarService.showSnackbar(
-          message: "Can't get colleges", 
-          duration: const Duration(milliseconds: 1200)
-        );
+        _snackbarService.showSnackbar(message: "Can't get colleges", );
         log("Something went on getting colleges", error: response.data["message"]);
         return [];
       }
@@ -96,10 +90,7 @@ class ApiService {
       log("Something went on getting colleges", stackTrace: st, error: err.toString());
       if (err.type == DioExceptionType.connectionTimeout ||
           err.type == DioExceptionType.receiveTimeout) {
-        _snackbarService.showSnackbar(
-          message: "Request timed out. Please try again.",
-          duration: const Duration(milliseconds: 1200),
-        );
+        _snackbarService.showSnackbar(message: "Request timed out. Please try again.",);
         return [];
       } 
       return [];
@@ -151,7 +142,7 @@ class ApiService {
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         List<dynamic> eventsResponse =  (response.data["eventList"] ?? []) as List<dynamic>;
         eventsList = eventsResponse.map((events) => EventsModel.fromMap(events) ,).toList();
-        debugPrint("Events: ${eventsList.length}");
+        debugPrint("Events: $eventsResponse");
         return eventsList;
       }else{
         log("Something went on getting events ${response.data["message"]}", error: response.data["message"]);
@@ -179,10 +170,10 @@ class ApiService {
         data: data
       );
       if (response.statusCode == 201 && response.data["status"] == "ok") {
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"],);
         return true;
       }else{
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         log("Something went on creating event  ${response.data["message"]}", error: response.data["message"]);
       }
     } on DioException catch (err, st) {
@@ -211,7 +202,7 @@ class ApiService {
         }
       );
       if (response.statusCode == 201 && response.data["status"] == "ok") {
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         isSent = true;
         return true;
       }
@@ -331,10 +322,10 @@ class ApiService {
         data: data
       );
       if (response.statusCode == 201) {
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         return true;
       }else{
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         debugPrint("Something went on creating Job ${response.data["message"]}");
         return false;
       }
@@ -365,10 +356,10 @@ class ApiService {
         }
       );
       if (response.statusCode == 201) {
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         return true;
       }else{
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         debugPrint("Something went on reporting Job ${response.data["message"]}");
         return false;
       }
@@ -395,23 +386,28 @@ class ApiService {
         data: data
       );
       if (response.statusCode == 201 && response.data["status"] == "ok") {
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         return true;
       }else{
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         debugPrint("Something went on add college ${response.data["message"]}");
         return false;
       }
     } on DioException catch (err, st) {
-      log("Something went on add college $err", stackTrace: st, error: err.toString());
-      final statusCode = err.response!.statusCode;
+       log("Something went on request login", error: err.toString(), stackTrace: st);
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        _snackbarService.showSnackbar(message: "Request timed out. Please try again.",);
+        return false;
+      } 
+      final statusCode = err.response!.statusCode ?? 100;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
       if((status == "not ok" && statusCode == 400) 
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
-          log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
-      } 
+         _snackbarService.showSnackbar(message: message,);
+      }
     }
     return false;
   }
@@ -431,7 +427,7 @@ class ApiService {
         }
       );
       if (response.statusCode == 201 && response.data["status"] == "ok") {
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         return true;
       }else{
         debugPrint("Something went on requesting mobile number ${response.data["message"]}");
@@ -462,7 +458,7 @@ class ApiService {
         }
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         return true;
       }else{
         debugPrint("Something went on updating status ${response.data["message"]}");
@@ -493,7 +489,7 @@ class ApiService {
         }
       );
       if (response.statusCode == 201 && response.data["status"] == "ok") {
-        _snackbarService.showSnackbar(message: response.data["message"], duration: Duration(milliseconds: 1200));
+        _snackbarService.showSnackbar(message: response.data["message"], );
         return response.data["requestStatus"];
       }
       return "";

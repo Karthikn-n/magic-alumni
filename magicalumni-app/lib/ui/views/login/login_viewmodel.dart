@@ -77,9 +77,9 @@ class LoginViewmodel extends BaseViewModel{
   // If the mobile is not added show the snackbar
   void mobileSnackBar(){
     if (mobileController.text.isEmpty) {
-      _snackbarService.showSnackbar(message: "Enter a Registered Mobile Number", duration: const Duration(milliseconds: 1200));
+      _snackbarService.showSnackbar(message: "Enter a Registered Mobile Number",);
     }else if(!RegExp(r'^[0-9]{10}$').hasMatch(mobileController.text)){
-      _snackbarService.showSnackbar(message: "Enter a Valid Mobile Number", duration: const Duration(milliseconds: 1200));
+      _snackbarService.showSnackbar(message: "Enter a Valid Mobile Number",);
     }else{
       return;
     }
@@ -88,9 +88,9 @@ class LoginViewmodel extends BaseViewModel{
   /// If the otp is not entered show the snackbar
   void otpSnackBar(){
     if (otpController.text.isEmpty) {
-      _snackbarService.showSnackbar(message: "Enter a OTP", duration: const Duration(milliseconds: 1200));
+      _snackbarService.showSnackbar(message: "Enter a OTP",);
     }else if(!RegExp(r'^[0-9]{6}$').hasMatch(otpController.text)){
-      _snackbarService.showSnackbar(message: "Enter a Valid OTP", duration: const Duration(milliseconds: 1200));
+      _snackbarService.showSnackbar(message: "Enter a Valid OTP",);
     }else{
       return;
     }
