@@ -704,13 +704,6 @@ router.post("/requestStatus", async (req, res) => {
       });
     }
 
-    // if (!mongoose.isValidObjectId(request_id)) {
-    //   return res.status(400).json({
-    //     status: "not ok",
-    //     message: "Invalid Request ID format",
-    //   });
-    // }
-
     const request = await Request.findOne({ request_id });
 
     if (!request) {
@@ -720,11 +713,24 @@ router.post("/requestStatus", async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    let response = {
       status: "ok",
       message: "Request status fetched successfully",
       requestStatus: request.status,
-    });
+    };
+
+    if (request.status === "allowed") {
+      const receiverProfile = await Member.findOne({ _id: request.receiver });
+      if (receiverProfile) {
+        response.receiverMobileNumber = receiverProfile.mobile_number;
+      } else {
+        console.error(
+          `Receiver profile not found for receiver ID: ${request.receiver}`
+        );
+      }
+    }
+
+    res.status(200).json(response);
   } catch (error) {
     res.status(500).json({
       status: "error",
