@@ -7,6 +7,7 @@ import 'package:magic_alumni/ui/views/app-view/app_view.dart';
 import 'package:magic_alumni/ui/views/events/create-event/create_event_view.dart';
 import 'package:magic_alumni/ui/views/events/event_detail.dart';
 import 'package:magic_alumni/ui/views/news/news_detail_view.dart';
+import 'package:magic_alumni/ui/views/notifications/notification_view.dart';
 import 'package:magic_alumni/ui/views/signup/signup_view.dart';
 import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -27,6 +28,7 @@ import '../ui/views/login/login_view.dart';
     MaterialRoute(page: CreateJobView),
     MaterialRoute(page: EventsDetailView),
     MaterialRoute(page: NewsDetailView),
+    MaterialRoute(page: NotificationsView),
   ],
   dependencies: [
     // Built-In Services

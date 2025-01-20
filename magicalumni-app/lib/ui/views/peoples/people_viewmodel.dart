@@ -7,6 +7,9 @@ class PeopleViewmodel extends BaseViewModel{
   List<AlumniProfileModel> peoplesList = [];
 
   final ApiService api = locator<ApiService>();
+  bool isLoad = false;
+  String status = "";
+  String mobileNumber = "";
 
   /// Get all the Alumni and Students from the API 
   Future<void> peoples() async {
@@ -21,6 +24,21 @@ class PeopleViewmodel extends BaseViewModel{
     }
     notifyListeners();
   }
+
+  /// check the mobile request status for the alumni
+  Future<void> checkStatus(String receiverId) async {
+    status = "";
+    mobileNumber = "";
+    isLoad = true;
+    await api.checkStatus(receiverId).then((value) {
+      status = value["requestStatus"];
+      mobileNumber = value["receiverMobileNumber"];
+      isLoad = false;
+      notifyListeners();
+    },);
+    notifyListeners();
+  }
+
 
 
 }

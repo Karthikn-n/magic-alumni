@@ -14,111 +14,106 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        SystemNavigator.pop();
+    return ViewModelBuilder<HomeViewmodel>.reactive(
+      viewModelBuilder: () => HomeViewmodel(),
+      onViewModelReady: (model) async  {
+        await model.init();
+        model.alumni!.colleges[0].status != "approved" ? _showNonClosablePopup(context) : null;
+        if (model.newsList.isEmpty) {
+          await model.news();
+        }
       },
-      child: ViewModelBuilder<HomeViewmodel>.reactive(
-        viewModelBuilder: () => HomeViewmodel(),
-        onViewModelReady: (model) async  {
-          await model.init();
-          if (model.newsList.isEmpty) {
-            await model.news();
-          }
-          model.alumni!.colleges[0].status != "approved" ? _showNonClosablePopup(context) : null;
-        },
-        builder: (ctx, model, child) {
-          return Scaffold(
+      builder: (ctx, model, child) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
             backgroundColor: Theme.of(context).primaryColor,
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).primaryColor,
-              title: ListTile(
-                leading: SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: Image.asset("assets/icon/logo.png"),
-                ),
-                title: Text(
-                  "Welcome back to the hut,", 
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white
-                  ),
-                ),
-                subtitle:  Text(
-                  model.alumni != null ? model.alumni!.alumniProfileDetail.name : "", 
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white
-                  ),
-                ),
-                trailing: IconButton(
-                  onPressed: (){}, 
-                  icon: Icon(
-                    CupertinoIcons.bell,
-                    color: Colors.white,
-                  )
+            title: ListTile(
+              leading: SizedBox(
+                height: 24,
+                width: 24,
+                child: Image.asset("assets/icon/logo.png"),
+              ),
+              title: Text(
+                "Welcome back to the hut,", 
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white
                 ),
               ),
-              centerTitle: true,
+              subtitle:  Text(
+                model.alumni != null ? model.alumni!.alumniProfileDetail.name : "", 
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white
+                ),
+              ),
+              trailing: IconButton(
+                onPressed: () => model.navigateToNotificationView(), 
+                icon: Icon(
+                  CupertinoIcons.bell,
+                  color: Colors.white,
+                )
+              ),
             ),
-            body: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned(
-                  top: size.width > 600 ? size.width * 0.15 :  size.height * 0.1,
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: Container(
-                    // height: size.height,
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      )
-                    ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Space padding for the tabs from above (below) card in stack
-                              SizedBox(height: size.height * 0.1,),
-                              // Recent Notifications
-                              Text("Recent Notifications", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                              SizedBox(height: size.height * 0.02,),
-                              SizedBox(
-                                height: 100,
-                                child: RecentNotificationsWidget()
-                              ),
-                              // Latest News 
-                              SizedBox(height: size.height * 0.015,),
-                              Text("Latest News", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                              // Latest news List widget
-                              LatestNewsWidget(news: model.newsList,)
-                            ],
-                          ),
+            centerTitle: true,
+          ),
+          body: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                top: size.width > 600 ? size.width * 0.15 :  size.height * 0.1,
+                bottom: 0,
+                right: 0,
+                left: 0,
+                child: Container(
+                  // height: size.height,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    )
+                  ),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Space padding for the tabs from above (below) card in stack
+                            SizedBox(height: size.height * 0.1,),
+                            // Recent Notifications
+                            Text("Recent Notifications", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+                            SizedBox(height: size.height * 0.02,),
+                            SizedBox(
+                              height: 100,
+                              child: RecentNotificationsWidget(requests: model.mobRequests.take(4).toList(),)
+                            ),
+                            // Latest News 
+                            SizedBox(height: size.height * 0.015,),
+                            Text("Latest News", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+                            SizedBox(height: size.height * 0.02,),
+                            // Latest news List widget
+                            LatestNewsWidget(news: model.newsList,)
+                          ],
                         ),
-                    ),
+                      ),
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  left: 10,
-                  right: 10,
-                  child: ProfileCardWidget()
-                )
-              ],
-            )
-          );
-        }
-      ),
+              ),
+              Positioned(
+                top: 0,
+                left: 10,
+                right: 10,
+                child: ProfileCardWidget()
+              )
+            ],
+          )
+        );
+      }
     );
   }
 
@@ -126,18 +121,24 @@ class HomeView extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false, // Prevents closing the dialog by tapping outside
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Not approved'),
-          content: Text("You're not approved by college"),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                // You can add any action here, but not closing the dialog
-              },
-              child: Text('OK'),
-            ),
-          ],
+      builder: (ctx) {
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            SystemNavigator.pop();
+          },
+          child: AlertDialog(
+            title: Text('Not approved'),
+            content: Text("You're not approved by college"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // You can add any action here, but not closing the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -462,6 +462,11 @@ class ApiService {
       }
     } on DioException catch (err, st) {
       log("Something went on requesting mobile number $err", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        _snackbarService.showSnackbar(message: "Request timed out. Please try again.",);
+        return false;
+      } 
       final statusCode = err.response!.statusCode ?? 100;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
@@ -478,11 +483,15 @@ class ApiService {
   Future<List<MobileRequestModel>> mobileRequestList() async {
     try{
       final response = await _dio.post(
-        "${baseApiUrl}member/requestList"
+        "${baseApiUrl}member/requestList",
+        data: {
+          "receiver_id": await storage.read(key: "alumni_id")
+        }
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
-        List<dynamic> requests = (response.data["requests"] ?? []) as List<dynamic>;
+        List<dynamic> requests = (response.data["requestList"] ?? []) as List<dynamic>;
         mobRequestsList = requests.map((request) => MobileRequestModel.fromJson(request),).toList();
+        debugPrint("Length of requests: ${mobRequestsList.length}");
         return mobRequestsList;
       }
       return [];
@@ -532,8 +541,8 @@ class ApiService {
   }
 
   /// Check the requesting status from from thre reciever
-  Future<String> checkStatus(String receiverId) async {
-      String alumniId = await storage.read(key: "alumni_id") ?? "";
+  Future<Map<String, dynamic>> checkStatus(String receiverId) async {
+    String alumniId = await storage.read(key: "alumni_id") ?? "";
      try{
       final response = await _dio.post(
         "${baseApiUrl}member/requestStatus",
@@ -541,13 +550,18 @@ class ApiService {
           "request_id": "${alumniId}_$receiverId",
         }
       );
-      if (response.statusCode == 201 && response.data["status"] == "ok") {
-        _snackbarService.showSnackbar(message: response.data["message"], );
-        return response.data["requestStatus"];
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        debugPrint("Status for Mobile Reuqest: ${response.data}");
+        return response.data;
       }
-      return "";
+      return {};
     } on DioException catch (err, st) {
       log("Something went on getting status $err", stackTrace: st, error: err.toString());
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.receiveTimeout) {
+        _snackbarService.showSnackbar(message: "Request timed out. Please try again.",);
+        return {};
+      } 
       final statusCode = err.response!.statusCode;
       final message = err.response!.data["message"] ?? "Unknown error occured";
       final status = err.response!.data["status"] ?? "Error";
@@ -556,7 +570,7 @@ class ApiService {
         || (status == "error" && status == 500) ) {
         log("Something went on getting status $err", stackTrace: st, error: message);
       } 
-      return "";
+      return {};
     }
   }
 
