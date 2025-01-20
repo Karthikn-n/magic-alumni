@@ -12,6 +12,9 @@ const requestSchema = new mongoose.Schema(
       ref: "Member",
       required: true,
     },
+    request_id: {
+      type: String,
+    },
     status: {
       type: String,
       default: "Pending",

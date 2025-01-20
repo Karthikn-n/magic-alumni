@@ -136,17 +136,19 @@ router.post("/list", upload, async (req, res) => {
       });
     }
 
-    let filter = {};
-    if (college_id) {
-      filter.college_id = college_id;
-    }
+    // let filter = {};
+    // if (college_id) {
+    //   filter.college_id = college_id;
+    // }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // const today = new Date();
+    // today.setHours(0, 0, 0, 0);
 
-    filter.date = { $gte: today };
+    // filter.date = { $gte: today };
 
-    const eventList = await Event.find(filter);
+    // const eventList = await Event.find(college_id);
+
+    const eventList = await Event.find({ college_id });
 
     if (eventList.length === 0) {
       return res.status(200).json({
@@ -273,4 +275,5 @@ router.post("/eventPeopleCount", upload, async (req, res) => {
     });
   }
 });
+
 export default router;
