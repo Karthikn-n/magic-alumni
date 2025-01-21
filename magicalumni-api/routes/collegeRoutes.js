@@ -3,6 +3,7 @@ import College from "../models/College.js";
 import Department from "../models/Department.js";
 const router = express.Router();
 
+// Documented
 router.post("/register", async (req, res) => {
   try {
     const { name, address, city } = req.body;
