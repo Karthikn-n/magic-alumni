@@ -314,6 +314,7 @@ router.post("/delete", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/newMemberList", async (req, res) => {
   try {
     const { college_id } = req.body;
@@ -340,6 +341,7 @@ router.post("/newMemberList", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/updateMemberStatus", async (req, res) => {
   const { alumni_id, college_id, status } = req.body;
   try {
@@ -387,6 +389,7 @@ router.post("/updateMemberStatus", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/updateRole", async (req, res) => {
   const { alumni_id, role } = req.body;
   try {
