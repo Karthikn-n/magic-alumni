@@ -5,6 +5,7 @@ import Member from "../models/Member.js";
 import mongoose from "mongoose";
 const router = express.Router();
 
+// Documented
 router.post("/create", async (req, res) => {
   try {
     const {
@@ -72,6 +73,7 @@ router.post("/create", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/list", async (req, res) => {
   try {
     const { college_id } = req.body;
@@ -112,6 +114,7 @@ router.post("/list", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/report", async (req, res) => {
   try {
     const { job_id, alumni_id, reason } = req.body;
@@ -157,6 +160,7 @@ router.post("/report", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/reportList", async (req, res) => {
   try {
     const { job_id } = req.body;
@@ -180,7 +184,7 @@ router.post("/reportList", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       status: "error",
-      message: "Error retrieving job",
+      message: "Error retrieving reports",
       error: error.message,
     });
   }

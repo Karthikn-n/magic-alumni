@@ -38,6 +38,7 @@ const upload = multer({
   },
 }).single("event_image");
 
+// Documented
 router.post("/create", upload, async (req, res) => {
   try {
     const {
@@ -118,6 +119,7 @@ router.post("/create", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/list", upload, async (req, res) => {
   try {
     const { college_id } = req.body;
@@ -167,6 +169,7 @@ router.post("/list", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/updateStatus", upload, async (req, res) => {
   const { event_id, college_id, status } = req.body;
   try {
@@ -214,6 +217,7 @@ router.post("/updateStatus", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/eventPeople", upload, async (req, res) => {
   try {
     const { event_id, alumni_id, interested } = req.body;
@@ -251,6 +255,7 @@ router.post("/eventPeople", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/eventPeopleCount", upload, async (req, res) => {
   try {
     const { event_id } = req.body;
@@ -276,6 +281,7 @@ router.post("/eventPeopleCount", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/eventPeopleStatus", upload, async (req, res) => {
   try {
     const { event_id, alumni_id } = req.body;
@@ -299,6 +305,7 @@ router.post("/eventPeopleStatus", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/eventPeopleStatusEdit", upload, async (req, res) => {
   try {
     const { event_id, alumni_id, interested } = req.body;
