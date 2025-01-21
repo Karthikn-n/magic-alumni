@@ -43,6 +43,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Documented
 router.get("/", async (req, res) => {
   try {
     const collegeList = await College.find();
