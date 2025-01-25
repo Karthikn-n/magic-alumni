@@ -30,8 +30,5 @@ class TypeSystem {
   set setObject(Object obj) => this.obj = obj;
 
   Object get getObject => obj;
-
-  /// Soundness -> It is the type system that ensures that the type of the value is the same as the type of the variable
-  /// If the type is casting with the other type it will throw an run time error
   
 }
