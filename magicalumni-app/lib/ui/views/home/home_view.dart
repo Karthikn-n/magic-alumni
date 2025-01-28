@@ -19,9 +19,6 @@ class HomeView extends StatelessWidget {
       onViewModelReady: (model) async  {
         await model.init();
         model.alumni!.colleges[0].status != "approved" ? _showNonClosablePopup(context) : null;
-        if (model.newsList.isEmpty) {
-          await model.news();
-        }
       },
       builder: (ctx, model, child) {
         return Scaffold(
@@ -77,30 +74,39 @@ class HomeView extends StatelessWidget {
                       topRight: Radius.circular(30),
                     )
                   ),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Space padding for the tabs from above (below) card in stack
-                            SizedBox(height: size.height * 0.1,),
-                            // Recent Notifications
-                            Text("Recent Notifications", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                            SizedBox(height: size.height * 0.02,),
-                            SizedBox(
-                              height: 100,
-                              child: RecentNotificationsWidget(requests: model.mobRequests.take(4).toList(),)
-                            ),
-                            // Latest News 
-                            SizedBox(height: size.height * 0.015,),
-                            Text("Latest News", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                            SizedBox(height: size.height * 0.02,),
-                            // Latest news List widget
-                            LatestNewsWidget(news: model.newsList,)
-                          ],
+                  child: RefreshIndicator(
+                    onRefresh: () => model.init(),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Space padding for the tabs from above (below) card in stack
+                              SizedBox(height: size.height * 0.1,),
+                              // Recent Notifications
+                              model.apiService.mobRequestsList.isEmpty
+                               ? Container()
+                               : Text("Recent Notifications", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+                               model.apiService.mobRequestsList.isEmpty
+                               ? Container()
+                               : SizedBox(height: size.height * 0.02,),
+                              model.apiService.mobRequestsList.isEmpty
+                               ? Container()
+                               : SizedBox(
+                                  height: 100,
+                                  child: RecentNotificationsWidget(requests: model.apiService.mobRequestsList.take(4).toList(),)
+                                ),
+                              // Latest News 
+                              SizedBox(height: size.height * 0.015,),
+                              Text("Latest News", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+                              SizedBox(height: size.height * 0.02,),
+                              // Latest news List widget
+                              LatestNewsWidget(news: model.newsList,)
+                            ],
+                          ),
                         ),
-                      ),
+                    ),
                   ),
                 ),
               ),

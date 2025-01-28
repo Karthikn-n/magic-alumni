@@ -14,90 +14,101 @@ class PeopleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.extent(
-        maxCrossAxisExtent: 200,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 0.9,
-      shrinkWrap: true,
-      children: List.generate(peoples.length, (index) {
-        return Container(
-          // padding: EdgeInsets.symmetric(horizontal: 10,),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black12),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 10,),
-              Flexible(
-                flex: 3,
-                child: CircleAvatar(
-                  backgroundColor: Theme.of(context).canvasColor,
-                  child:  Icon(CupertinoIcons.person),
+    return peoples.isEmpty 
+      ?  key == Key("alumni")
+        ? Center(
+            child: Text("There is no approved alumni for this college"),
+          )
+        : Center(
+            child: Text("There is no approved student for this college"),
+          )
+      : RefreshIndicator(
+        onRefresh: () async => await PeopleViewmodel().peoples(),
+        child: GridView.extent(
+            maxCrossAxisExtent: 200,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.9,
+            shrinkWrap: true,
+            children: List.generate(peoples.length, (index) {
+              return Container(
+                // padding: EdgeInsets.symmetric(horizontal: 10,),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ),
-              const SizedBox(height: 10,),
-              Flexible(
-                flex: 2,
                 child: Column(
                   children: [
-                    Text(
-                      peoples[index].name, 
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                        color: Color(0xFF161719),
-                        fontWeight: FontWeight.w600
+                    const SizedBox(height: 10,),
+                    Flexible(
+                      flex: 3,
+                      child: CircleAvatar(
+                        backgroundColor: Theme.of(context).canvasColor,
+                        child:  Icon(CupertinoIcons.person),
                       ),
                     ),
-                    Text(
-                      peoples[index].designation.isEmpty ? "Student" : peoples[index].designation,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black26,
-                        overflow: TextOverflow.ellipsis
+                    const SizedBox(height: 10,),
+                    Flexible(
+                      flex: 2,
+                      child: Column(
+                        children: [
+                          Text(
+                            peoples[index].name, 
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              overflow: TextOverflow.ellipsis,
+                              color: Color(0xFF161719),
+                              fontWeight: FontWeight.w600
+                            ),
+                          ),
+                          Text(
+                            peoples[index].designation.isEmpty ? "Student" : peoples[index].designation,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black26,
+                              overflow: TextOverflow.ellipsis
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    const SizedBox(height: 10,),
+                    Flexible(
+                      flex: 2,
+                      child: SizedBox(
+                        // height: 30,
+                        child: ViewModelBuilder.reactive(
+                          viewModelBuilder: () => PeopleViewmodel(),
+                          builder: (ctx, model, child) {
+                            return model.isLoad 
+                            ? LoadingButtonWidget()
+                            : ElevatedButton(
+                              onPressed: () async => await model.checkStatus(peoples[index].id).then((value) => showConnectionBottomSheet(
+                                model, 
+                                peoples[index].id,
+                                context, 
+                                peoples[index].name, 
+                                peoples[index].linkedUrl,
+                                model.status
+                              )), 
+                              child: Text("Connect", style: textStyle,)
+                            );
+                          }
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
                   ],
                 ),
-              ),
-              const SizedBox(height: 10,),
-              Flexible(
-                flex: 2,
-                child: SizedBox(
-                  // height: 30,
-                  child: ViewModelBuilder.reactive(
-                    viewModelBuilder: () => PeopleViewmodel(),
-                    builder: (ctx, model, child) {
-                      return model.isLoad 
-                      ? LoadingButtonWidget()
-                      : ElevatedButton(
-                        onPressed: () async => await model.checkStatus(peoples[index].id).then((value) => showConnectionBottomSheet(
-                          model, 
-                          peoples[index].id,
-                          context, 
-                          peoples[index].name, 
-                          peoples[index].linkedUrl,
-                          model.status
-                        )), 
-                        child: Text("Connect", style: textStyle,)
-                      );
-                    }
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10,),
-            ],
+              );
+            },
+            )
           ),
-        );
-      },
-      )
-    );
+      );
     
   }
 

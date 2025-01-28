@@ -16,6 +16,7 @@ import '../service/api_service.dart';
 import '../service/authenticate_service.dart';
 import '../service/dio_service.dart';
 import '../service/encrption_service.dart';
+import '../service/onesignal_service.dart';
 
 final locator = StackedLocator.instance;
 
@@ -36,4 +37,5 @@ Future<void> setupLocator({
   locator.registerLazySingleton(() => EncryptionService());
   locator.registerLazySingleton(() => AuthenticateService());
   locator.registerLazySingleton(() => ApiService());
+  locator.registerLazySingleton(() => OnesignalService());
 }

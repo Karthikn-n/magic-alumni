@@ -3,9 +3,11 @@ import 'package:magic_alumni/service/api_service.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
 import 'package:magic_alumni/service/dio_service.dart';
 import 'package:magic_alumni/service/encrption_service.dart';
+import 'package:magic_alumni/service/onesignal_service.dart';
 import 'package:magic_alumni/ui/views/app-view/app_view.dart';
 import 'package:magic_alumni/ui/views/events/create-event/create_event_view.dart';
 import 'package:magic_alumni/ui/views/events/event_detail.dart';
+import 'package:magic_alumni/ui/views/jobs/jobs_view.dart';
 import 'package:magic_alumni/ui/views/news/news_detail_view.dart';
 import 'package:magic_alumni/ui/views/notifications/notification_view.dart';
 import 'package:magic_alumni/ui/views/signup/signup_view.dart';
@@ -27,6 +29,7 @@ import '../ui/views/login/login_view.dart';
     MaterialRoute(page: CreateEventView),
     MaterialRoute(page: CreateJobView),
     MaterialRoute(page: EventsDetailView),
+    MaterialRoute(page: JobsView),
     MaterialRoute(page: NewsDetailView),
     MaterialRoute(page: NotificationsView),
   ],
@@ -41,6 +44,7 @@ import '../ui/views/login/login_view.dart';
     LazySingleton(classType: EncryptionService),
     LazySingleton(classType: AuthenticateService),
     LazySingleton(classType: ApiService),
+    LazySingleton(classType: OnesignalService),
   ],
   logger: StackedLogger(),
 )

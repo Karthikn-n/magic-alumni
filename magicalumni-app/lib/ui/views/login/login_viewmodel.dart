@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
@@ -36,6 +38,7 @@ class LoginViewmodel extends BaseViewModel{
   // Use navigation service to navigate between views
   final NavigationService _navigationService = locator<NavigationService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
+  
 
   // Authenticate Service used to Authenticate users from Database
   final AuthenticateService auth = locator<AuthenticateService>();
@@ -162,5 +165,35 @@ class LoginViewmodel extends BaseViewModel{
     otpController.dispose();
     timer?.cancel();
   }
+
+  List<String> images = [
+      // "https://images.unsplash.com/photo-1634170380000-4b3b3b3b3b3b",
+      "https://i.ytimg.com/vi/af98UXA1s4I/maxresdefault.jpg",
+      "https://static.vecteezy.com/system/resources/previews/023/576/936/large_2x/beautiful-coastal-sunset-seascape-scenery-of-rocky-coast-at-wild-atlantic-way-in-barna-galway-ireland-free-photo.jpg",
+      "https://papers.co/desktop/wp-content/uploads/papers.co-nf16-sea-ocean-nature-sunset-rock-wave-29-wallpaper.jpg",
+      "https://samueldurfeehouse.com/wp-content/uploads/2023/05/shutterstock_2129390144-768x512.jpg",
+      "https://mir-s3-cdn-cf.behance.net/project_modules/2800_opt_1/94012896263347.5eaa3c9e847cb.jpg",
+      "https://images.squarespace-cdn.com/content/v1/55317945e4b0cb1542a52840/1430429636991-1MARAQ5LKITS8NOFTTLX/15523267694_e01cd76813_h.jpg",
+      "https://www.pixelstalk.net/wp-content/uploads/2016/08/Best-Nature-Full-HD-Images-For-Desktop.jpg",
+      "https://live.staticflickr.com/8575/16528381587_05a625723b_b.jpg",
+      "https://pixnio.com/free-images/2017/10/24/2017-10-24-07-06-36-850x567.jpg",
+      "https://images.squarespace-cdn.com/content/v1/55317945e4b0cb1542a52840/1430429636991-1MARAQ5LKITS8NOFTTLX/15523267694_e01cd76813_h.jpg",
+      "https://thewowstyle.com/wp-content/uploads/2015/01/free-beautiful-place-wallpaper-hd-173.jpg",
+      "https://www.pixelstalk.net/wp-content/uploads/2016/07/Wallpapers-pexels-photo.jpg",
+      "https://photographylife.com/wp-content/uploads/2014/09/Nikon-D750-Image-Samples-2.jpg", 
+    ];
+
+  final PagingController<String, String> _pagingController = PagingController(firstPageKey: '');
+
+  PagingController<String, String> get pagingController => _pagingController; 
+
+  final Uint16List data = Uint16List(100);
 }
 
+
+/// OOPS  -> 
+/// class, object, constructors, this, super, static, 
+/// inheritence, overriding, abstract class, interface, 
+/// mixins, generics, sealed class, final class, 
+/// factory constructor, extension, named constructor, 
+/// async, await, future, stream, yield, yield*,
