@@ -20,14 +20,13 @@ router.post("/create", async (req, res) => {
       tag,
     } = req.body;
 
-    if (!alumni_id || !college_id || !job_title || !last_date) {
+    if (!college_id || !job_title || !last_date) {
       return res.status(400).json({
         status: "not ok",
         message: "All required fields must be filled",
       });
     }
     const existingJob = await Job.findOne({
-      alumni_id,
       college_id,
       job_title,
       last_date,
@@ -172,10 +171,25 @@ router.post("/reportList", async (req, res) => {
       job_id: job_id,
     });
 
+    if (reportList.length === 0) {
+      return res.status(404).json({
+        status: "not ok",
+        message: "No reports found",
+      });
+    }
+
+    const alumniDetailsPromises = reportList.map(async (report) => {
+      const alumni = await Member.findById(report.alumni_id);
+      return { ...report._doc, alumni };
+    });
+
+    const reportListWithAlumni = await Promise.all(alumniDetailsPromises);
+
+    console.log(reportListWithAlumni);
     res.status(200).json({
       status: "ok",
       message: "Reports retrieved successfully",
-      reportList: reportList,
+      reportList: reportListWithAlumni,
     });
   } catch (error) {
     res.status(500).json({
@@ -185,4 +199,135 @@ router.post("/reportList", async (req, res) => {
     });
   }
 });
+
+router.post("/jobsCount", async (req, res) => {
+  try {
+    const { college_id } = req.body;
+    if (!college_id) {
+      return res
+        .status(400)
+        .json({ status: "not ok", message: "College ID is required" });
+    }
+    const jobsCount = await Job.find({
+      college_id,
+    });
+    const jobsCountOff = jobsCount.length;
+    res.status(200).json({
+      status: "ok",
+      message: "Data generated",
+      jobsCount: jobsCount,
+      jobsCountOff: jobsCountOff,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating status",
+      error: error.message,
+    });
+  }
+});
+
+router.post("/delete", async (req, res) => {
+  const { id } = req.body;
+  try {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid or missing job ID",
+      });
+    }
+
+    const deletedJob = await Job.findByIdAndDelete(id);
+
+    if (!deletedJob) {
+      return res
+        .status(404)
+        .json({ status: "not found", message: "Job not found" });
+    }
+    res.status(200).json({
+      status: "ok",
+      message: "Job deleted successfully",
+      job: deletedJob,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error deleting job",
+      error: error.message,
+    });
+  }
+});
+
+router.post("/update", async (req, res) => {
+  const {
+    id,
+    job_title,
+    job_type,
+    last_date,
+    company_name,
+    location,
+    job_url,
+    email,
+    tag,
+  } = req.body;
+
+  try {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid or missing Job ID",
+      });
+    }
+
+    const updatedJob = await Job.findByIdAndUpdate(
+      id,
+      {
+        job_title,
+        job_type,
+        last_date,
+        company_name,
+        location,
+        job_url,
+        email,
+        tag,
+      },
+      { new: true }
+    );
+
+    if (!updatedJob) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    res.status(200).json({
+      status: "ok",
+      message: "Updated successfully",
+      job: updatedJob,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating data",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res
+        .status(404)
+        .json({ status: "not ok", message: "Job not found" });
+    }
+    res.status(200).json({ status: "ok", job: job });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching job details",
+      error: error.message,
+    });
+  }
+});
+
 export default router;
