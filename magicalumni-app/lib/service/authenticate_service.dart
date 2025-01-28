@@ -8,6 +8,7 @@ import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:magic_alumni/service/dio_service.dart';
 import 'package:magic_alumni/service/encrption_service.dart';
+import 'package:magic_alumni/service/onesignal_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 
@@ -18,6 +19,8 @@ class  AuthenticateService {
   final EncryptionService encrypt = locator<EncryptionService>();
   // Local storage to store the user informations
   final FlutterSecureStorage store = FlutterSecureStorage();
+
+  final OnesignalService _onesignalService = OnesignalService();
   
   AlumniModel? _alumni;
   AlumniModel? get alumni => _alumni;
@@ -37,6 +40,7 @@ class  AuthenticateService {
         await store.write(key: "college_id", value: response.data["collegeid"].toString());
         await store.write(key: "alumni_role", value: response.data["role"].toString());
         snackBar.showSnackbar(message: response.data["message"], );
+        await _onesignalService.oneSignalLogin(await store.read(key: "alumni_id") ?? "");
         await fetchAlumni();
         return true;
       } else{
@@ -86,7 +90,6 @@ class  AuthenticateService {
         await store.write(key: "alumni_mobile", value: mobile.toString());
         snackBar.showSnackbar(
             message: response.data["message"], 
-           
         );
         return true;
       } else{
@@ -129,6 +132,8 @@ class  AuthenticateService {
         await store.write(key: "alumni_status", value: response.data["approvalStatus"].toString());
         await store.write(key: "college_id", value: response.data["college_id"].toString());
         snackBar.showSnackbar(message: response.data["message"], );
+        /// Login to the one signal app with external ID
+        await _onesignalService.oneSignalLogin(await store.read(key: "alumni_id") ?? "");
         debugPrint('Alumni ID : ${await store.read(key: "alumni_id")}');
         debugPrint('Alumni Role : ${await store.read(key: "alumni_role")}');
         debugPrint('Alumni Status : ${await store.read(key: "alumni_status")}');

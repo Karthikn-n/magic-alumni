@@ -1,4 +1,6 @@
 
+// ignore_for_file: avoid_print
+
 /// Soundness
 /// The static type of the object is same ad the runtime type of the object
 /// if this mismatch it will raise an error

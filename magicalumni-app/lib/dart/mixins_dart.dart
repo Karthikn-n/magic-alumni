@@ -12,7 +12,6 @@ mixin Singer on Animal implements Cat, Lion{
   void song(){}
 
   void sing(){
-    print("singing");
   }
 }
 
@@ -24,7 +23,6 @@ mixin Cricket{
 class Player with Cricket{
   @override
   void bat() {
-    // TODO: implement bat
   }
 
 }
@@ -37,7 +35,6 @@ mixin A on D implements Cat{
 class B extends D with A {
   @override
   void catCalled() {
-    // TODO: implement catCalled
   }
 
 }
@@ -45,7 +42,6 @@ class B extends D with A {
 class C extends D with A{
   @override
   void catCalled() {
-    // TODO: implement catCalled
   }
 
 }
@@ -59,17 +55,10 @@ interface class Lion{
 }
 class Musician extends Animal with Singer{ 
   void play(){
-    print("playing");
   }
-  
-  @override
-  void song() {
-    print("img");
-    super.song();
-  }
+
   @override
   void catCalled() {
-    // TODO: implement catCalled
   }
 }
 
@@ -81,7 +70,6 @@ class Dog extends Animal{
   
   void printAnimal(){
     super.chase(Dog());
-    print(super.nums);
   }
 }
 

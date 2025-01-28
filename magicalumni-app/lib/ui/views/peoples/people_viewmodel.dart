@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:magic_alumni/service/api_service.dart';
@@ -10,6 +11,8 @@ class PeopleViewmodel extends BaseViewModel{
   bool isLoad = false;
   String status = "";
   String mobileNumber = "";
+
+  final ScrollController controller = ScrollController();
 
   /// Get all the Alumni and Students from the API 
   Future<void> peoples() async {

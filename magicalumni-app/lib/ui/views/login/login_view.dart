@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/login/login_viewmodel.dart';
-import 'package:magic_alumni/utils/clicable_images.dart';
 import 'package:magic_alumni/widgets/common/loading_button_widget.dart';
 import 'package:magic_alumni/widgets/common/text_field.dart';
 import 'package:stacked/stacked.dart';
@@ -154,7 +153,6 @@ class LoginView extends StatelessWidget {
                                 height: 48.0,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ClicableImages()));
                                     // model.isLoad = false;
                                   },
                                   child: Row(

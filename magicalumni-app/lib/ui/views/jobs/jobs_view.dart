@@ -54,13 +54,15 @@ class JobsView extends StatelessWidget {
                     child: TabBarView(
                       children: [
                         JobListWidget(
+                          key: Key("job"),
                           jobs: model.jobsList.where((element) => element.jobType == "Job",).toList(),
                         ),
                         JobListWidget(
+                          key: Key("internship"),
                           jobs: model.jobsList.where((element) => element.jobType == "Intern",).toList(),
                         ),
                       ]
-                    )
+                    ),
                   ),
                 ],
               ),

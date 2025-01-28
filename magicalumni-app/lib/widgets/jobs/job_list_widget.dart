@@ -15,130 +15,141 @@ class JobListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  ListView.builder(
-      itemCount: jobs.length,
-      itemBuilder: (context, index) {
-        return Material(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                child: Column(
-                  children: [
-                    ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                      horizontalTitleGap: 10.0,
-                      shape: RoundedRectangleBorder(
-                        
-                      ),
-                      title:  Text(
-                        jobs[index].title, 
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF161719),
-                          fontWeight: FontWeight.w600
+    return jobs.isEmpty
+    ? key == Key("jobs")
+      ? Center(
+          child: Text("There is no jobs"),
+        )
+      : Center(
+          child: Text("There is no internship"),
+        )
+    : RefreshIndicator(
+      onRefresh: () async => await JobViewModel().jobs(),
+      child: ListView.builder(
+        itemCount: jobs.length,
+        itemBuilder: (context, index) {
+          return Material(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                        horizontalTitleGap: 10.0,
+                        shape: RoundedRectangleBorder(
+                          
                         ),
-                      ),
-                      subtitle: Text(
-                            DateTime.parse(jobs[index].lastDate).difference(DateTime.now()).inDays == 1
-                            ? "${DateTime.parse(jobs[index].lastDate).difference(DateTime.now()).inDays} Day left"
-                            : "${DateTime.parse(jobs[index].lastDate).difference(DateTime.now()).inDays} Days left",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black26
-                            ),
-                          ),
-                      trailing: Padding(
-                        padding: const EdgeInsets.only(left: 9.0),
-                        child: PopupMenuButton(
-                          iconSize: 20,
-                          color: Colors.white,
-                          itemBuilder: (context) {
-                            return [
-                              PopupMenuItem(
-                                child: Text("Report"),
-                                onTap:() async {
-                                  showReportDialog(context, jobs[index].id);
-                                },
-                              )
-                            ];
-                          },
-                        ),
-                      ),
-                    ),
-                    ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                      minLeadingWidth: 22.0,
-                      leading: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.grey.shade200
-                        ),
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Icons.business_outlined, size: 18, color: Theme.of(context).primaryColor,),
-                      ),
-                      title: Padding(
-                        padding: const EdgeInsets.only(left: 4.0),
-                        child: Text(
-                          jobs[index].companyName,
+                        title:  Text(
+                          jobs[index].title, 
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black
+                            color: Color(0xFF161719),
+                            fontWeight: FontWeight.w600
                           ),
                         ),
-                      ),
-                      subtitle: Row(
-                        spacing: 4,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.pin_drop_outlined, size: 18, color: Colors.black26,),
-                          Text(
-                            jobs[index].location,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black26
-                            ),
-                          ),
-                        ],
-                      ),
-                      trailing: Padding(
-                        padding: const EdgeInsets.only(left: 4.0),
-                        child: Material(
-                          child: IconButton(
-                            splashColor: Theme.of(context).primaryColor.withValues(alpha: 0.4),
-                            onPressed: () async => await launchUrl(Uri.parse(jobs[index].applyLink)),
-                            icon: Text(
-                              "Apply >",
+                        subtitle: Text(
+                              DateTime.parse(jobs[index].lastDate).difference(DateTime.now()).inDays == 1
+                              ? "${DateTime.parse(jobs[index].lastDate).difference(DateTime.now()).inDays} Day left"
+                              : "${DateTime.parse(jobs[index].lastDate).difference(DateTime.now()).inDays} Days left",
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
-                                color: Theme.of(context).primaryColor
+                                color: Colors.black26
+                              ),
+                            ),
+                        trailing: Padding(
+                          padding: const EdgeInsets.only(left: 9.0),
+                          child: PopupMenuButton(
+                            iconSize: 20,
+                            color: Colors.white,
+                            itemBuilder: (context) {
+                              return [
+                                PopupMenuItem(
+                                  child: Text("Report"),
+                                  onTap:() async {
+                                    showReportDialog(context, jobs[index].id);
+                                  },
+                                )
+                              ];
+                            },
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                        minLeadingWidth: 22.0,
+                        leading: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: Colors.grey.shade200
+                          ),
+                          padding: EdgeInsets.all(8),
+                          child: Icon(Icons.business_outlined, size: 18, color: Theme.of(context).primaryColor,),
+                        ),
+                        title: Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: Text(
+                            jobs[index].companyName,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black
+                            ),
+                          ),
+                        ),
+                        subtitle: Row(
+                          spacing: 4,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.pin_drop_outlined, size: 18, color: Colors.black26,),
+                            Text(
+                              jobs[index].location,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black26
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: Material(
+                            child: IconButton(
+                              splashColor: Theme.of(context).primaryColor.withValues(alpha: 0.4),
+                              onPressed: () async => await launchUrl(Uri.parse(jobs[index].applyLink)),
+                              icon: Text(
+                                "Apply >",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Theme.of(context).primaryColor
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: index == jobs.length - 1 ? 66: 10,)
-            ],
-          ),
-        );
-        
-       
-      },
+                SizedBox(height: index == jobs.length - 1 ? 66: 10,)
+              ],
+            ),
+          );
+          
+         
+        },
+      ),
     );
   }
    void showReportDialog(BuildContext context, String jobId){

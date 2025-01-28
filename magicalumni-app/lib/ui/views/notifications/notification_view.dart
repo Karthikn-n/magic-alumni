@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:magic_alumni/model/mobrequest_model.dart';
-import 'package:magic_alumni/ui/views/home/home_viewmodel.dart';
+import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
 class NotificationsView extends StatelessWidget {
@@ -12,7 +12,8 @@ class NotificationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
-      viewModelBuilder: () => HomeViewmodel(),
+      onViewModelReady: (viewModel) async => await viewModel.init(),
+      viewModelBuilder: () => NotificationViewmodel(),
       builder: (ctx, model, child) {
         return Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
@@ -42,9 +43,9 @@ class NotificationsView extends StatelessWidget {
               clipBehavior: Clip.antiAliasWithSaveLayer,
               height: size.height,
               child: ListView.builder(
-                itemCount: model.apiService.mobRequestsList.length,
+                itemCount: model.mobRequests.length,
                 itemBuilder: (context, index) {
-                  MobileRequestModel req = model.apiService.mobRequestsList[index];
+                  MobileRequestModel req = model.mobRequests[index];
                   return Column(
                     children: [
                       ListTile(
