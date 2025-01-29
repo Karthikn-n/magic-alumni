@@ -87,7 +87,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/allCollegeList", async (res) => {
+router.get("/allCollegeList", async (req, res) => {
   try {
     const collegeList = await College.find();
 
