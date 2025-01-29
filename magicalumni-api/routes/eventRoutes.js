@@ -1,6 +1,7 @@
 import express from "express";
 import Member from "../models/Member.js";
 import Event from "../models/Event.js";
+import MemberCollege from "../models/MemberCollege.js";
 import EventPeople from "../models/EventPeople.js";
 import multer from "multer";
 import path from "path";
@@ -56,7 +57,7 @@ router.post("/create", upload, async (req, res) => {
     } = req.body;
 
     const imagePath = req.file
-      ? `/uploads/news/${req.file.filename}`
+      ? `/uploads/events/${req.file.filename}`
       : req.body.event_image;
 
     if (!alumni_id || !college_id || !event_title || !date || !imagePath) {
@@ -68,7 +69,7 @@ router.post("/create", upload, async (req, res) => {
 
     const rsvpArray = Array.isArray(rsvp_options)
       ? rsvp_options
-      : [rsvp_options || "no"];
+      : [rsvp_options || "yes", "no", "maybe"];
     const creatorName = await Member.findById(alumni_id);
 
     const createdBy = creatorName.name;
@@ -138,19 +139,10 @@ router.post("/list", upload, async (req, res) => {
       });
     }
 
-    // let filter = {};
-    // if (college_id) {
-    //   filter.college_id = college_id;
-    // }
-
-    // const today = new Date();
-    // today.setHours(0, 0, 0, 0);
-
-    // filter.date = { $gte: today };
-
-    // const eventList = await Event.find(college_id);
-
-    const eventList = await Event.find({ college_id });
+    const eventList = await Event.find({
+      college_id,
+      approval_status: "approved",
+    });
 
     if (eventList.length === 0) {
       return res.status(200).json({
@@ -159,7 +151,22 @@ router.post("/list", upload, async (req, res) => {
       });
     }
 
-    res.status(200).json({ status: "ok", eventList: eventList });
+    const eventsWithAlumni = await Promise.all(
+      eventList.map(async (event) => {
+        const alumni = await Member.findById(event.alumni_id).select("name");
+        const formattedDate = new Date(event.date).toLocaleDateString("en-US");
+        return {
+          ...event._doc,
+          alumni_name: alumni ? alumni.name : "Unknown Alumni",
+          date: formattedDate,
+        };
+      })
+    );
+
+    res.status(200).json({
+      status: "ok",
+      eventList: eventsWithAlumni,
+    });
   } catch (error) {
     res.status(500).json({
       status: "error",
@@ -168,6 +175,62 @@ router.post("/list", upload, async (req, res) => {
     });
   }
 });
+
+router.post("/unapprovedlist", upload, async (req, res) => {
+  try {
+    const { college_id } = req.body;
+
+    if (!college_id) {
+      return res.status(404).json({
+        status: "not found",
+        message: "College ID required",
+      });
+    }
+
+    if (college_id && !mongoose.Types.ObjectId.isValid(college_id)) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid college_id format",
+      });
+    }
+
+    const eventList = await Event.find({
+      college_id,
+      approval_status: "not approved",
+    });
+
+    if (eventList.length === 0) {
+      return res.status(200).json({
+        status: "ok",
+        message: "No data found for this college",
+      });
+    }
+
+    const eventsWithAlumni = await Promise.all(
+      eventList.map(async (event) => {
+        const alumni = await Member.findById(event.alumni_id).select("name");
+        const formattedDate = new Date(event.date).toLocaleDateString("en-US");
+        return {
+          ...event._doc,
+          alumni_name: alumni ? alumni.name : "Unknown Alumni",
+          date: formattedDate,
+        };
+      })
+    );
+
+    res.status(200).json({
+      status: "ok",
+      eventList: eventsWithAlumni,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error retrieving event lists",
+      error: error.message,
+    });
+  }
+});
+
 
 // Documented
 router.post("/updateStatus", upload, async (req, res) => {
@@ -325,6 +388,24 @@ router.post("/eventPeopleStatusEdit", upload, async (req, res) => {
     res.status(500).json({
       status: "error",
       message: "Error updating status",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res
+        .status(404)
+        .json({ status: "not ok", message: "Event not found" });
+    }
+    res.status(200).json({ status: "ok", event: event });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching event details",
       error: error.message,
     });
   }

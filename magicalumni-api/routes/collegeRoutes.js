@@ -1,37 +1,42 @@
 import express from "express";
 import College from "../models/College.js";
 import Department from "../models/Department.js";
+import bcrypt from "bcrypt";
+import multer from "multer";
+import path from "path";
+import mongoose from "mongoose";
 const router = express.Router();
 
 // Documented
 router.post("/register", async (req, res) => {
   try {
-    const { name, address, city } = req.body;
-    if (!name || !address || !city) {
+    const { name, address, city, password } = req.body;
+
+    if (!name || !address || !city || !password) {
       return res.status(400).json({
         status: "not ok",
         message: "All required fields must be filled",
       });
     }
 
-    const existingCollege = await College.findOne({
-      name,
-      address,
-      city,
-    });
-
+    const existingCollege = await College.findOne({ name, address, city });
     if (existingCollege) {
       return res.status(400).json({
         status: "not ok",
-        message: "College created already",
+        message: "College already exists",
       });
     }
+
     const newCollege = new College({
       name,
       address,
       city,
+      password,
+      description,
     });
+
     const savedCollege = await newCollege.save();
+
     res.status(201).json({
       status: "ok",
       message: "College created successfully",
@@ -43,6 +48,7 @@ router.post("/register", async (req, res) => {
       .json({ status: "error", message: "Error creating college", error });
   }
 });
+
 
 // Documented
 router.get("/", async (req, res) => {
@@ -79,27 +85,85 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.post("/collegedetail", async (req, res) => {
   try {
-    const { id } = req.params;
-    const updatedUser = await College.findByIdAndUpdate(id, req.body, {
-      new: true,
+    const { college_id } = req.body;
+
+    if (!college_id) {
+      return res.status(404).json({
+        status: "not found",
+        message: "College ID required",
+      });
+    }
+
+    if (college_id && !mongoose.Types.ObjectId.isValid(college_id)) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid college_id format",
+      });
+    }
+
+    const collegeList = await College.findOne({
+      _id: college_id,
     });
-    res
-      .status(200)
-      .json({ message: "User updated successfully", user: updatedUser });
+
+    if (collegeList.length === 0) {
+      return res.status(200).json({
+        status: "ok",
+        message: "No data found",
+      });
+    }
+
+    res.status(200).json({
+      status: "ok",
+      collegeList: collegeList,
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error updating user", error });
+    res.status(500).json({
+      status: "error",
+      message: "Error retrieving college",
+      error: error.message,
+    });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.post("/update", async (req, res) => {
+  const { id, name, address, description, city } = req.body;
+
   try {
-    const { id } = req.params;
-    await College.findByIdAndDelete(id);
-    res.status(200).json({ message: "User deleted successfully" });
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid or missing college ID",
+      });
+    }
+
+    const updatedCollege = await College.findByIdAndUpdate(
+      id,
+      {
+        name,
+        address,
+        description,
+        city,
+      },
+      { new: true }
+    );
+
+    if (!updatedCollege) {
+      return res.status(404).json({ message: "College not found" });
+    }
+
+    res.status(200).json({
+      status: "ok",
+      message: "Updated successfully",
+      college: updatedCollege,
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error deleting user", error });
+    res.status(500).json({
+      status: "error",
+      message: "Error updating data",
+      error: error.message,
+    });
   }
 });
 
