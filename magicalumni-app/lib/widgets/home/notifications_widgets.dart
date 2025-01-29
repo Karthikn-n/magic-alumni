@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:magic_alumni/model/mobrequest_model.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class RecentNotificationsWidget extends StatelessWidget {
-  final List<MobileRequestModel> requests;
+  final List<OSNotification> requests;
   const RecentNotificationsWidget({super.key, required this.requests});
 
   @override
@@ -57,7 +57,7 @@ class RecentNotificationsWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Your mobile number is requested by ${requests[index].sender.name}.",
+                              "Your mobile number is requested by ${requests[index].title}.",
                               maxLines: 2,
                               style: TextStyle(
                                 fontSize: 12,
@@ -69,7 +69,7 @@ class RecentNotificationsWidget extends StatelessWidget {
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Text(
-                                formatTimeDifference(requests[index].requestedDate),
+                                formatTimeDifference(requests[index].additionalData!["date"]),
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontSize: 12,

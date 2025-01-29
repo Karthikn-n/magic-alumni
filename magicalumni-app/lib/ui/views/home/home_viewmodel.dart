@@ -63,9 +63,7 @@ class HomeViewmodel extends BaseViewModel {
 
   /// Navigate to the Notifications Screen
   void navigateToNotificationView()
-    => apiService.mobRequestsList.isEmpty
-      ? _snackbarService.showSnackbar(message: "No notfications for you", duration: Duration(seconds: 2))
-      : _navigationService.navigateToNotificationsView();
+    =>  _navigationService.navigateToNotificationsView();
 
 }
 
