@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import AdminJS from "adminjs";
+import cors from "cors";
 import AdminJSExpress from "@adminjs/express";
 import * as AdminJSMongoose from "@adminjs/mongoose";
 import { ComponentLoader } from "adminjs";
@@ -17,6 +18,8 @@ import Job from "./models/Job.js";
 import { fileURLToPath } from "url";
 import bodyParser from "body-parser";
 import multer from "multer";
+import session from "express-session";
+import bcrypt from "bcrypt";
 import userRoutes from "./routes/userRoutes.js";
 import collegeRoutes from "./routes/collegeRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
@@ -28,7 +31,8 @@ import jobRoutes from "./routes/jobRoutes.js";
 dotenv.config();
 
 const app = express();
-
+app.use(cors());
+app.use(express.json());
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/news");
@@ -79,24 +83,43 @@ AdminJS.registerAdapter({
 
 const componentLoader = new ComponentLoader();
 
+const authenticate = async (email, password) => {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (user && (await bcrypt.compare(password, user.password))) {
+      return user;
+    }
+    return null;
+  } catch (err) {
+    console.error("Authentication error:", err);
+    return null;
+  }
+};
+
 const admin = new AdminJS({
   resources: [User, College, Department, News, Member, Event, Job, Request],
   rootPath: "/admin",
   branding: {
     companyName: "Magic Alumni",
   },
-  // componentLoader,
-  // pages: {
-  //   Reports: {
-  //     component: ReportsComponent,
-  //   },
-  //   Settings: {
-  //     component: SettingsComponent,
-  //   },
-  // },
 });
 
-const adminRouter = AdminJSExpress.buildRouter(admin);
+const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
+  admin,
+  {
+    authenticate,
+    cookieName: "adminjs",
+    cookiePassword: "supersecret",
+  },
+  null,
+  {
+    resave: false,
+    saveUninitialized: true,
+    secret: "supersecret",
+    store: new session.MemoryStore(),
+  }
+);
+
 app.use(admin.options.rootPath, adminRouter);
 
 mongoose

@@ -38,7 +38,7 @@ const eventSchema = new mongoose.Schema(
     },
     rsvp_options: {
       type: [String],
-      default: ["no"],
+      default: ["yes", "no", "maybe"],
     },
     location: {
       type: String,

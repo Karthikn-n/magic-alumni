@@ -5,11 +5,13 @@ import College from "../models/College.js";
 import Request from "../models/Request.js";
 import Department from "../models/Department.js";
 import mongoose from "mongoose";
+import Notification from "../models/Notification.js";
 import otpGenerator from "otp-generator";
 import OTPModel from "../models/OTPModel.js";
+import axios from "axios";
 
 const router = express.Router();
-
+// Documented
 router.post("/register", async (req, res) => {
   try {
     const {
@@ -127,9 +129,10 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/allMembers", async (req, res) => {
   try {
-    const { alumni_id, college_id } = req.body;
+    const { college_id } = req.body;
     if (!mongoose.Types.ObjectId.isValid(college_id)) {
       return res.status(400).json({
         status: "not ok",
@@ -137,21 +140,35 @@ router.post("/allMembers", async (req, res) => {
       });
     }
     const alumniMembers = await MemberCollege.find({
-      college_id,
+      college_id: college_id,
       status: "approved",
     });
+    // console.log(alumniMembers);
     if (alumniMembers.length === 0) {
       return res
         .status(200)
         .json({ status: "ok", message: "No approved alumni members found" });
     }
+    const departmentIds = alumniMembers.map((member) => member.department_id);
+    const departmentDetails = await Department.find({
+      _id: departmentIds,
+    });
     const alumniIds = alumniMembers.map((member) => member.alumni_id);
     const alumniDetails = await Member.find({
       _id: alumniIds,
-      _id: { $ne: alumni_id },
-    }).select("-alumni_id");
+    });
+    // const alumniIds = alumniMembers.map((member) => member.alumni_id);
+    // const alumniDetails = await Member.find({
+    //   _id: alumniIds,
+    //   _id: { $ne: alumni_id },
+    // }).select("-alumni_id");
 
-    res.status(200).json({ status: "ok", alumniDetails: alumniDetails });
+    res.status(200).json({
+      status: "ok",
+      alumniMembers: alumniMembers,
+      alumniDetails: alumniDetails,
+      departmentDetails: departmentDetails,
+    });
   } catch (error) {
     res.status(500).json({
       status: "error",
@@ -161,6 +178,7 @@ router.post("/allMembers", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/profile", async (req, res) => {
   try {
     const { alumni_id } = req.body;
@@ -226,6 +244,7 @@ router.post("/profile", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/update", async (req, res) => {
   const {
     id,
@@ -278,6 +297,7 @@ router.post("/update", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/delete", async (req, res) => {
   const { id } = req.body;
   try {
@@ -310,6 +330,7 @@ router.post("/delete", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/newMemberList", async (req, res) => {
   try {
     const { college_id } = req.body;
@@ -336,6 +357,7 @@ router.post("/newMemberList", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/updateMemberStatus", async (req, res) => {
   const { alumni_id, college_id, status } = req.body;
   try {
@@ -383,6 +405,7 @@ router.post("/updateMemberStatus", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/updateRole", async (req, res) => {
   const { alumni_id, role } = req.body;
   try {
@@ -427,6 +450,7 @@ router.post("/updateRole", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/login", async (req, res) => {
   try {
     const { mobile_number } = req.body;
@@ -485,6 +509,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/verifyOtp", async (req, res) => {
   try {
     const { mobile_number, otp } = req.body;
@@ -542,6 +567,7 @@ router.post("/verifyOtp", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/addCollege", async (req, res) => {
   try {
     const {
@@ -613,6 +639,8 @@ router.post("/addCollege", async (req, res) => {
   }
 });
 
+
+// Documented
 router.post("/requestMobile", async (req, res) => {
   try {
     const { sender, receiver, status, request_id } = req.body;
@@ -623,35 +651,116 @@ router.post("/requestMobile", async (req, res) => {
     ) {
       return res.status(400).json({
         status: "not ok",
-        message: "Invalid alumni_id, sender, or receiver ID",
+        message: "Invalid sender or receiver ID",
       });
     }
 
-    const fakeRequest = await Request.findOne({
-      request_id,
-    });
-
+    // Check if the request ID already exists
+    const fakeRequest = await Request.findOne({ request_id });
     if (fakeRequest) {
-      res.status(400).json({
+      return res.status(400).json({
         status: "not ok",
         message: "Request sent already",
-        request: request,
+        request: fakeRequest,
       });
     }
 
+    // Fetch sender data from the database
+    const senderData = await Member.findById(sender);
+    if (!senderData) {
+      return res.status(404).json({
+        status: "not ok",
+        message: "Sender not found",
+      });
+    }
+
+    // Create a new request
     const request = new Request({
       sender,
       receiver,
       status,
       request_id,
     });
-
     await request.save();
 
+    const notification = new Notification({
+      user_id: receiver,
+      type: "request",
+      title: "New Request Received",
+      message: `You have a new request from ${senderData.name || "a user"}`,
+      data: {
+        request_id,
+        sender: {
+          id: senderData._id,
+          name: senderData.name,
+          email: senderData.email,
+        },
+        status,
+      },
+      status: "unread", // Default status
+      created_at: new Date(),
+    });
+
+    await notification.save();
+
+    // Prepare OneSignal notification payload
+    const oneSignalConfig = {
+      app_id: "b1793826-5d51-49a9-822c-ff0dcda804f1",
+      include_external_user_ids: ["679735d9107a026e4d3f66e9"], // Send to the receiver's external ID
+      headings: { en: "New Request Received" },
+      contents: {
+        en: `You have a new request from ${senderData.name || "a user"}`,
+      },
+      data: {
+        type: "request",
+        request_id: request_id,
+        sender: {
+          id: senderData._id,
+          name: senderData.name,
+          email: senderData.email,
+        },
+        status,
+      },
+      buttons: [
+        {
+          id: "accept", // Unique ID for the button
+          text: "Accept Request", // Button text
+          icon: "https://your-app.com/icons/accept.png", // (Optional) Icon URL
+        },
+        {
+          id: "reject", // Unique ID for the button
+          text: "Reject Request", // Button text
+          icon: "https://your-app.com/icons/reject.png", // (Optional) Icon URL
+        },
+      ],
+    };
+
+    // Send notification through OneSignal
+    try {
+      const oneSignalResponse = await axios.post(
+        "https://onesignal.com/api/v1/notifications",
+        oneSignalConfig,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic os_v2_app_wf4tqjs5kfe2tarm74g43kae6e6jipwt6acuehfqbefg65upusr6j2xorkk5w6cejuwm5c3xwqapvvdkrkrs5iqobhbin6qgjbmtrji`,
+          },
+        }
+      );
+      console.log("Notification sent:", oneSignalResponse.data);
+    } catch (notificationError) {
+      console.error(
+        "Failed to send OneSignal notification:",
+        notificationError.response?.data || notificationError.message
+      );
+    }
+
+    // Respond with success
     res.status(201).json({
       status: "ok",
-      message: "Request sent successfully",
+      message: "Request sent successfully and notification pushed",
       request: request,
+      senderData: senderData,
     });
   } catch (error) {
     res.status(500).json({
@@ -662,6 +771,7 @@ router.post("/requestMobile", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/requestStatusUpdate", async (req, res) => {
   try {
     const { request_id, status } = req.body;
@@ -693,6 +803,7 @@ router.post("/requestStatusUpdate", async (req, res) => {
   }
 });
 
+// Documented
 router.post("/requestStatus", async (req, res) => {
   try {
     const { request_id } = req.body;
@@ -704,23 +815,43 @@ router.post("/requestStatus", async (req, res) => {
       });
     }
 
-    const request = await Request.findById({ request_id: request_id });
-    const requestStatus = request.status;
+    const request = await Request.findOne({ request_id });
 
-    res.status(200).json({
+    if (!request) {
+      return res.status(404).json({
+        status: "not ok",
+        message: "Request not found",
+      });
+    }
+
+    let response = {
       status: "ok",
-      message: "Request status updated successfully",
-      requestStatus: requestStatus,
-    });
+      message: "Request status fetched successfully",
+      requestStatus: request.status,
+    };
+
+    if (request.status === "allowed") {
+      const receiverProfile = await Member.findOne({ _id: request.receiver });
+      if (receiverProfile) {
+        response.receiverMobileNumber = receiverProfile.mobile_number;
+      } else {
+        console.error(
+          `Receiver profile not found for receiver ID: ${request.receiver}`
+        );
+      }
+    }
+
+    res.status(200).json(response);
   } catch (error) {
     res.status(500).json({
       status: "error",
-      message: "Error updating request status",
+      message: "Error fetching request status",
       error: error.message,
     });
   }
 });
 
+// Documented
 router.post("/requestList", async (req, res) => {
   try {
     const { receiver_id } = req.body;
@@ -734,15 +865,112 @@ router.post("/requestList", async (req, res) => {
 
     const requestList = await Request.find({ receiver: receiver_id });
 
+    const requestsWithSenderProfiles = await Promise.all(
+      requestList.map(async (request) => {
+        const senderProfile = await Member.findOne({ _id: request.sender });
+        return {
+          ...request._doc,
+          senderProfile,
+        };
+      })
+    );
+
     res.status(200).json({
       status: "ok",
       message: "Request list retrieved successfully",
-      requestList: requestList,
+      requestList: requestsWithSenderProfiles,
     });
   } catch (error) {
     res.status(500).json({
       status: "error",
       message: "Error updating request status",
+      error: error.message,
+    });
+  }
+});
+
+router.post("/membersCount", async (req, res) => {
+  try {
+    const { college_id } = req.body;
+    if (!college_id) {
+      return res
+        .status(400)
+        .json({ status: "not ok", message: "College ID is required" });
+    }
+    const memberPeople = await MemberCollege.find({
+      college_id,
+      status: "approved",
+    });
+    const memberPeopleCountOff = memberPeople.length;
+    res.status(200).json({
+      status: "ok",
+      message: "Data generated",
+      memberPeople: memberPeople,
+      memberPeopleCountOff: memberPeopleCountOff,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating status",
+      error: error.message,
+    });
+  }
+});
+
+router.post("/unApprovedMembersCount", async (req, res) => {
+  try {
+    const { college_id } = req.body;
+    if (!college_id) {
+      return res
+        .status(400)
+        .json({ status: "not ok", message: "College ID is required" });
+    }
+    const memberPeople = await MemberCollege.find({
+      college_id,
+      status: "not approved",
+    });
+    const memberPeopleCountOff = memberPeople.length;
+    res.status(200).json({
+      status: "ok",
+      message: "Data generated",
+      memberPeople: memberPeople,
+      memberPeopleCountOff: memberPeopleCountOff,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating status",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const alumni = await Member.findById(req.params.id);
+
+    if (!alumni) {
+      return res
+        .status(404)
+        .json({ status: "not ok", message: "Alumni not found" });
+    }
+
+    const alumniID = alumni._id;
+
+    const alumniCollegeData = await MemberCollege.find({ alumni_id: alumniID })
+      .populate("college_id")
+      .populate("department_id");
+
+    const alumniWithCollegeData = {
+      ...alumni.toObject(),
+      alumniCollegeData,
+    };
+
+    res.status(200).json({ status: "ok", alumni: alumniWithCollegeData });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching member details",
       error: error.message,
     });
   }

@@ -5,7 +5,7 @@ const jobSchema = new mongoose.Schema(
     alumni_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Member",
-      required: true,
+      required: false,
     },
     college_id: {
       type: mongoose.Schema.Types.ObjectId,

@@ -5,22 +5,25 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:flutter/foundation.dart' as _i10;
-import 'package:flutter/material.dart' as _i9;
+import 'package:flutter/foundation.dart' as _i12;
+import 'package:flutter/material.dart' as _i11;
 import 'package:flutter/material.dart';
-import 'package:magic_alumni/model/events_model.dart' as _i11;
-import 'package:magic_alumni/model/news_model.dart' as _i12;
+import 'package:magic_alumni/model/events_model.dart' as _i13;
+import 'package:magic_alumni/model/news_model.dart' as _i14;
 import 'package:magic_alumni/ui/views/app-view/app_view.dart' as _i3;
 import 'package:magic_alumni/ui/views/events/create-event/create_event_view.dart'
     as _i5;
 import 'package:magic_alumni/ui/views/events/event_detail.dart' as _i7;
 import 'package:magic_alumni/ui/views/jobs/create-job/create_job_view.dart'
     as _i6;
+import 'package:magic_alumni/ui/views/jobs/jobs_view.dart' as _i8;
 import 'package:magic_alumni/ui/views/login/login_view.dart' as _i4;
-import 'package:magic_alumni/ui/views/news/news_detail_view.dart' as _i8;
+import 'package:magic_alumni/ui/views/news/news_detail_view.dart' as _i9;
+import 'package:magic_alumni/ui/views/notifications/notification_view.dart'
+    as _i10;
 import 'package:magic_alumni/ui/views/signup/signup_view.dart' as _i2;
 import 'package:stacked/stacked.dart' as _i1;
-import 'package:stacked_services/stacked_services.dart' as _i13;
+import 'package:stacked_services/stacked_services.dart' as _i15;
 
 class Routes {
   static const signupView = '/signup-view';
@@ -35,7 +38,11 @@ class Routes {
 
   static const eventsDetailView = '/events-detail-view';
 
+  static const jobsView = '/jobs-view';
+
   static const newsDetailView = '/news-detail-view';
+
+  static const notificationsView = '/notifications-view';
 
   static const all = <String>{
     signupView,
@@ -44,7 +51,9 @@ class Routes {
     createEventView,
     createJobView,
     eventsDetailView,
+    jobsView,
     newsDetailView,
+    notificationsView,
   };
 }
 
@@ -75,55 +84,75 @@ class StackedRouter extends _i1.RouterBase {
       page: _i7.EventsDetailView,
     ),
     _i1.RouteDef(
+      Routes.jobsView,
+      page: _i8.JobsView,
+    ),
+    _i1.RouteDef(
       Routes.newsDetailView,
-      page: _i8.NewsDetailView,
+      page: _i9.NewsDetailView,
+    ),
+    _i1.RouteDef(
+      Routes.notificationsView,
+      page: _i10.NotificationsView,
     ),
   ];
 
   final _pagesMap = <Type, _i1.StackedRouteFactory>{
     _i2.SignupView: (data) {
-      return _i9.MaterialPageRoute<dynamic>(
+      return _i11.MaterialPageRoute<dynamic>(
         builder: (context) => const _i2.SignupView(),
         settings: data,
       );
     },
     _i3.AppView: (data) {
-      return _i9.MaterialPageRoute<dynamic>(
+      return _i11.MaterialPageRoute<dynamic>(
         builder: (context) => const _i3.AppView(),
         settings: data,
       );
     },
     _i4.LoginView: (data) {
-      return _i9.MaterialPageRoute<dynamic>(
+      return _i11.MaterialPageRoute<dynamic>(
         builder: (context) => const _i4.LoginView(),
         settings: data,
       );
     },
     _i5.CreateEventView: (data) {
-      return _i9.MaterialPageRoute<dynamic>(
+      return _i11.MaterialPageRoute<dynamic>(
         builder: (context) => const _i5.CreateEventView(),
         settings: data,
       );
     },
     _i6.CreateJobView: (data) {
-      return _i9.MaterialPageRoute<dynamic>(
+      return _i11.MaterialPageRoute<dynamic>(
         builder: (context) => const _i6.CreateJobView(),
         settings: data,
       );
     },
     _i7.EventsDetailView: (data) {
       final args = data.getArgs<EventsDetailViewArguments>(nullOk: false);
-      return _i9.MaterialPageRoute<dynamic>(
+      return _i11.MaterialPageRoute<dynamic>(
         builder: (context) => _i7.EventsDetailView(
             key: args.key, event: args.event, status: args.status),
         settings: data,
       );
     },
-    _i8.NewsDetailView: (data) {
+    _i8.JobsView: (data) {
+      return _i11.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i8.JobsView(),
+        settings: data,
+      );
+    },
+    _i9.NewsDetailView: (data) {
       final args = data.getArgs<NewsDetailViewArguments>(nullOk: false);
-      return _i9.MaterialPageRoute<dynamic>(
+      return _i11.MaterialPageRoute<dynamic>(
         builder: (context) =>
-            _i8.NewsDetailView(key: args.key, news: args.news),
+            _i9.NewsDetailView(key: args.key, news: args.news),
+        settings: data,
+      );
+    },
+    _i10.NotificationsView: (data) {
+      return _i11.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i10.NotificationsView(),
         settings: data,
       );
     },
@@ -143,9 +172,9 @@ class EventsDetailViewArguments {
     required this.status,
   });
 
-  final _i10.Key? key;
+  final _i12.Key? key;
 
-  final _i11.EventsModel event;
+  final _i13.EventsModel event;
 
   final String status;
 
@@ -172,9 +201,9 @@ class NewsDetailViewArguments {
     required this.news,
   });
 
-  final _i10.Key? key;
+  final _i12.Key? key;
 
-  final _i12.NewsModel news;
+  final _i14.NewsModel news;
 
   @override
   String toString() {
@@ -193,7 +222,7 @@ class NewsDetailViewArguments {
   }
 }
 
-extension NavigatorStateExtension on _i13.NavigationService {
+extension NavigatorStateExtension on _i15.NavigationService {
   Future<dynamic> navigateToSignupView([
     int? routerId,
     bool preventDuplicates = true,
@@ -265,8 +294,8 @@ extension NavigatorStateExtension on _i13.NavigationService {
   }
 
   Future<dynamic> navigateToEventsDetailView({
-    _i10.Key? key,
-    required _i11.EventsModel event,
+    _i12.Key? key,
+    required _i13.EventsModel event,
     required String status,
     int? routerId,
     bool preventDuplicates = true,
@@ -283,9 +312,23 @@ extension NavigatorStateExtension on _i13.NavigationService {
         transition: transition);
   }
 
+  Future<dynamic> navigateToJobsView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return navigateTo<dynamic>(Routes.jobsView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
   Future<dynamic> navigateToNewsDetailView({
-    _i10.Key? key,
-    required _i12.NewsModel news,
+    _i12.Key? key,
+    required _i14.NewsModel news,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -294,6 +337,20 @@ extension NavigatorStateExtension on _i13.NavigationService {
   }) async {
     return navigateTo<dynamic>(Routes.newsDetailView,
         arguments: NewsDetailViewArguments(key: key, news: news),
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> navigateToNotificationsView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return navigateTo<dynamic>(Routes.notificationsView,
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
@@ -371,8 +428,8 @@ extension NavigatorStateExtension on _i13.NavigationService {
   }
 
   Future<dynamic> replaceWithEventsDetailView({
-    _i10.Key? key,
-    required _i11.EventsModel event,
+    _i12.Key? key,
+    required _i13.EventsModel event,
     required String status,
     int? routerId,
     bool preventDuplicates = true,
@@ -389,9 +446,23 @@ extension NavigatorStateExtension on _i13.NavigationService {
         transition: transition);
   }
 
+  Future<dynamic> replaceWithJobsView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return replaceWith<dynamic>(Routes.jobsView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
   Future<dynamic> replaceWithNewsDetailView({
-    _i10.Key? key,
-    required _i12.NewsModel news,
+    _i12.Key? key,
+    required _i14.NewsModel news,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -400,6 +471,20 @@ extension NavigatorStateExtension on _i13.NavigationService {
   }) async {
     return replaceWith<dynamic>(Routes.newsDetailView,
         arguments: NewsDetailViewArguments(key: key, news: news),
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> replaceWithNotificationsView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return replaceWith<dynamic>(Routes.notificationsView,
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
