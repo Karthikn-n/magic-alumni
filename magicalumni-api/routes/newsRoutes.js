@@ -35,7 +35,6 @@ const upload = multer({
   },
 }).single("image");
 
-// Documented
 router.post("/create", upload, async (req, res) => {
   try {
     const {
@@ -83,7 +82,6 @@ router.post("/create", upload, async (req, res) => {
   }
 });
 
-// Documented
 router.post("/list", async (req, res) => {
   try {
     const { college_id } = req.body;

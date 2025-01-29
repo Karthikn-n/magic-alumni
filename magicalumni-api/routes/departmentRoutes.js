@@ -3,7 +3,6 @@ import Department from "../models/Department.js";
 import mongoose from "mongoose";
 const router = express.Router();
 
-// Documented
 router.post("/create", async (req, res) => {
   try {
     const { college_id, name } = req.body;
