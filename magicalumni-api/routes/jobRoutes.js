@@ -58,6 +58,67 @@ router.post("/create", async (req, res) => {
     });
 
     const savedJob = await newJob.save();
+
+    const memberColleges = await MemberCollege.find({ college_id }).select(
+      "alumni_id"
+    );
+    console.log(memberColleges);
+    const alumniIds = memberColleges.map((mc) => mc.alumni_id);
+    console.log("Alumni IDs:", alumniIds);
+
+    const members = await Member.find({ _id: { $in: alumniIds } }).select(
+      "external_id"
+    );
+    console.log("Member records found:", members);
+
+    const externalUserIds = members.map((m) => m._id).filter(Boolean);
+    console.log("External User IDs:", externalUserIds);
+
+    if (externalUserIds.length > 0) {
+      const oneSignalConfig = {
+        app_id: "b1793826-5d51-49a9-822c-ff0dcda804f1",
+        include_external_user_ids: externalUserIds,
+        type: "jobs",
+        headings: { en: "New Job Created!" },
+        contents: { en: `${job_title} vacancy at ${company_name}.` },
+        location: location,
+        actions: [{ id: "apply", title: "Apply Job", url: job_url }],
+      };
+
+      try {
+        console.log(
+          "Sending notification to OneSignal with config:",
+          oneSignalConfig
+        );
+        const oneSignalResponse = await axios.post(
+          "https://onesignal.com/api/v1/notifications",
+          oneSignalConfig,
+          {
+            headers: {
+              Authorization: `Basic os_v2_app_wf4tqjs5kfe2tarm74g43kae6elbk3wqxiwu2zumz7qf2grag7zaqe4gbw5e5sv7hf2s6cxzuc2urudnsouutgpzkq5xxfdflomu2ma`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const members = await Member.find({
+          _id: { $in: alumniIds },
+          status: "active",
+        }).select("external_id");
+        const externalUserIds = members
+          .map((m) => m.external_id)
+          .filter(Boolean);
+
+        console.log("Notification sent:", oneSignalResponse.data);
+
+        console.log("Notification sent successfully");
+      } catch (error) {
+        console.error(
+          "Error sending OneSignal notification:",
+          error.response?.data || error.message
+        );
+      }
+    }
+
     res.status(201).json({
       status: "ok",
       message: "Job created successfully",

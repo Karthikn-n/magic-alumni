@@ -4,8 +4,11 @@ import Event from "../models/Event.js";
 import MemberCollege from "../models/MemberCollege.js";
 import EventPeople from "../models/EventPeople.js";
 import multer from "multer";
+import Notification from "../models/Notification.js";
 import path from "path";
+import axios from "axios";
 import mongoose from "mongoose";
+import { type } from "os";
 
 const router = express.Router();
 
@@ -69,9 +72,10 @@ router.post("/create", upload, async (req, res) => {
     const rsvpArray = Array.isArray(rsvp_options)
       ? rsvp_options
       : [rsvp_options || "yes", "no", "maybe"];
-    const creatorName = await Member.findById(alumni_id);
 
-    const createdBy = creatorName.name;
+    const creator = await Member.findById(alumni_id);
+    const createdBy = creator?.name || "Unknown";
+
     const newEvent = new Event({
       alumni_id,
       college_id,
@@ -89,33 +93,107 @@ router.post("/create", upload, async (req, res) => {
 
     const savedEvent = await newEvent.save();
 
-    // const students = await StudentCollege.find({ college_id });
-    // const alumni = await AlumniCollege.find({ college_id });
+    const memberColleges = await MemberCollege.find({ college_id }).select(
+      "alumni_id"
+    );
+    console.log(memberColleges);
+    const alumniIds = memberColleges.map((mc) => mc.alumni_id);
+    console.log("Alumni IDs:", alumniIds);
 
-    // const recipients = [
-    //   ...students.map((s) => s.student_id.toString()),
-    //   ...alumni.map((a) => a.alumni_id.toString()),
-    // ];
+    const members = await Member.find({ _id: { $in: alumniIds } }).select(
+      "external_id"
+    );
+    console.log("Member records found:", members);
 
-    // recipients.forEach((userId) => {
-    //   const socketId = connectedUsers[userId];
-    //   if (socketId) {
-    //     io.to(socketId).emit("new_event", {
-    //       message: `New event "${event_title}" has been created by your college.`,
-    //       event: savedEvent,
-    //     });
-    //   }
-    // });
+    const externalUserIds = members.map((m) => m._id).filter(Boolean);
+    console.log("External User IDs:", externalUserIds);
+
+    if (externalUserIds.length > 0) {
+      const oneSignalConfig = {
+        app_id: "b1793826-5d51-49a9-822c-ff0dcda804f1",
+        include_external_user_ids: externalUserIds,
+        type: "event",
+        headings: { en: "New Event Created!" },
+        contents: { en: `${event_title} is happening soon! Check it out.` },
+        data: {
+          type: "event",
+          event_id: savedEvent._id,
+          title: event_title,
+          content: `${event_title} is happening soon! Check it out.`,
+          created_by: createdBy,
+          date,
+          location,
+        },
+        actions: [{ id: "view", title: "View Event" }],
+      };
+
+      try {
+        console.log(
+          "Sending notification to OneSignal with config:",
+          oneSignalConfig
+        );
+        const oneSignalResponse = await axios.post(
+          "https://onesignal.com/api/v1/notifications",
+          oneSignalConfig,
+          {
+            headers: {
+              Authorization: `Basic os_v2_app_wf4tqjs5kfe2tarm74g43kae6elbk3wqxiwu2zumz7qf2grag7zaqe4gbw5e5sv7hf2s6cxzuc2urudnsouutgpzkq5xxfdflomu2ma`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const members = await Member.find({
+          _id: { $in: alumniIds },
+          status: "active",
+        }).select("external_id");
+        const externalUserIds = members
+          .map((m) => m.external_id)
+          .filter(Boolean);
+
+        console.log("Notification sent:", oneSignalResponse.data);
+
+        console.log("Notification sent successfully");
+
+        await Promise.all(
+          externalUserIds.map((externalId) => {
+            const notification = new Notification({
+              user_id: alumniIds[externalUserIds.indexOf(externalId)],
+              type: "event",
+              title: `New Event Created: ${event_title}`,
+              message: `${event_title} is happening soon! Check it out.`,
+              data: {
+                event_id: savedEvent._id,
+                event_title,
+                created_by: createdBy,
+                date,
+                location,
+              },
+            });
+            return notification.save();
+          })
+        );
+
+        console.log("Notifications saved successfully");
+      } catch (error) {
+        console.error(
+          "Error sending OneSignal notification:",
+          error.response?.data || error.message
+        );
+      }
+    }
 
     res.status(201).json({
       status: "ok",
-      message: "Event created successfully",
+      message: "Event created successfully and notifications sent",
       event: savedEvent,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ status: "error", message: "Error creating event", error });
+    console.error("Error:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Error creating event",
+      error,
+    });
   }
 });
 
