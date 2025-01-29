@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/notifications_model.dart';
 import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
 
-class NotificationRequest extends StatelessWidget {
+class NotificationEvent extends StatelessWidget {
   final NotificationsModel notification;
   final NotificationViewmodel model;
-  const NotificationRequest({super.key, required this.notification, required this.model});
+  const NotificationEvent({super.key, required this.notification, required this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -23,22 +23,12 @@ class NotificationRequest extends StatelessWidget {
             color: Colors.black87
           ),
         ),
-        trailing: PopupMenuButton(
-          iconSize: 20,
-          itemBuilder: (context) {
-            return <PopupMenuItem>[
-              PopupMenuItem(
-                onTap: () async 
-                  => await model.apiService.updateMobileRequest("allowed", notification.requestId ?? "",),
-                child: Text("Accept"), 
-              ),
-              PopupMenuItem(
-                onTap: () async
-                   => await model.apiService.updateMobileRequest("denied", notification.requestId ?? "",),
-                child: Text("Reject"), 
-              ),
-            ];
-          },
+        trailing: IconButton(
+          tooltip: "View Event",
+          onPressed: () async {
+            model.navigateToEventDetail(notification.eventId ?? "");
+          }, 
+          icon: Icon(CupertinoIcons.chevron_right, size: 20,)
         ),
         subtitle:  Text(
           notification.content, 

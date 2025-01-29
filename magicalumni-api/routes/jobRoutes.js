@@ -95,7 +95,7 @@ router.post("/create", async (req, res) => {
           oneSignalConfig,
           {
             headers: {
-              Authorization: `Basic os_v2_app_wf4tqjs5kfe2tarm74g43kae6elbk3wqxiwu2zumz7qf2grag7zaqe4gbw5e5sv7hf2s6cxzuc2urudnsouutgpzkq5xxfdflomu2ma`,
+              Authorization: `Basic ${process.env.ONSIGNAL_API_KEY}`,
               "Content-Type": "application/json",
             },
           }

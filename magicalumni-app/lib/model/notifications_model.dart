@@ -5,12 +5,14 @@ class NotificationsModel {
   final String date;
   final String? requestId;
   final String type;
+  final String? eventId;
   NotificationsModel({
     required this.id,
     required this.title,
     required this.content,
     required this.date,
     required this.type,
+    this.eventId,
     this.requestId,
   });
 
@@ -21,6 +23,7 @@ class NotificationsModel {
     result.addAll({'title': title});
     result.addAll({'content': content});
     result.addAll({'date': date});
+    result.addAll({"event_id": eventId});
     result.addAll({'request_id': requestId});
     return result;
   }
@@ -32,7 +35,8 @@ class NotificationsModel {
       content: map['content'] ?? '',
       date: map['date'] ?? "",
       type: map['type'] ?? "",
-      requestId: map["request_id"] ?? ""
+      requestId: map["request_id"] ?? "",
+      eventId: map["event_id"] ?? ""
     );
   }
 }

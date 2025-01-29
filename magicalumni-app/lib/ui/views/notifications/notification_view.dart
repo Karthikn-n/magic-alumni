@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:magic_alumni/model/notifications_model.dart';
 import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
+import 'package:magic_alumni/widgets/notifications/notification_event.dart';
 import 'package:magic_alumni/widgets/notifications/notification_request.dart';
 import 'package:stacked/stacked.dart';
 
@@ -59,10 +60,9 @@ class NotificationsView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   NotificationsModel req = model.notifications[index];
                   return switch (req.type) {
-                    "event" => NotificationRequest(notification: req, model: model,),
-                    "job" => NotificationRequest(notification: req, model: model,),
+                    "event" => NotificationEvent(notification: req, model: model,),
                     "request" => NotificationRequest(notification: req, model: model,),
-                    "invitation" => NotificationRequest(notification: req, model: model,),
+                    "invitation" => NotificationEvent(notification: req, model: model,),
                     _ => Container()
                   };
                 },
