@@ -11,7 +11,7 @@ import OTPModel from "../models/OTPModel.js";
 import axios from "axios";
 
 const router = express.Router();
-// Documented
+
 router.post("/register", async (req, res) => {
   try {
     const {
@@ -129,7 +129,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/allMembers", async (req, res) => {
   try {
     const { college_id } = req.body;
@@ -178,7 +177,6 @@ router.post("/allMembers", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/profile", async (req, res) => {
   try {
     const { alumni_id } = req.body;
@@ -244,7 +242,6 @@ router.post("/profile", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/update", async (req, res) => {
   const {
     id,
@@ -297,7 +294,6 @@ router.post("/update", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/delete", async (req, res) => {
   const { id } = req.body;
   try {
@@ -330,7 +326,6 @@ router.post("/delete", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/newMemberList", async (req, res) => {
   try {
     const { college_id } = req.body;
@@ -357,7 +352,6 @@ router.post("/newMemberList", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/updateMemberStatus", async (req, res) => {
   const { alumni_id, college_id, status } = req.body;
   try {
@@ -405,7 +399,6 @@ router.post("/updateMemberStatus", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/updateRole", async (req, res) => {
   const { alumni_id, role } = req.body;
   try {
@@ -450,7 +443,6 @@ router.post("/updateRole", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/login", async (req, res) => {
   try {
     const { mobile_number } = req.body;
@@ -509,7 +501,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/verifyOtp", async (req, res) => {
   try {
     const { mobile_number, otp } = req.body;
@@ -567,7 +558,6 @@ router.post("/verifyOtp", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/addCollege", async (req, res) => {
   try {
     const {
@@ -639,8 +629,55 @@ router.post("/addCollege", async (req, res) => {
   }
 });
 
+// router.post("/requestMobile", async (req, res) => {
+//   try {
+//     const { sender, receiver, status, request_id } = req.body;
 
-// Documented
+//     if (
+//       !mongoose.Types.ObjectId.isValid(sender) ||
+//       !mongoose.Types.ObjectId.isValid(receiver)
+//     ) {
+//       return res.status(400).json({
+//         status: "not ok",
+//         message: "Invalid alumni_id, sender, or receiver ID",
+//       });
+//     }
+
+//     const fakeRequest = await Request.findOne({
+//       request_id,
+//     });
+
+//     if (fakeRequest) {
+//       res.status(400).json({
+//         status: "not ok",
+//         message: "Request sent already",
+//         request: request,
+//       });
+//     }
+
+//     const request = new Request({
+//       sender,
+//       receiver,
+//       status,
+//       request_id,
+//     });
+
+//     await request.save();
+
+//     res.status(201).json({
+//       status: "ok",
+//       message: "Request sent successfully",
+//       request: request,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       status: "error",
+//       message: "Error sending request",
+//       error: error.message,
+//     });
+//   }
+// });
+
 router.post("/requestMobile", async (req, res) => {
   try {
     const { sender, receiver, status, request_id } = req.body;
@@ -771,7 +808,6 @@ router.post("/requestMobile", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/requestStatusUpdate", async (req, res) => {
   try {
     const { request_id, status } = req.body;
@@ -803,7 +839,6 @@ router.post("/requestStatusUpdate", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/requestStatus", async (req, res) => {
   try {
     const { request_id } = req.body;
@@ -851,7 +886,6 @@ router.post("/requestStatus", async (req, res) => {
   }
 });
 
-// Documented
 router.post("/requestList", async (req, res) => {
   try {
     const { receiver_id } = req.body;
