@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/model/events_model.dart';
 import 'package:magic_alumni/ui/views/events/create-event/create_event_view.dart';
@@ -12,7 +13,7 @@ class EventsViewModel extends BaseViewModel {
   
    /// Use API Service to get the news from the API
   final ApiService apiService = ApiService();
-
+  final ScrollController scrollController = ScrollController();
   List<EventsModel> eventsList = [];
   bool isSent = false;
 
@@ -22,7 +23,16 @@ class EventsViewModel extends BaseViewModel {
   
 
   /// Call the Events API and store if the events get from the API or return empty list
-  Future<void> events() async {
+  Future<void> events({bool? isrefreshed}) async {
+      eventsList.clear();
+    if (isrefreshed != null) {
+       await apiService.events().then(
+        (value) {
+          eventsList = value;
+          notifyListeners();
+        } ,
+      );
+    }
     if(apiService.eventsList.isEmpty) {
       await apiService.events().then(
         (value) {
@@ -55,5 +65,9 @@ class EventsViewModel extends BaseViewModel {
       EventsDetailView(event: event, status: status,), 
       transitionStyle: Transition.downToUp
     );
+  }
+
+  void onDispose(){
+    scrollController.dispose();
   }
 }

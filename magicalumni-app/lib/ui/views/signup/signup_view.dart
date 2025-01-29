@@ -72,7 +72,7 @@ class SignupView extends StatelessWidget {
                             ),
                             // college name field
                             Container(
-                              width: double.infinity,
+                              // width: double.infinity,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(8)
@@ -86,8 +86,9 @@ class SignupView extends StatelessWidget {
                                       height: 20,
                                       width: 20,
                                       child: Image.asset(
-                                        "assets/icon/college.png", color: Theme.of(context).primaryColor,
+                                        "assets/icon/college.png",
                                         fit: BoxFit.contain,
+                                        color: Theme.of(context).primaryColor,
                                       ),
                                     ),
                                     Text(
