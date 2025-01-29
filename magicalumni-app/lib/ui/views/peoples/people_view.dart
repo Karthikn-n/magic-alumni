@@ -55,8 +55,18 @@ class PeopleView extends StatelessWidget {
                   Expanded(
                     child: TabBarView(
                       children: [
-                        PeopleWidget(peoples: model.peoplesList.where((element) => element.role == "Alumni",).toList(),),
-                        PeopleWidget(peoples:  model.peoplesList.where((element) => element.role == "Student",).toList(),),
+                        PeopleWidget(
+                          key: Key("alumni"),
+                          peoples: model.peoplesList.where(
+                            (element) => element.role == "Alumni",
+                          ).toList(),
+                        ),
+                        PeopleWidget(
+                          key: Key("student"),
+                          peoples:  model.peoplesList.where(
+                            (element) => element.role == "Student",
+                          ).toList(),
+                        ),
                       ],
                     ),
                   )

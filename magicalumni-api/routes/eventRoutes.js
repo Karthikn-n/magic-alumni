@@ -39,6 +39,7 @@ const upload = multer({
   },
 }).single("event_image");
 
+// Documented
 router.post("/create", upload, async (req, res) => {
   try {
     const {
@@ -119,6 +120,7 @@ router.post("/create", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/list", upload, async (req, res) => {
   try {
     const { college_id } = req.body;
@@ -229,75 +231,8 @@ router.post("/unapprovedlist", upload, async (req, res) => {
   }
 });
 
-router.post("/unApprovedEventCount", upload, async (req, res) => {
-  try {
-    const { college_id } = req.body;
-    if (!college_id) {
-      return res
-        .status(400)
-        .json({ status: "not ok", message: "Event ID is required" });
-    }
-    const eventCount = await Event.find({
-      college_id,
-      approval_status: "not approved",
-    });
-    const eventCountOff = eventCount.length;
-    res.status(200).json({
-      status: "ok",
-      message: "Data generated",
-      eventCountOff: eventCountOff,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Error updating status",
-      error: error.message,
-    });
-  }
-});
 
-router.post("/coordinatorList", upload, async (req, res) => {
-  try {
-    const { college_id } = req.body;
-    if (!college_id) {
-      return res.status(404).json({
-        status: "not found",
-        message: "College ID required",
-      });
-    }
-
-    if (college_id && !mongoose.Types.ObjectId.isValid(college_id)) {
-      return res.status(400).json({
-        status: "not ok",
-        message: "Invalid college_id format",
-      });
-    }
-
-    const eventList = await MemberCollege.find({ college_id });
-    const alumniIds = eventList.map((event) => event.alumni_id);
-    console.log(alumniIds);
-    const alumniList = await Member.find({
-      _id: { $in: alumniIds },
-      role: "Alumni co-ordinator",
-    });
-
-    if (alumniList.length === 0) {
-      return res.status(200).json({
-        status: "ok",
-        message: "No data found",
-      });
-    }
-
-    res.status(200).json({ status: "ok", alumniList: alumniList });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: "Error retrieving list",
-      error: error.message,
-    });
-  }
-});
-
+// Documented
 router.post("/updateStatus", upload, async (req, res) => {
   const { event_id, college_id, status } = req.body;
   try {
@@ -345,6 +280,7 @@ router.post("/updateStatus", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/eventPeople", upload, async (req, res) => {
   try {
     const { event_id, alumni_id, interested } = req.body;
@@ -382,6 +318,7 @@ router.post("/eventPeople", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/eventPeopleCount", upload, async (req, res) => {
   try {
     const { event_id } = req.body;
@@ -407,6 +344,7 @@ router.post("/eventPeopleCount", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/eventPeopleStatus", upload, async (req, res) => {
   try {
     const { event_id, alumni_id } = req.body;
@@ -430,6 +368,7 @@ router.post("/eventPeopleStatus", upload, async (req, res) => {
   }
 });
 
+// Documented
 router.post("/eventPeopleStatusEdit", upload, async (req, res) => {
   try {
     const { event_id, alumni_id, interested } = req.body;

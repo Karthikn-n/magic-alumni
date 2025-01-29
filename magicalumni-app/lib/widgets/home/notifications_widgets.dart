@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:magic_alumni/model/mobrequest_model.dart';
 
 class RecentNotificationsWidget extends StatelessWidget {
-  const RecentNotificationsWidget({super.key});
+  final List<MobileRequestModel> requests;
+  const RecentNotificationsWidget({super.key, required this.requests});
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +12,7 @@ class RecentNotificationsWidget extends StatelessWidget {
       shrinkWrap: true,
       clipBehavior: Clip.none,
       scrollDirection: Axis.horizontal,
-      itemCount: 5,
+      itemCount: requests.length,
       itemBuilder: (context, index) {
         return Material(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -41,7 +43,7 @@ class RecentNotificationsWidget extends StatelessWidget {
                       ),
                       // Notification title
                       title: Text(
-                        "Invitation",
+                        "Mobile Request",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -55,7 +57,7 @@ class RecentNotificationsWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "You are invited to guest lecturing on 12 Mar 2025.",
+                              "Your mobile number is requested by ${requests[index].sender.name}.",
                               maxLines: 2,
                               style: TextStyle(
                                 fontSize: 12,
@@ -67,7 +69,7 @@ class RecentNotificationsWidget extends StatelessWidget {
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Text(
-                                "Just now *",
+                                formatTimeDifference(requests[index].requestedDate),
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontSize: 12,
@@ -106,4 +108,18 @@ class RecentNotificationsWidget extends StatelessWidget {
       },
     );
   }
+  
+  String formatTimeDifference(String requestedDate) {
+    final Duration difference = DateTime.now().difference(DateTime.parse(requestedDate));
+    if (difference.inSeconds < 60) {
+      return '${difference.inSeconds} secs ago';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} mins ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} hrs ago';
+    } else {
+      return '${difference.inDays} days ago';
+    }
+  }
+
 }
