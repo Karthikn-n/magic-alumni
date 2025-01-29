@@ -76,7 +76,7 @@ class ApiService {
     }
     try {
       final response = await _dio.get(
-        "${baseApiUrl}colleges"
+        "${baseApiUrl}colleges/allCollegeList"
       );
       if (response.statusCode == 200 && response.data["status"] == "Ok") {
         List<dynamic> collegesRepsponse =  (response.data["collegeWithDepartments"] ?? []) as List<dynamic>;

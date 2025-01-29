@@ -52,12 +52,13 @@ class OnesignalService {
   static Future<void> subscribeNotification() async {
     /// listen to the Notification when the app is in foreground
     OneSignal.Notifications.addForegroundWillDisplayListener((event) {
-      debugPrint("Notification received from one signal: ${event.notification.jsonRepresentation()}");
+      debugPrint("Notification received from one signal: ${event.notification.additionalData}");
       _notificationStreamController.sink.add(event.notification);
     },);
     OneSignal.Notifications.addClickListener((event) async {
+      _notificationStreamController.sink.add(event.notification);
         var data = event.notification.additionalData;
-        debugPrint("Notification data: ${event.notification.jsonRepresentation()}");
+        debugPrint("Notification data: ${event.notification.additionalData}");
          if (data != null) {
           String? type = data['type'];
           debugPrint("Type of the button: $type");
@@ -66,23 +67,22 @@ class OnesignalService {
           /// Handle the notification action for the mobile request types
           if (type != null && type =="request") {
             // Check which button was clicked, if any
-            List<OSActionButton> actionId = event.notification.buttons ?? [];
-            debugPrint("${actionId.map((e) => e.text,)}");
-            debugPrint("Button ID: ${actionId.map((e) => e.id,)}");
+            String actionId = event.result.actionId ?? "";
+            
+            debugPrint("${event.result.actionId}");
             // Handle the button actions from background and forground of the app
-            for (var button in actionId) {
-              if (button.id == 'accept') {
-                // Handle accept request button action
-                debugPrint("Requested accept clicked");
-                await _apiService.updateMobileRequest("allowed", requestId ?? "");
-                debugPrint("Request accepted");
-              } else if(button.id == 'reject') {
-                // Handle reject request by reject id
-                debugPrint("Reject button clicked");
-                await _apiService.updateMobileRequest("deny", requestId ?? "");
-                debugPrint("Request rejected");
-              }
+            if (actionId == 'accept') {
+              // Handle accept request button action
+              debugPrint("Requested accept clicked");
+              await _apiService.updateMobileRequest("allowed", requestId ?? "");
+              debugPrint("Request accepted");
+            } else if(actionId == 'reject') {
+              // Handle reject request by reject id
+              debugPrint("Reject button clicked");
+              await _apiService.updateMobileRequest("deny", requestId ?? "");
+              debugPrint("Request rejected");
             }
+            
             //  if (actionId.isEmpty) {
             //   debugPrint("Moved to notification screen");
             //   _navigationService.navigateToNotificationsView();
