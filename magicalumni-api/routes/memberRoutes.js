@@ -742,8 +742,8 @@ router.post("/requestMobile", async (req, res) => {
 
     // Prepare OneSignal notification payload
     const oneSignalConfig = {
-      app_id: "b1793826-5d51-49a9-822c-ff0dcda804f1",
-      include_external_user_ids: ["679735d9107a026e4d3f66e9"], // Send to the receiver's external ID
+      app_id: process.env.ONESIGNAL_APP_ID,
+      include_external_user_ids: [receiver], // Send to the receiver's external ID
       headings: { en: "New Request Received" },
       contents: {
         en: `You have a new request from ${senderData.name || "a user"}`,
@@ -780,7 +780,7 @@ router.post("/requestMobile", async (req, res) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic os_v2_app_wf4tqjs5kfe2tarm74g43kae6e6jipwt6acuehfqbefg65upusr6j2xorkk5w6cejuwm5c3xwqapvvdkrkrs5iqobhbin6qgjbmtrji`,
+            Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
           },
         }
       );
