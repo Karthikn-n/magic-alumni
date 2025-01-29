@@ -16,7 +16,7 @@ class JobListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return jobs.isEmpty
-    ? key == Key("jobs")
+    ? key == Key("job")
       ? Center(
           child: Text("There is no jobs"),
         )

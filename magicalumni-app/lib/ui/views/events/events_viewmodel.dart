@@ -33,7 +33,7 @@ class EventsViewModel extends BaseViewModel {
         } ,
       );
     }
-    if(apiService.eventsList.isEmpty) {
+    if(eventsList.isEmpty) {
       await apiService.events().then(
         (value) {
           eventsList = value;

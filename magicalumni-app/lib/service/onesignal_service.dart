@@ -7,7 +7,7 @@ import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/model/events_model.dart';
 import 'package:magic_alumni/service/api_service.dart';
-import 'package:magic_alumni/ui/views/events/event_detail.dart';
+import 'package:magic_alumni/ui/views/app-view/app_viewmodel.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'package:flutter/material.dart';
@@ -22,6 +22,7 @@ class OnesignalService {
   Stream<OSNotification> get notificationStream => _notificationStreamController.stream;
 
   static final ApiService _apiService = locator<ApiService>();
+  static final AppViewModel _appViewModel = locator<AppViewModel>();
 
   static Future<void> init() async {
     // Load the dot env file for the APP ID
@@ -56,7 +57,6 @@ class OnesignalService {
       _notificationStreamController.sink.add(event.notification);
     },);
     OneSignal.Notifications.addClickListener((event) async {
-      _notificationStreamController.sink.add(event.notification);
         var data = event.notification.additionalData;
         debugPrint("Notification data: ${event.notification.additionalData}");
          if (data != null) {
@@ -64,6 +64,7 @@ class OnesignalService {
           debugPrint("Type of the button: $type");
           String? requestId = data['request_id'];
           debugPrint("Request ID: $requestId");
+
           /// Handle the notification action for the mobile request types
           if (type != null && type =="request") {
             // Check which button was clicked, if any
@@ -79,7 +80,7 @@ class OnesignalService {
             } else if(actionId == 'reject') {
               // Handle reject request by reject id
               debugPrint("Reject button clicked");
-              await _apiService.updateMobileRequest("deny", requestId ?? "");
+              await _apiService.updateMobileRequest("denied", requestId ?? "");
               debugPrint("Request rejected");
             }
             
@@ -87,46 +88,28 @@ class OnesignalService {
             //   debugPrint("Moved to notification screen");
             //   _navigationService.navigateToNotificationsView();
             // }
+          } else if(type == "event") {
+            /// If the notification has the
+            String? eventId = data["event_id"] ?? "";
+            if(event.result.actionId != null && event.result.actionId == "view"){
+              await _apiService.events().then((value) {
+                EventsModel event = _apiService.eventsList.firstWhere((element) => element.id == eventId,);
+                _navigationService.navigateToEventsDetailView(event: event, status: "");
+              },);
+            }
+          } else if (type == "job") {
+            /// If the ntofication comes for the Job then open the Jobs view before that call the Jobs APi to update the list
+            _apiService.jobs().then((value) {
+              _appViewModel.onTapped(3);
+              _navigationService.navigateToAppView();
+            },);
+          
+          } else {
+            /// If the notification has no types than above cases it will go to the App home screen
+            _navigationService.navigateToAppView();
           }
-          /// TODO: Handle other type of requests
         }
     },);
-    /// Handle the click events by listening to the notification types
-    // OneSignal.Notifications.addClickListener((event) {
-    //   final data = event.notification.additionalData;
-
-    //   if (data == null) {
-    //     debugPrint("Notification additional data is null.");
-    //     return;
-    //   }
-
-    //   final String? type = data["type"] as String?;
-    //   if (type == null) {
-    //     debugPrint("Notification type is missing in additional data.");
-    //     return;
-    //   }
-
-    //   switch (type) {
-    //     case "event":
-    //     case "invitation":
-    //       _navigationService.navigateWithTransition(
-    //             EventsDetailView(
-    //               event: EventsModel.fromMap(event.notification.additionalData!["event"]), 
-    //               status: event.notification.additionalData!["status"]
-    //             )
-    //           );
-    //           break;
-    //     case "request":
-    //        _navigationService.navigateToNotificationsView();
-    //        break;
-    //     case "job":
-    //        _navigationService.navigateToJobsView();
-    //        break;
-    //     default: _navigationService.navigateToNotificationsView();
-    //   }
-
-  
-    // },);
 
   }
 

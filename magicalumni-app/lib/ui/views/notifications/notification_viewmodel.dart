@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
+import 'package:magic_alumni/model/events_model.dart';
 import 'package:magic_alumni/model/notifications_model.dart';
 import 'package:magic_alumni/service/api_service.dart';
 import 'package:magic_alumni/service/onesignal_service.dart';
@@ -28,7 +29,15 @@ class NotificationViewmodel extends BaseViewModel{
       notifyListeners();
     },);
    debugPrint("Still listenting..");
-  
+  }
+
+  void navigateToEventDetail(String eventId) async {
+    await apiService.events().then((value) {
+      EventsModel event = apiService.eventsList.firstWhere((element) => element.id == eventId,);
+      _navigationService.navigateToEventsDetailView(event: event, status: "");
+    },);
+
+    // TODO : Parse the event from the event ID and Navigate to event detail View
   }
 
   /// Navigate to the Notifications Screen
