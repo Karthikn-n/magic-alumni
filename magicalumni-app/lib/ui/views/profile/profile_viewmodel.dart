@@ -5,7 +5,6 @@ import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:magic_alumni/service/api_service.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
-import 'package:magic_alumni/service/onesignal_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -54,8 +53,6 @@ class ProfileViewmodel extends BaseViewModel{
   final ApiService api = locator<ApiService>();
   final DialogService dialogService = locator<DialogService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  final OnesignalService _onesignalService = OnesignalService();
-
   List<CollegesModel> collegesList = [];
   CollegesModel? selectedCollege;
   String? selectedDepartment;
@@ -229,7 +226,6 @@ class ProfileViewmodel extends BaseViewModel{
 
   Future<void> onLogout() async {
     await storage.deleteAll();
-    await _onesignalService.removeUserandSubscription(await storage.read(key: "alumni_id") ?? "");
     navigation.pushNamedAndRemoveUntil(Routes.loginView, predicate: (route) => false,);
     notifyListeners();
   }

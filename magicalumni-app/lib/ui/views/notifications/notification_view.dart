@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
-import 'package:magic_alumni/model/mobrequest_model.dart';
 import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
+import 'package:magic_alumni/widgets/notifications/notification_request.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:stacked/stacked.dart';
 
 class NotificationsView extends StatelessWidget {
@@ -42,39 +42,21 @@ class NotificationsView extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(12, 10, 12, 0),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               height: size.height,
-              child: ListView.builder(
-                itemCount: model.mobRequests.length,
+              child: model.notifications.isEmpty
+              ? Center(
+                child: Text("No notifications"),
+              )
+              : ListView.builder(
+                itemCount: model.notifications.length,
                 itemBuilder: (context, index) {
-                  MobileRequestModel req = model.mobRequests[index];
-                  return Column(
-                    children: [
-                      ListTile(
-                        leading: CircleAvatar(
-                          child: Icon(CupertinoIcons.bell),
-                        ),
-                        title: Text("Mobile number Request", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            InkWell(
-                              onTap: () => showAlumniBottomSheet(context, req.sender),
-                              child: Text("View profile")
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextButton(onPressed: (){} , child: Text("Show")),
-                                TextButton(onPressed: (){} , child: Text("Deny")),
-                                Container()
-                              ],
-                            )
-                          ],
-                        ),
-                        trailing: Icon(CupertinoIcons.delete),
-                      ),
-                      
-                    ],
-                  );
+                  OSNotification req = model.notifications[index];
+                  return switch (req.additionalData!["type"]) {
+                    "event" => NotificationRequest(notification: req, model: model,),
+                    "job" => NotificationRequest(notification: req, model: model,),
+                    "request" => NotificationRequest(notification: req, model: model,),
+                    "invitation" => NotificationRequest(notification: req, model: model,),
+                    _ => Container()
+                  };
                 },
               ),
             ),

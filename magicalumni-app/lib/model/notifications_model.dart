@@ -3,12 +3,14 @@ class NotificationsModel {
   final String title;
   final String description;
   final String date;
+  final String type;
   final Map<String, dynamic> data;
   NotificationsModel({
     required this.id,
     required this.title,
     required this.description,
     required this.date,
+    required this.type,
     required this.data,
   });
 
@@ -30,6 +32,7 @@ class NotificationsModel {
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       date: map['date'] ?? '',
+      type: map['type'] ?? "",
       data: Map<String, dynamic>.from(map['data']),
     );
   }

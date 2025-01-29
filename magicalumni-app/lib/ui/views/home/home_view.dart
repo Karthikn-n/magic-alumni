@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:magic_alumni/ui/views/home/home_viewmodel.dart';
+import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
 import 'package:magic_alumni/widgets/home/latest_news_widget.dart';
 import 'package:magic_alumni/widgets/home/notifications_widgets.dart';
 import 'package:magic_alumni/widgets/profile/profile_card_widget.dart';
@@ -77,35 +78,40 @@ class HomeView extends StatelessWidget {
                   child: RefreshIndicator(
                     onRefresh: () => model.init(),
                     child: SingleChildScrollView(
-                      child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Space padding for the tabs from above (below) card in stack
-                              SizedBox(height: size.height * 0.1,),
-                              // Recent Notifications
-                              model.apiService.mobRequestsList.isEmpty
-                               ? Container()
-                               : Text("Recent Notifications", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                               model.apiService.mobRequestsList.isEmpty
-                               ? Container()
-                               : SizedBox(height: size.height * 0.02,),
-                              model.apiService.mobRequestsList.isEmpty
-                               ? Container()
-                               : SizedBox(
-                                  height: 100,
-                                  child: RecentNotificationsWidget(requests: model.apiService.mobRequestsList.take(4).toList(),)
-                                ),
-                              // Latest News 
-                              SizedBox(height: size.height * 0.015,),
-                              Text("Latest News", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
-                              SizedBox(height: size.height * 0.02,),
-                              // Latest news List widget
-                              LatestNewsWidget(news: model.newsList,)
-                            ],
-                          ),
-                        ),
+                      child: ViewModelBuilder.nonReactive(
+                        viewModelBuilder: () => NotificationViewmodel(),
+                        builder: (ctx, notifyModel, child) {
+                          return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Space padding for the tabs from above (below) card in stack
+                                  SizedBox(height: size.height * 0.1,),
+                                  // Recent Notifications
+                                  notifyModel.notifications.isEmpty
+                                   ? Container()
+                                   : Text("Recent Notifications", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+                                   notifyModel.notifications.isEmpty
+                                   ? Container()
+                                   : SizedBox(height: size.height * 0.02,),
+                                  notifyModel.notifications.isEmpty
+                                   ? Container()
+                                   : SizedBox(
+                                      height: 100,
+                                      child: RecentNotificationsWidget(requests: notifyModel.notifications.take(4).toList(),)
+                                    ),
+                                  // Latest News 
+                                  SizedBox(height: size.height * 0.015,),
+                                  Text("Latest News", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+                                  SizedBox(height: size.height * 0.02,),
+                                  // Latest news List widget
+                                  LatestNewsWidget(news: model.newsList,)
+                                ],
+                              ),
+                            );
+                        }
+                      ),
                     ),
                   ),
                 ),
