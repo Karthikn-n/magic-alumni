@@ -7,7 +7,6 @@ import path from "path";
 import mongoose from "mongoose";
 const router = express.Router();
 
-// Documented
 router.post("/register", async (req, res) => {
   try {
     const { name, address, city, password } = req.body;
@@ -49,9 +48,46 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  try {
+    const { name, password } = req.body;
 
-// Documented
-router.get("/", async (req, res) => {
+    if (!name || !password) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Name and password are required",
+      });
+    }
+
+    const college = await College.findOne({ name });
+    if (!college) {
+      return res.status(404).json({
+        status: "not ok",
+        message: "College not found",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, college.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        status: "not ok",
+        message: "Invalid password",
+      });
+    }
+
+    res.status(200).json({
+      status: "ok",
+      message: "Login successful",
+      college,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ status: "error", message: "Error logging in", error });
+  }
+});
+
+router.get("/allCollegeList", async (res) => {
   try {
     const collegeList = await College.find();
 
