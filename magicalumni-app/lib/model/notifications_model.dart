@@ -1,17 +1,17 @@
 class NotificationsModel {
   final int id;
   final String title;
-  final String description;
+  final String content;
   final String date;
+  final String? requestId;
   final String type;
-  final Map<String, dynamic> data;
   NotificationsModel({
     required this.id,
     required this.title,
-    required this.description,
+    required this.content,
     required this.date,
     required this.type,
-    required this.data,
+    this.requestId,
   });
 
   Map<String, dynamic> toJson() {
@@ -19,10 +19,9 @@ class NotificationsModel {
   
     result.addAll({'id': id});
     result.addAll({'title': title});
-    result.addAll({'description': description});
+    result.addAll({'content': content});
     result.addAll({'date': date});
-    result.addAll({'data': data});
-  
+    result.addAll({'request_id': requestId});
     return result;
   }
 
@@ -30,10 +29,10 @@ class NotificationsModel {
     return NotificationsModel(
       id: map['id']?.toInt() ?? 0,
       title: map['title'] ?? '',
-      description: map['description'] ?? '',
-      date: map['date'] ?? '',
+      content: map['content'] ?? '',
+      date: map['date'] ?? "",
       type: map['type'] ?? "",
-      data: Map<String, dynamic>.from(map['data']),
+      requestId: map["request_id"] ?? ""
     );
   }
 }

@@ -751,23 +751,19 @@ router.post("/requestMobile", async (req, res) => {
       data: {
         type: "request",
         request_id: request_id,
-        sender: {
-          id: senderData._id,
-          name: senderData.name,
-          email: senderData.email,
-        },
+        title: "New Request Received",
+        content: `You have a new request from ${senderData.name || "a user"}`,
+        date: new Date(),
         status,
       },
       buttons: [
         {
           id: "accept", // Unique ID for the button
-          text: "Accept Request", // Button text
-          icon: "https://your-app.com/icons/accept.png", // (Optional) Icon URL
+          text: "Accept Request", // Button text // (Optional) Icon URL
         },
         {
           id: "reject", // Unique ID for the button
-          text: "Reject Request", // Button text
-          icon: "https://your-app.com/icons/reject.png", // (Optional) Icon URL
+          text: "Reject Request", // Button text // (Optional) Icon URL
         },
       ],
     };

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
+import 'package:magic_alumni/model/notifications_model.dart';
 import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
 import 'package:magic_alumni/widgets/notifications/notification_request.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:stacked/stacked.dart';
 
 class NotificationsView extends StatelessWidget {
@@ -14,6 +14,7 @@ class NotificationsView extends StatelessWidget {
     return ViewModelBuilder.reactive(
       onViewModelReady: (viewModel) async => await viewModel.init(),
       viewModelBuilder: () => NotificationViewmodel(),
+      onDispose: (viewModel) => viewModel.onDispose(),
       builder: (ctx, model, child) {
         return Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
@@ -39,18 +40,25 @@ class NotificationsView extends StatelessWidget {
                   topRight: Radius.circular(30),
                 ),
               ),
-              padding: EdgeInsets.fromLTRB(12, 10, 12, 0),
+              // padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               height: size.height,
               child: model.notifications.isEmpty
               ? Center(
                 child: Text("No notifications"),
               )
-              : ListView.builder(
+              : ListView.separated(
                 itemCount: model.notifications.length,
+                 separatorBuilder: (context, index) {
+                  return Divider(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    thickness: 1,
+                    height: 5,
+                  );
+                },
                 itemBuilder: (context, index) {
-                  OSNotification req = model.notifications[index];
-                  return switch (req.additionalData!["type"]) {
+                  NotificationsModel req = model.notifications[index];
+                  return switch (req.type) {
                     "event" => NotificationRequest(notification: req, model: model,),
                     "job" => NotificationRequest(notification: req, model: model,),
                     "request" => NotificationRequest(notification: req, model: model,),

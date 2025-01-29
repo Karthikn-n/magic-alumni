@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:magic_alumni/model/notifications_model.dart';
 
 class RecentNotificationsWidget extends StatelessWidget {
-  final List<OSNotification> requests;
+  final List<NotificationsModel> requests;
   const RecentNotificationsWidget({super.key, required this.requests});
 
   @override
@@ -69,7 +69,7 @@ class RecentNotificationsWidget extends StatelessWidget {
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Text(
-                                formatTimeDifference(requests[index].additionalData!["date"]),
+                                formatTimeDifference(requests[index].date),
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontSize: 12,
