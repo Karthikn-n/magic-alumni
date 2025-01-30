@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/model/events_model.dart';
+import 'package:magic_alumni/model/notifications_model.dart';
 import 'package:magic_alumni/service/api_service.dart';
 import 'package:magic_alumni/ui/views/app-view/app_viewmodel.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -17,9 +18,9 @@ class OnesignalService {
   
 
   // Stream controller that handle the new notification that comes from the oneSignal and API
-  static final StreamController<OSNotification> _notificationStreamController = StreamController<OSNotification>.broadcast();
+  static final StreamController<List<NotificationsModel>> _notificationStreamController = StreamController<List<NotificationsModel>>.broadcast();
   static final NavigationService _navigationService = locator<NavigationService>();
-  Stream<OSNotification> get notificationStream => _notificationStreamController.stream;
+  Stream<List<NotificationsModel>> get notificationStream => _notificationStreamController.stream;
 
   static final ApiService _apiService = locator<ApiService>();
   static final AppViewModel _appViewModel = locator<AppViewModel>();
@@ -52,9 +53,15 @@ class OnesignalService {
   /// Check the permission every time that app is closed and reopen it
   static Future<void> subscribeNotification() async {
     /// listen to the Notification when the app is in foreground
-    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+    OneSignal.Notifications.addForegroundWillDisplayListener((OSNotificationWillDisplayEvent event) {
+      event.notification.display();
       debugPrint("Notification received from one signal: ${event.notification.additionalData}");
-      _notificationStreamController.sink.add(event.notification);
+        List<NotificationsModel> notifications = [];
+        notifications.add(NotificationsModel.fromJson(event.notification.additionalData ?? {}));
+        debugPrint("Notification added ${notifications.length}");
+      _notificationStreamController.sink.add(notifications);
+      debugPrint("Notification added to stream");
+      event.preventDefault();
     },);
     OneSignal.Notifications.addClickListener((event) async {
         var data = event.notification.additionalData;

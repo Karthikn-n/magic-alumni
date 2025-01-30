@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/model/events_model.dart';
@@ -10,7 +9,7 @@ import 'package:stacked_services/stacked_services.dart';
 
 
 class NotificationViewmodel extends BaseViewModel{
-  final OnesignalService _onesignalService = locator<OnesignalService>();
+  final OnesignalService onesignalService = locator<OnesignalService>();
 
   final NavigationService _navigationService = locator<NavigationService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
@@ -21,15 +20,6 @@ class NotificationViewmodel extends BaseViewModel{
   
   final ApiService apiService = locator<ApiService>();
 
-  Future<void> init() async {
-    debugPrint("Initialized");
-    _onesignalService.notificationStream.listen((event) {
-    debugPrint("Listening..");
-      _notifications.add(NotificationsModel.fromJson(event.additionalData ?? <String, dynamic>{}));
-      notifyListeners();
-    },);
-   debugPrint("Still listenting..");
-  }
 
   void navigateToEventDetail(String eventId) async {
     await apiService.events().then((value) {
@@ -47,7 +37,7 @@ class NotificationViewmodel extends BaseViewModel{
       : _navigationService.navigateToNotificationsView();
 
   /// Dispose the Notification listener
-  void onDispose() {
-    _onesignalService.onDispose();
-  }
+  // void onDispose() {
+  //   onesignalService.onDispose();
+  // }
 }

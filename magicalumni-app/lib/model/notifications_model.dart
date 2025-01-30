@@ -25,6 +25,7 @@ class NotificationsModel {
     result.addAll({'date': date});
     result.addAll({"event_id": eventId});
     result.addAll({'request_id': requestId});
+    result.addAll({"type": type});
     return result;
   }
 

@@ -13,9 +13,9 @@ class NotificationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
-      onViewModelReady: (viewModel) async => await viewModel.init(),
+      onViewModelReady: (viewModel) async => await viewModel.apiService.notifications(),
       viewModelBuilder: () => NotificationViewmodel(),
-      onDispose: (viewModel) => viewModel.onDispose(),
+      // onDispose: (viewModel) => viewModel.onDispose(),
       builder: (ctx, model, child) {
         return Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
@@ -44,29 +44,58 @@ class NotificationsView extends StatelessWidget {
               // padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               height: size.height,
-              child: model.notifications.isEmpty
+              child:  model.apiService.notificationsList.isEmpty
               ? Center(
-                child: Text("No notifications"),
-              )
-              : ListView.separated(
-                itemCount: model.notifications.length,
-                 separatorBuilder: (context, index) {
-                  return Divider(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    thickness: 1,
-                    height: 5,
-                  );
-                },
-                itemBuilder: (context, index) {
-                  NotificationsModel req = model.notifications[index];
-                  return switch (req.type) {
-                    "event" => NotificationEvent(notification: req, model: model,),
-                    "request" => NotificationRequest(notification: req, model: model,),
-                    "invitation" => NotificationEvent(notification: req, model: model,),
-                    _ => Container()
-                  };
-                },
-              ),
+                  child: Text("No notifications"),
+                )
+              :  ListView.separated(
+                  itemCount: model.apiService.notificationsList.length,
+                  separatorBuilder: (context, index) {
+                    return Divider(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      thickness: 1,
+                      height: 5,
+                    );
+                  },
+                  itemBuilder: (context, index) {
+                    NotificationsModel req = model.apiService.notificationsList[index];
+                    return switch (req.type) {
+                      "event" => NotificationEvent(notification: req, model: model,),
+                      "request" => NotificationRequest(notification: req, model: model,),
+                      "invitation" => NotificationEvent(notification: req, model: model,),
+                      _ => Container()
+                    };
+                  },
+                ),
+              // StreamBuilder<List<NotificationsModel>>(
+              //   stream: model.onesignalService.notificationStream,
+              //   builder: (context, snapshot) {
+              //     debugPrint("${snapshot.data ?? []}");
+              //     return snapshot.data == null
+              //       ? Center(
+              //           child: Text("No notifications"),
+              //         )
+              //       : ListView.separated(
+              //           itemCount: snapshot.data!.length,
+              //           separatorBuilder: (context, index) {
+              //             return Divider(
+              //               color: Theme.of(context).scaffoldBackgroundColor,
+              //               thickness: 1,
+              //               height: 5,
+              //             );
+              //           },
+              //           itemBuilder: (context, index) {
+              //             NotificationsModel req = snapshot.data![index];
+              //             return switch (req.type) {
+              //               "event" => NotificationEvent(notification: req, model: model,),
+              //               "request" => NotificationRequest(notification: req, model: model,),
+              //               "invitation" => NotificationEvent(notification: req, model: model,),
+              //               _ => Container()
+              //             };
+              //           },
+              //         );
+              //   }
+              // ),
             ),
           ),
           
