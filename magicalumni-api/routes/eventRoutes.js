@@ -2,13 +2,13 @@ import express from "express";
 import Member from "../models/Member.js";
 import Event from "../models/Event.js";
 import MemberCollege from "../models/MemberCollege.js";
+import College from "../models/College.js";
 import EventPeople from "../models/EventPeople.js";
 import multer from "multer";
 import Notification from "../models/Notification.js";
 import path from "path";
 import axios from "axios";
 import mongoose from "mongoose";
-import { type } from "os";
 
 const router = express.Router();
 
@@ -55,6 +55,8 @@ router.post("/create", upload, async (req, res) => {
       rsvp_options,
       location,
       criteria,
+      status,
+      cheif_guest,
       created_by,
     } = req.body;
 
@@ -68,6 +70,8 @@ router.post("/create", upload, async (req, res) => {
         message: "All required fields must be filled",
       });
     }
+
+    const eventStatus = cheif_guest ? "approved" : "hold";
 
     const rsvpArray = Array.isArray(rsvp_options)
       ? rsvp_options
@@ -85,13 +89,24 @@ router.post("/create", upload, async (req, res) => {
       date,
       approval_status,
       event_type,
+      cheif_guest,
       rsvp_options: rsvpArray,
       location,
       criteria,
+      status: eventStatus,
       created_by: createdBy,
     });
 
     const savedEvent = await newEvent.save();
+
+    if (!cheif_guest) {
+      return res.status(201).json({
+        status: "ok",
+        message:
+          "Event created successfully, but no notification sent due to missing chief guest",
+        event: savedEvent,
+      });
+    }
 
     const memberColleges = await MemberCollege.find({ college_id }).select(
       "alumni_id"
@@ -110,7 +125,7 @@ router.post("/create", upload, async (req, res) => {
 
     if (externalUserIds.length > 0) {
       const oneSignalConfig = {
-        app_id: "b1793826-5d51-49a9-822c-ff0dcda804f1",
+        app_id: `${process.env.ONESIGNAL_APP_ID}`,
         include_external_user_ids: externalUserIds,
         type: "event",
         headings: { en: "New Event Created!" },
@@ -144,7 +159,7 @@ router.post("/create", upload, async (req, res) => {
         );
         const members = await Member.find({
           _id: { $in: alumniIds },
-          status: "active",
+          status: "approved",
         }).select("external_id");
         const externalUserIds = members
           .map((m) => m.external_id)
@@ -230,11 +245,11 @@ router.post("/list", upload, async (req, res) => {
     const eventsWithAlumni = await Promise.all(
       eventList.map(async (event) => {
         const alumni = await Member.findById(event.alumni_id).select("name");
-        const formattedDate = new Date(event.date).toLocaleDateString("en-US");
+        // const formattedDate = new Date(event.date).toLocaleDateString("en-US");
         return {
           ...event._doc,
           alumni_name: alumni ? alumni.name : "Unknown Alumni",
-          date: formattedDate,
+          // date: formattedDate,
         };
       })
     );
@@ -527,6 +542,97 @@ router.post("/eventPeopleStatusEdit", upload, async (req, res) => {
     res.status(500).json({
       status: "error",
       message: "Error updating status",
+      error: error.message,
+    });
+  }
+});
+
+router.post("/chiefGuestRequest", async (req, res) => {
+  try {
+    const { alumni_id, college_id, event_id } = req.body;
+
+    if (
+      !mongoose.Types.ObjectId.isValid(alumni_id) ||
+      !mongoose.Types.ObjectId.isValid(college_id)
+    ) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid alumni or college",
+      });
+    }
+
+    const members = await Member.find({ _id: { $in: alumni_id } }).select(
+      "external_id"
+    );
+    console.log("Member records found:", members);
+
+    const externalUserIds = members.map((m) => m._id).filter(Boolean);
+    console.log("External User IDs:", externalUserIds);
+
+    const alumniId = await Member.findById(alumni_id);
+    const alumniName = alumniId.name;
+
+    const eventId = await Event.findById(event_id);
+    const eventName = eventId.event_title;
+
+    const collegeId = await College.findById(college_id);
+    const collegeName = collegeId.name;
+
+    if (externalUserIds.length > 0) {
+      const oneSignalConfig = {
+        app_id: `${process.env.ONESIGNAL_APP_ID}`,
+        include_external_user_ids: externalUserIds,
+        type: "cheif guest request",
+        headings: { en: "New request" },
+        contents: {
+          en: `${collegeName} has sent you a request to accept the cheif guest for ${eventName}`,
+        },
+        data: {
+          type: "cheif guest request",
+          alumni_id: alumni_id,
+          title: "cheif guest request",
+          content: `${collegeName} has sent you a request to accept the cheif guest for ${eventName}`,
+        },
+        actions: [{ id: "cheif guest request", title: "Cheif Guest Request" }],
+      };
+
+      try {
+        console.log(
+          "Sending notification to OneSignal with config:",
+          oneSignalConfig
+        );
+        const oneSignalResponse = await axios.post(
+          "https://onesignal.com/api/v1/notifications",
+          oneSignalConfig,
+          {
+            headers: {
+              Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const members = await Member.find({
+          _id: { $in: alumni_id },
+          status: "approved",
+        }).select("external_id");
+        const externalUserIds = members
+          .map((m) => m.external_id)
+          .filter(Boolean);
+
+        console.log("Notification sent:", oneSignalResponse.data);
+
+        console.log("Notification sent successfully");
+      } catch (error) {
+        console.error(
+          "Error sending OneSignal notification:",
+          error.response?.data || error.message
+        );
+      }
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error sending request",
       error: error.message,
     });
   }

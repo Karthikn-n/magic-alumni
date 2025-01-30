@@ -10,6 +10,7 @@ import path from "path";
 import User from "./models/User.js";
 import College from "./models/College.js";
 import Member from "./models/Member.js";
+import Notification from "./models/Notification.js";
 import Department from "./models/Department.js";
 import News from "./models/News.js";
 import Event from "./models/Event.js";
@@ -27,6 +28,7 @@ import newsRoutes from "./routes/newsRoutes.js";
 import memberRoutes from "./routes/memberRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
+import notificationRoutes from "./routes/NotificationRoutes.js";
 
 dotenv.config();
 
@@ -71,6 +73,7 @@ app.use("/api/news", newsRoutes);
 app.use("/api/member", memberRoutes);
 app.use("/api/event", eventRoutes);
 app.use("/api/job", jobRoutes);
+app.use("/api/notification", notificationRoutes);
 app.use("/uploads", express.static("uploads"));
 
 const __filename = fileURLToPath(import.meta.url);
@@ -97,7 +100,17 @@ const authenticate = async (email, password) => {
 };
 
 const admin = new AdminJS({
-  resources: [User, College, Department, News, Member, Event, Job, Request],
+  resources: [
+    User,
+    College,
+    Department,
+    News,
+    Member,
+    Event,
+    Job,
+    Request,
+    Notification,
+  ],
   rootPath: "/admin",
   branding: {
     companyName: "Magic Alumni",
