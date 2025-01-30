@@ -10,6 +10,7 @@ import 'package:magic_alumni/model/events_model.dart';
 import 'package:magic_alumni/model/jobs_model.dart';
 import 'package:magic_alumni/model/mobrequest_model.dart';
 import 'package:magic_alumni/model/news_model.dart';
+import 'package:magic_alumni/model/notifications_model.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 import '../constants/app_constants.dart';
@@ -29,6 +30,7 @@ class ApiService {
   AlumniModel? get alumni => _alumni;
   List<CollegesModel> collegesList = [];
   List<MobileRequestModel> mobRequestsList = [];
+  List<NotificationsModel> notificationsList = [];
 
   bool isSent = false;
 
@@ -572,6 +574,66 @@ class ApiService {
       } 
       return {};
     }
+  }
+
+  /// Get all the notifications
+  Future<List<NotificationsModel>> notifications() async {
+    try{
+      final response = await _dio.post(
+        "${baseApiUrl}notification/list",
+        data: {
+          "alumni_id": await storage.read(key: "alumni_id")
+        }
+      );
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        List<dynamic> requests = (response.data["requestList"] ?? []) as List<dynamic>;
+        mobRequestsList = requests.map((request) => MobileRequestModel.fromJson(request),).toList();
+        debugPrint("Length of notifications: ${notificationsList.length}");
+        return notificationsList;
+      }
+      return [];
+    } on DioException catch(err, st) {
+      log("Somthing went wrong on listing getting notifications", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode ?? 100;
+      final message = err.response!.data["message"] ?? "Unknown";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && statusCode == 500)) {
+          log("Somthing went wrong on listing getting notifications", stackTrace: st, error: message);
+        }
+        return [];
+    }
+  }
+
+  /// Create the Event only the Alumni who is Alumni Coordinator can create this Events
+  Future<bool> deleteNotofication(String notificationID) async {
+    try{
+      final response = await _dio.post(
+        "${baseApiUrl}notification/delete",
+        data: {
+          "notification_id": notificationID
+        }
+      );
+      if (response.statusCode == 201 && response.data["status"] == "ok") {
+        _snackbarService.showSnackbar(message: response.data["message"],);
+        return true;
+      }else{
+        _snackbarService.showSnackbar(message: response.data["message"], );
+        log("Something went on creating event  ${response.data["message"]}", error: response.data["message"]);
+      }
+    } on DioException catch (err, st) {
+      log("Something went on deleting notification $err", stackTrace: st, error: err.toString());
+      final statusCode = err.response!.statusCode;
+      final message = err.response!.data["message"] ?? "Unknown error occured";
+      final status = err.response!.data["status"] ?? "Error";
+      if((status == "not ok" && statusCode == 400) 
+        || (status == "not found" && statusCode == 404)
+        || (status == "error" && status == 500) ) {
+          log("Something went on deleting notification $message", stackTrace: st, error: err.toString());
+      } 
+    }
+    return false;
   }
 
   /// Factory constructor to return the instance of the ApiService
