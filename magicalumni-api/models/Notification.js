@@ -5,34 +5,34 @@ const notificationSchema = new mongoose.Schema(
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Member",
-      required: true, // The user receiving the notification
+      required: true,
     },
     type: {
       type: String,
-      required: true, // Type of notification (e.g., request, message, alert)
+      required: true,
     },
     title: {
       type: String,
-      required: true, // Title of the notification
+      required: true,
     },
     message: {
       type: String,
-      required: true, // Notification message content
+      required: true,
     },
     data: {
-      type: Object, // Additional data related to the notification (e.g., request details)
+      type: Object,
     },
     status: {
       type: String,
-      enum: ["unread", "read"], // Status of the notification
+      enum: ["unread", "read"],
       default: "unread",
     },
     created_at: {
       type: Date,
-      default: Date.now, // Timestamp when the notification was created
+      default: Date.now,
     },
   },
-  { timestamps: true } // Adds `createdAt` and `updatedAt` fields automatically
+  { timestamps: true }
 );
 
 export default mongoose.model("Notification", notificationSchema);

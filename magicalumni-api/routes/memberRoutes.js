@@ -4,7 +4,8 @@ import MemberCollege from "../models/MemberCollege.js";
 import College from "../models/College.js";
 import Request from "../models/Request.js";
 import Department from "../models/Department.js";
-import mongoose from "mongoose";
+import Event from "../models/Event.js";
+import mongoose, { now } from "mongoose";
 import Notification from "../models/Notification.js";
 import otpGenerator from "otp-generator";
 import OTPModel from "../models/OTPModel.js";
@@ -378,11 +379,81 @@ router.post("/updateMemberStatus", async (req, res) => {
       { new: true }
     );
 
+    const collegeId = await College.findById(college_id);
+    console.log("College ID:", collegeId);
+    const collegeName = collegeId.name;
+    console.log("College Name:", collegeName);
     if (!updatedAlumniCollege) {
       return res.status(404).json({
         status: "not found",
         message: "No alumni-college mapping found with the provided IDs",
       });
+    }
+
+    // const memberColleges = await MemberCollege.find({ college_id }).select(
+    //   "alumni_id"
+    // );
+    // console.log(memberColleges);
+    // const alumniIds = memberColleges.map((mc) => mc.alumni_id);
+    // console.log("Alumni IDs:", alumniIds);
+
+    const members = await Member.find({ _id: { $in: alumni_id } }).select(
+      "external_id"
+    );
+    console.log("Member records found:", members);
+
+    const externalUserIds = members.map((m) => m._id).filter(Boolean);
+    console.log("External User IDs:", externalUserIds);
+
+    if (externalUserIds.length > 0) {
+      const oneSignalConfig = {
+        app_id: `${process.env.ONESIGNAL_APP_ID}`,
+        include_external_user_ids: externalUserIds,
+        type: "member approval",
+        headings: { en: "Status Approved" },
+        contents: { en: `${collegeName} has approved your status` },
+        data: {
+          type: "member approval",
+          alumni_id: alumni_id,
+          title: "member approval",
+          content: "member approval by college",
+          date: now,
+        },
+        actions: [{ id: "member approval", title: "Member Approval" }],
+      };
+
+      try {
+        console.log(
+          "Sending notification to OneSignal with config:",
+          oneSignalConfig
+        );
+        const oneSignalResponse = await axios.post(
+          "https://onesignal.com/api/v1/notifications",
+          oneSignalConfig,
+          {
+            headers: {
+              Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const members = await Member.find({
+          _id: { $in: alumni_id },
+          status: "approved",
+        }).select("external_id");
+        const externalUserIds = members
+          .map((m) => m.external_id)
+          .filter(Boolean);
+
+        console.log("Notification sent:", oneSignalResponse.data);
+
+        console.log("Notification sent successfully");
+      } catch (error) {
+        console.error(
+          "Error sending OneSignal notification:",
+          error.response?.data || error.message
+        );
+      }
     }
 
     res.status(200).json({
@@ -692,7 +763,6 @@ router.post("/requestMobile", async (req, res) => {
       });
     }
 
-    // Check if the request ID already exists
     const fakeRequest = await Request.findOne({ request_id });
     if (fakeRequest) {
       return res.status(400).json({
@@ -702,7 +772,6 @@ router.post("/requestMobile", async (req, res) => {
       });
     }
 
-    // Fetch sender data from the database
     const senderData = await Member.findById(sender);
     if (!senderData) {
       return res.status(404).json({
@@ -711,7 +780,6 @@ router.post("/requestMobile", async (req, res) => {
       });
     }
 
-    // Create a new request
     const request = new Request({
       sender,
       receiver,
@@ -734,16 +802,15 @@ router.post("/requestMobile", async (req, res) => {
         },
         status,
       },
-      status: "unread", // Default status
+      status: "unread",
       created_at: new Date(),
     });
 
     await notification.save();
 
-    // Prepare OneSignal notification payload
     const oneSignalConfig = {
-      app_id: process.env.ONESIGNAL_APP_ID,
-      include_external_user_ids: [receiver], // Send to the receiver's external ID
+      app_id: `${process.env.ONESIGNAL_APP_ID}`,
+      include_external_user_ids: ["679735d9107a026e4d3f66e9"],
       headings: { en: "New Request Received" },
       contents: {
         en: `You have a new request from ${senderData.name || "a user"}`,
@@ -751,24 +818,26 @@ router.post("/requestMobile", async (req, res) => {
       data: {
         type: "request",
         request_id: request_id,
-        title: "New Request Received",
-        content: `You have a new request from ${senderData.name || "a user"}`,
-        date: new Date(),
+        sender: {
+          id: senderData._id,
+          name: senderData.name,
+          email: senderData.email,
+        },
         status,
       },
       buttons: [
         {
-          id: "accept", // Unique ID for the button
-          text: "Accept Request", // Button text // (Optional) Icon URL
+          id: "accept",
+          text: "Accept Request",
+          icon: "https://your-app.com/icons/accept.png",
         },
         {
-          id: "reject", // Unique ID for the button
-          text: "Reject Request", // Button text // (Optional) Icon URL
+          id: "reject",
+          text: "Reject Request",
+          icon: "https://your-app.com/icons/reject.png",
         },
       ],
     };
-
-    // Send notification through OneSignal
     try {
       const oneSignalResponse = await axios.post(
         "https://onesignal.com/api/v1/notifications",
@@ -788,7 +857,6 @@ router.post("/requestMobile", async (req, res) => {
       );
     }
 
-    // Respond with success
     res.status(201).json({
       status: "ok",
       message: "Request sent successfully and notification pushed",
@@ -1001,6 +1069,70 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({
       status: "error",
       message: "Error fetching member details",
+      error: error.message,
+    });
+  }
+});
+
+router.post("/roleRequestStatus", async (req, res) => {
+  try {
+    const { alumni_id, status } = req.body;
+
+    if (!alumni_id || !status) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid or missing alumni ID, or status",
+      });
+    }
+
+    const request = await Member.findOne({ _id: alumni_id });
+
+    if (!request) {
+      return res.status(404).json({
+        status: "not ok",
+        message: "Alumni member not found",
+      });
+    }
+
+    if (status === "accepted") {
+      await Member.updateOne(
+        { _id: alumni_id },
+        { $set: { role: "Alumni co-ordinator" } }
+      );
+    }
+
+    res.status(200).json({
+      status: "ok",
+      message: `Request processed successfully. Status: ${status}`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating request status",
+      error: error.message,
+    });
+  }
+});
+
+router.post("/cheifGuestRequestStatus", async (req, res) => {
+  try {
+    const { alumni_id, status, event_id } = req.body;
+
+    if (!alumni_id || !status || !event_id) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid or missing alumni ID, status, event ID, ",
+      });
+    }
+
+    res.status(200).json({
+      status: "ok",
+      message: `Request processed successfully. Status: ${status}`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error updating request status",
       error: error.message,
     });
   }

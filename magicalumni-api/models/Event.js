@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const eventSchema = new mongoose.Schema(
   {
@@ -44,7 +45,15 @@ const eventSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    cheif_guest: {
+      type: String,
+      required: false,
+    },
     criteria: {
+      type: String,
+      required: true,
+    },
+    status: {
       type: String,
       required: true,
     },

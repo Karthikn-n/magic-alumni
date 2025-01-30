@@ -76,7 +76,7 @@ router.post("/create", async (req, res) => {
 
     if (externalUserIds.length > 0) {
       const oneSignalConfig = {
-        app_id: "b1793826-5d51-49a9-822c-ff0dcda804f1",
+        app_id: `${process.env.ONESIGNAL_APP_ID}`,
         include_external_user_ids: externalUserIds,
         type: "jobs",
         headings: { en: "New Job Created!" },
@@ -95,14 +95,14 @@ router.post("/create", async (req, res) => {
           oneSignalConfig,
           {
             headers: {
-              Authorization: `Basic ${process.env.ONSIGNAL_API_KEY}`,
+              Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
               "Content-Type": "application/json",
             },
           }
         );
         const members = await Member.find({
           _id: { $in: alumniIds },
-          status: "active",
+          status: "approved",
         }).select("external_id");
         const externalUserIds = members
           .map((m) => m.external_id)
