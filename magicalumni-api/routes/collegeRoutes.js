@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post("/register", async (req, res) => {
   try {
-    const { name, address, city, password } = req.body;
+    const { name, address, city, password, description } = req.body;
 
     if (!name || !address || !city || !password) {
       return res.status(400).json({
