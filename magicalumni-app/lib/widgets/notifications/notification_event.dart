@@ -23,12 +23,17 @@ class NotificationEvent extends StatelessWidget {
             color: Colors.black87
           ),
         ),
-        trailing: IconButton(
-          tooltip: "View Event",
-          onPressed: () async {
-            model.navigateToEventDetail(notification.eventId ?? "");
-          }, 
-          icon: Icon(CupertinoIcons.chevron_right, size: 20,)
+        trailing: Column(
+          children: [
+            Text(model.formatTimeDifference(notification.createdAt ?? notification.date)),
+            IconButton(
+              tooltip: "View Event",
+              onPressed: () async {
+                model.navigateToEventDetail(notification.eventId ?? "");
+              }, 
+              icon: Icon(CupertinoIcons.chevron_right, size: 20,)
+            ),
+          ],
         ),
         subtitle:  Text(
           notification.content, 
@@ -41,4 +46,5 @@ class NotificationEvent extends StatelessWidget {
       ),
     );
   }
+
 }

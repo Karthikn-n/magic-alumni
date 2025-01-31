@@ -21,7 +21,6 @@ class HomeViewmodel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final FlutterSecureStorage storage = FlutterSecureStorage();
   final DialogService diologService = locator<DialogService>();
-  final SnackbarService _snackbarService = locator<SnackbarService>();
 
   AlumniModel? alumni;
 

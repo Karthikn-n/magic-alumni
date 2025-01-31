@@ -47,6 +47,7 @@ class ProfileViewmodel extends BaseViewModel{
   }
 
   AlumniModel? alumni;
+  late PageController pageController = pageController =  PageController(initialPage: selectedIndex);
   final FlutterSecureStorage storage = FlutterSecureStorage();
   final AuthenticateService auth = locator<AuthenticateService>();
   final NavigationService navigation = locator<NavigationService>();
@@ -56,6 +57,33 @@ class ProfileViewmodel extends BaseViewModel{
   List<CollegesModel> collegesList = [];
   CollegesModel? selectedCollege;
   String? selectedDepartment;
+
+  bool isLoad = false;
+
+  void selectCollege(int index) async {
+    
+    pageController =  PageController(initialPage: int.parse(await storage.read(key: "college") ?? "0"));
+    notifyListeners();
+  }
+
+  /// Confirmation for changing college
+  void changeConfirmation(String collegeName, int index) async {
+   final  result = await dialogService.showConfirmationDialog(
+      title: "Want to change the current college to $collegeName",
+      description: "Once your college changed app will load news, events and alumni from the $collegeName",
+      confirmationTitle: "Change"
+    );
+    if (result != null && result.confirmed) {
+      await storage.write(key: "college", value: "$index");
+      pageController =  PageController(initialPage: index);
+      selectedIndex = index;
+      // TODO: call news API with new collegeID
+    } else {
+      await storage.write(key: "college", value: "$index");
+      pageController =  PageController(initialPage: int.parse(await storage.read(key: "college") ?? "0"));
+    }
+    notifyListeners();
+  }
 
   /// Select the college from the API list and set the value to the [selectedCollege]
   void setCollege(CollegesModel collegeName){
@@ -136,6 +164,9 @@ class ProfileViewmodel extends BaseViewModel{
     }else{
       await auth.fetchAlumni();
     }
+    debugPrint(await storage.read(key: "college") ?? "0");
+    selectedIndex = int.parse(await storage.read(key: "college") ?? "0");
+    pageController =  PageController(initialPage: int.parse(await storage.read(key: "college") ?? "0"));
     userNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Raj kumar";
     collegeNameController.text = alumni != null ? alumni!.colleges[0].collegeName : "ABC College"; // Default College Name
     depNameController.text = alumni != null ? alumni!.colleges[0].departments[0].departmentName : "Computer Science"; // Default Department
@@ -210,6 +241,7 @@ class ProfileViewmodel extends BaseViewModel{
 
   /// Call the Add college API with Data
   Future<void> addCollege() async {
+    isLoad = true;
     Map<String, dynamic> collegeData = {
       "college_id": selectedCollege!.id,
       "department_id": selectedCollege!.departments.firstWhere((element) => element.departmentName == selectedDepartment,).id,
@@ -221,7 +253,16 @@ class ProfileViewmodel extends BaseViewModel{
       collegeData["completed_year"] = newCurrentYearOrAlumniController.text;
     }
     debugPrint("Added college: $collegeData");
-    await api.addCollege(collegeData);
+    await api.addCollege(collegeData).then((value) async {
+      debugPrint("Added: $value");
+      if (value) {
+        alumni = await auth.fetchAlumni();
+        isLoad = false;
+        checkExpanded(false);
+        notifyListeners();
+      }
+    },);
+    notifyListeners();
   }
 
   Future<void> onLogout() async {

@@ -14,8 +14,7 @@ class NotificationViewmodel extends BaseViewModel{
   final NavigationService _navigationService = locator<NavigationService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
   
-  final List<NotificationsModel> _notifications = [];
-  List<NotificationsModel> get notifications => _notifications;
+  List<NotificationsModel> notifications = [];
 
   
   final ApiService apiService = locator<ApiService>();
@@ -36,6 +35,26 @@ class NotificationViewmodel extends BaseViewModel{
       ? _snackbarService.showSnackbar(message: "No notfications for you", duration: Duration(seconds: 2))
       : _navigationService.navigateToNotificationsView();
 
+
+  Future<void> notification() async {
+    if (notifications.isEmpty) {
+      notifications = await apiService.notifications();
+      notifyListeners();
+    }
+  }
+
+  String formatTimeDifference(String requestedDate) {
+    final Duration difference = DateTime.now().difference(DateTime.parse(requestedDate));
+    if (difference.inSeconds < 60) {
+      return '${difference.inSeconds}s';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h';
+    } else {
+      return '${difference.inDays}d';
+    }
+  }
   /// Dispose the Notification listener
   // void onDispose() {
   //   onesignalService.onDispose();

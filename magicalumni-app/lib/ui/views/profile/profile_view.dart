@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/ui/views/profile/profile_viewmodel.dart';
+import 'package:magic_alumni/widgets/common/loading_button_widget.dart';
 import 'package:magic_alumni/widgets/common/text_field.dart';
 import 'package:magic_alumni/widgets/profile/profile_card_widget.dart';
 import 'package:stacked/stacked.dart';
@@ -274,7 +275,9 @@ class ProfileView extends StatelessWidget {
                                   },
                                 ),
                                 // Send to permission to the admin
-                                ElevatedButton(
+                                model.isLoad
+                                ? LoadingButtonWidget()
+                                : ElevatedButton(
                                   onPressed: () async {
                                     model.validateAddCollege();
                                     if (model.isAddCollegeValid) {

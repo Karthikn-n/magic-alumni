@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/model/notifications_model.dart';
 import 'package:sqflite/sqflite.dart';
 
