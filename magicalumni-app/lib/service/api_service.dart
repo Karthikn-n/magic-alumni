@@ -129,6 +129,7 @@ class ApiService {
         || (status == "not found" && statusCode == 404)
         || (status == "error" && status == 500) ) {
           log("Something went on getting news $message", stackTrace: st, error: err.toString());
+          return [];
       } 
       return [];
     }
@@ -586,8 +587,8 @@ class ApiService {
         }
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
-        List<dynamic> requests = (response.data["requestList"] ?? []) as List<dynamic>;
-        mobRequestsList = requests.map((request) => MobileRequestModel.fromJson(request),).toList();
+        List<dynamic> requests = (response.data["notificationList"] ?? []) as List<dynamic>;
+        notificationsList = requests.map((request) => NotificationsModel.fromJson(request),).toList();
         debugPrint("Length of notifications: ${notificationsList.length}");
         return notificationsList;
       }

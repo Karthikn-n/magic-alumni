@@ -170,6 +170,7 @@ class  AuthenticateService {
   /// Parse the Alumni data from the response using [AlumniModel]
   /// Store it in the local Storage using [FlutterSecureStorage] for maintain session
   Future<AlumniModel?>? fetchAlumni() async {
+    debugPrint("Alumni-id: ${await store.read(key: "alumni_id")}");
     try {
       final response = await _dio.post(
         "${baseApiUrl}member/profile",
@@ -177,6 +178,7 @@ class  AuthenticateService {
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         _alumni = AlumniModel.fromJson(response.data);
+        debugPrint("Alumni Profile: ${response.data}");
         return alumni;
       }
       return null;

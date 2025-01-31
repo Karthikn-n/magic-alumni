@@ -22,10 +22,11 @@ class ProfileCardWidget extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             children: [
               PageView.builder(
+                controller: model.pageController,
                 scrollDirection: Axis.horizontal,
                 itemCount:  model.alumni != null ? model.alumni!.colleges.length : 2,
                 onPageChanged: (value) {
-                  // model.selectOtherCollege(value);
+                  model.changeConfirmation(model.alumni!.colleges[value].collegeName, value);
                 },
                 itemBuilder: (context, index) {
                   return Card(
@@ -48,7 +49,7 @@ class ProfileCardWidget extends StatelessWidget {
                               Text(
                                 model.alumni != null && model.alumni!.colleges.isEmpty 
                                   ? "Not approved" 
-                                  : "${model.alumni!.colleges[index].departments[index].departmentName}, ${model.alumni!.colleges[index].collegeName}",
+                                  : "${model.alumni!.colleges[index].departments[0].departmentName}, ${model.alumni!.colleges[index].collegeName}",
                                 maxLines: 1,
                                 style: TextStyle(
                                   fontSize: 12,

@@ -13,8 +13,9 @@ class NotificationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
     return ViewModelBuilder.reactive(
-      onViewModelReady: (viewModel) async => await viewModel.apiService.notifications(),
+      onViewModelReady: (viewModel) async => await viewModel.notification(),
       viewModelBuilder: () => NotificationViewmodel(),
+      disposeViewModel: false,
       // onDispose: (viewModel) => viewModel.onDispose(),
       builder: (ctx, model, child) {
         return Scaffold(
@@ -44,12 +45,12 @@ class NotificationsView extends StatelessWidget {
               // padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               height: size.height,
-              child:  model.apiService.notificationsList.isEmpty
+              child:  model.notifications.isEmpty
               ? Center(
                   child: Text("No notifications"),
                 )
               :  ListView.separated(
-                  itemCount: model.apiService.notificationsList.length,
+                  itemCount: model.notifications.length,
                   separatorBuilder: (context, index) {
                     return Divider(
                       color: Theme.of(context).scaffoldBackgroundColor,
@@ -58,7 +59,7 @@ class NotificationsView extends StatelessWidget {
                     );
                   },
                   itemBuilder: (context, index) {
-                    NotificationsModel req = model.apiService.notificationsList[index];
+                    NotificationsModel req = model.notifications[index];
                     return switch (req.type) {
                       "event" => NotificationEvent(notification: req, model: model,),
                       "request" => NotificationRequest(notification: req, model: model,),
