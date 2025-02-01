@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_alumni/app/app.locator.dart';
@@ -11,6 +13,7 @@ import 'package:stacked_services/stacked_services.dart';
 import '../../../model/colleges_model.dart';
 
 class ProfileViewmodel extends BaseViewModel{
+  
   int selectedIndex = 0;
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController collegeNameController = TextEditingController();
@@ -159,14 +162,13 @@ class ProfileViewmodel extends BaseViewModel{
   // Validation for the login form comes in the 
   Future<void> init() async {
     if (auth.alumni != null) {
-      debugPrint("profile is not null");
       alumni = auth.alumni;
+      debugPrint("Called 1");
     }else{
-      await auth.fetchAlumni();
+      debugPrint("Called 2");
+     alumni = await auth.fetchAlumni();
     }
-    debugPrint(await storage.read(key: "college") ?? "0");
-    selectedIndex = int.parse(await storage.read(key: "college") ?? "0");
-    pageController =  PageController(initialPage: int.parse(await storage.read(key: "college") ?? "0"));
+    debugPrint("Alumni is null ${alumni == null}");
     userNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Raj kumar";
     collegeNameController.text = alumni != null ? alumni!.colleges[0].collegeName : "ABC College"; // Default College Name
     depNameController.text = alumni != null ? alumni!.colleges[0].departments[0].departmentName : "Computer Science"; // Default Department
@@ -176,6 +178,7 @@ class ProfileViewmodel extends BaseViewModel{
     emailController.text = alumni != null ? alumni!.alumniProfileDetail.email : "rajkumar@gmail.com";
     designationController.text = alumni != null ? alumni!.alumniProfileDetail.designation : "Software Developer";
     // Name controller validationmodel.alumni!.colleges[index].collegeName
+    rebuildUi();
     userNameController.addListener(() {
       if (userNameController.text.isNotEmpty) {
         isUserNameValid = true;
@@ -215,7 +218,7 @@ class ProfileViewmodel extends BaseViewModel{
         isLinkedInUrlValid = false;
       }
     },);
-    notifyListeners();
+    rebuildUi();
   }
 
   Future confirmLogout() async {
@@ -269,6 +272,7 @@ class ProfileViewmodel extends BaseViewModel{
     await storage.deleteAll();
     navigation.pushNamedAndRemoveUntil(Routes.loginView, predicate: (route) => false,);
     notifyListeners();
+    debugPrint("Logout");
   }
 
 
