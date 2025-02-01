@@ -4,19 +4,27 @@ import Department from "../models/Department.js";
 import bcrypt from "bcrypt";
 import axios from "axios";
 import Member from "../models/Member.js";
-import multer from "multer";
-import path from "path";
+// import multer from "multer";
+// import path from "path";
 import mongoose from "mongoose";
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
   try {
-    const { name, address, city, password, description } = req.body;
+    const { name, address, city, password, confirmPassword, description } =
+      req.body;
 
-    if (!name || !address || !city || !password) {
+    if (!name || !address || !city || !password || !confirmPassword) {
       return res.status(400).json({
         status: "not ok",
         message: "All required fields must be filled",
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Passwords do not match",
       });
     }
 
@@ -231,7 +239,7 @@ router.post("/requestRole", async (req, res) => {
     if (externalUserIds.length > 0) {
       const oneSignalConfig = {
         app_id: `${process.env.ONESIGNAL_APP_ID}`,
-        include_external_user_ids: ["6799e782b1efb0c856e4f0f1"],
+        include_external_user_ids: externalUserIds,
         type: "role request",
         headings: { en: `Request from ${collegeName}` },
         contents: {

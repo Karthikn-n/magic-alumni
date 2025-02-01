@@ -7,6 +7,7 @@ router.post("/", async (req, res) => {
   try {
     const { role, email, password } = req.body;
     const newUser = new User({
+      name,
       role,
       email,
       password,

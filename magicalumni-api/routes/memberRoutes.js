@@ -4,7 +4,7 @@ import MemberCollege from "../models/MemberCollege.js";
 import College from "../models/College.js";
 import Request from "../models/Request.js";
 import Department from "../models/Department.js";
-import Event from "../models/Event.js";
+// import Event from "../models/Event.js";
 import mongoose, { now } from "mongoose";
 import Notification from "../models/Notification.js";
 import otpGenerator from "otp-generator";
@@ -809,7 +809,7 @@ router.post("/requestMobile", async (req, res) => {
     await notification.save();
 
     const oneSignalConfig = {
-      app_id: `${process.env.ONESIGNAL_APP_ID}`,
+      app_id: "b1793826-5d51-49a9-822c-ff0dcda804f1",
       include_external_user_ids: ["679735d9107a026e4d3f66e9"],
       headings: { en: "New Request Received" },
       contents: {
@@ -845,7 +845,7 @@ router.post("/requestMobile", async (req, res) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
+            Authorization: `Basic os_v2_app_wf4tqjs5kfe2tarm74g43kae6e6jipwt6acuehfqbefg65upusr6j2xorkk5w6cejuwm5c3xwqapvvdkrkrs5iqobhbin6qgjbmtrji`,
           },
         }
       );
