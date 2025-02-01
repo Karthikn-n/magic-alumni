@@ -1,0 +1,21 @@
+.text-meta-3 {
+    display: none !important;
+}
+
+.bg-meta-2 svg {
+    width: 100px;
+    height: 28px;
+    color: white;
+}
+
+span.text-sm.font-medium {
+    font-size: 15px;
+}
+
+.text-meta-5 {
+    display: none !important;
+}
+
+.rounded-sm.border.border-stroke.bg-white.py-6.px-7\.5.shadow-default.dark\:border-strokedark.dark\:bg-boxdark {
+    height: 190px;
+}

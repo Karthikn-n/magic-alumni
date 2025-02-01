@@ -1,6 +1,7 @@
 import express from "express";
 import Job from "../models/Job.js";
 import JobReport from "../models/JobReport.js";
+import MemberCollege from "../models/MemberCollege.js";
 import Member from "../models/Member.js";
 import mongoose from "mongoose";
 const router = express.Router();
