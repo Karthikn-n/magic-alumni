@@ -46,8 +46,9 @@ class EventsView extends StatelessWidget {
                 children: [
                   Container(),
                   TabBar(
+                    key: const PageStorageKey("events"),
                     indicatorAnimation: TabIndicatorAnimation.elastic,
-                    isScrollable: true,
+                    isScrollable: false,
                       padding: EdgeInsets.zero,
                       tabAlignment: TabAlignment.center,
                       dividerColor: Colors.transparent,
@@ -60,6 +61,7 @@ class EventsView extends StatelessWidget {
                   Expanded(
                     // flex: 4,
                     child: TabBarView(
+                      key: const PageStorageKey("events"),
                       children: [
                         EventListWidget(
                           key: Key("today"),

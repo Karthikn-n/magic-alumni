@@ -67,7 +67,7 @@ class ProfileView extends StatelessWidget {
                         children: [
                           // Space padding for the tabs from above (below) card in stack
                           SizedBox(height: size.height * 0.1,),
-                           Column(
+                          Column(
                           spacing: 10,
                           children: [
                             Container(),
@@ -250,7 +250,7 @@ class ProfileView extends StatelessWidget {
                             ),
                                 const SizedBox(height: 10,),
                                 // Current year or passed out year text field
-                               TextFieldWidget(
+                              TextFieldWidget(
                                   controller: model.newCurrentYearOrAlumniController,
                                   prefixIcon: Icon(CupertinoIcons.calendar, color: Theme.of(context).primaryColor, size: 20,),
                                   hintText: model.isCurrentYearStudent ? "Current Academic Year" : "Passed Out Year",
@@ -350,9 +350,9 @@ class ProfileView extends StatelessWidget {
               // // Profile card and status card
               Positioned(
                 top: 0,
-                left: 16,
-                right: 16,
-                child: ProfileCardWidget()
+                left: 10,
+                right: 10,
+                child: ProfileCardWidget(fromProfile: false)
               ),
             ],
           ),
