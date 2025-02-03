@@ -26,7 +26,7 @@ class ProfileView extends StatelessWidget {
             backgroundColor: Theme.of(context).primaryColor,
             title:  Text(
               "Profile", 
-              style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+              style: appBarTextStyle,
             ) ,
             actions: [
                IconButton(

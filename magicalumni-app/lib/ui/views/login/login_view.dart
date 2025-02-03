@@ -147,42 +147,6 @@ class LoginView extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 15,),
-                              // Linked in button to signin
-                              SizedBox(
-                                width: size.width,
-                                height: 48.0,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    // model.isLoad = false;
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    spacing: 10.0,
-                                    children: [
-                                      Flexible(
-                                        flex: 1,
-                                        child: SizedBox(
-                                          height: 24,
-                                          width: 24,
-                                          child: Image.asset(
-                                            "assets/icon/linkedin_circle.png",
-                                            fit: BoxFit.cover,
-                                          )
-                                        ),
-                                      ),
-                                      Flexible(
-                                        flex: 2,
-                                        child: Text(
-                                          'Login with LinkedIn',
-                                          style: textStyle,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 15,),
                               // Signup Navigation
                               InkWell(
                                 onTap: () {

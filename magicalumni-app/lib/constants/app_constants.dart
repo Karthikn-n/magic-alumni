@@ -16,3 +16,5 @@ TextStyle textStyle = const TextStyle(
 );
 
 const String baseApiUrl = "http://192.168.1.10:3000/api/";
+
+const TextStyle appBarTextStyle = TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600);

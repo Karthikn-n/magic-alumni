@@ -238,7 +238,7 @@ class SignupView extends StatelessWidget {
                               height: 50.0,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  model.isLoad = false;
+                                  model.navigatePayment();
                                 },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
