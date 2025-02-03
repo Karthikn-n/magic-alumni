@@ -138,6 +138,8 @@ class SignupViewmodel extends BaseViewModel{
   /// Navigate to signin screen
   void navigateSignin() => _navigationService.replaceWithLoginView();
   
+  /// Navigate to payment view
+  void navigatePayment() => _navigationService.navigateToPaymentView();
 
   /// Set true for the current year student to change the field hint
   void currentYear(bool isCurrentYearStudent){
