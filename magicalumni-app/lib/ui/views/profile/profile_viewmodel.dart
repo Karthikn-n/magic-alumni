@@ -159,13 +159,13 @@ class ProfileViewmodel extends BaseViewModel{
 
   // Validation for the login form comes in the 
   Future<void> init() async {
-    if (auth.alumni != null) {
-      alumni = auth.alumni;
-      debugPrint("Called 1");
-    }else{
-      debugPrint("Called 2");
-     alumni = await auth.fetchAlumni();
-    }
+    // if (auth.alumni != null) {
+    //   alumni = auth.alumni;
+    //   debugPrint("Called 1");
+    // }else{
+    //   debugPrint("Called 2");
+    //  alumni = await auth.fetchAlumni();
+    // }
     debugPrint("Alumni is null ${alumni == null}");
     userNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Raj kumar";
     collegeNameController.text = alumni != null ? alumni!.colleges[0].collegeName : "ABC College"; // Default College Name

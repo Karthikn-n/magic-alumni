@@ -16,7 +16,6 @@ class  AuthenticateService {
   static final AuthenticateService _authenticateService = AuthenticateService._internal();
   final _dio = DioService.dio;
   final SnackbarService snackBar = locator<SnackbarService>();
-  final EncryptionService encrypt = locator<EncryptionService>();
   // Local storage to store the user informations
   final FlutterSecureStorage store = FlutterSecureStorage();
 
