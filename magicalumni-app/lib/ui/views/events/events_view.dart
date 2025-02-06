@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:magic_alumni/ui/views/events/events_viewmodel.dart';
 import 'package:magic_alumni/ui/views/profile/profile_viewmodel.dart';
-import 'package:magic_alumni/widgets/events/event_list_widget.dart';
+import 'package:magic_alumni/ui/widgets/events/event_list_widget.dart';
 import 'package:stacked/stacked.dart';
 
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:magic_alumni/widgets/payment/payment_card_viewmodel.dart';
+import 'package:magic_alumni/ui/widgets/payment/payment_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
 class PaymentCardView extends StackedView<PaymentCardViewmodel> {

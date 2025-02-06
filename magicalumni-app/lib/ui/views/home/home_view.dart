@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:magic_alumni/ui/views/home/home_viewmodel.dart';
 import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
-import 'package:magic_alumni/widgets/home/latest_news_widget.dart';
-import 'package:magic_alumni/widgets/home/notifications_widgets.dart';
-import 'package:magic_alumni/widgets/profile/profile_card_widget.dart';
+import 'package:magic_alumni/ui/widgets/home/latest_news_widget.dart';
+import 'package:magic_alumni/ui/widgets/home/notifications_widgets.dart';
+import 'package:magic_alumni/ui/widgets/profile/profile_card_widget.dart';
 import 'package:stacked/stacked.dart';
 
 

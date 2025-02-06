@@ -6,7 +6,7 @@ import 'package:magic_alumni/model/events_model.dart';
 import 'package:magic_alumni/ui/views/events/events_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
-import '../../../widgets/people/filter_button.dart';
+import '../../widgets/people/filter_button.dart';
 
 class EventsDetailView extends StatelessWidget {
   final EventsModel event;

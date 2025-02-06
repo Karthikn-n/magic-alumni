@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/ui/views/jobs/job_viewmodel.dart';
-import 'package:magic_alumni/widgets/jobs/job_list_widget.dart';
+import 'package:magic_alumni/ui/widgets/jobs/job_list_widget.dart';
 import 'package:stacked/stacked.dart';
 
 import '../profile/profile_viewmodel.dart';
