@@ -150,15 +150,14 @@ class ProfileViewmodel extends BaseViewModel{
     }
     await auth.update(alumniData).then((value) async {
       if(value) {
-        await init();
+        await fetchAlumni();
         isEditing = false;
       }
       notifyListeners();
     },);
   }
 
-  // Validation for the login form comes in the 
-  Future<void> init() async {
+  Future<void> fetchAlumni() async {
     if (auth.alumni != null) {
       alumni = auth.alumni;
       debugPrint("Called 1");
@@ -167,6 +166,11 @@ class ProfileViewmodel extends BaseViewModel{
      alumni = await auth.fetchAlumni();
     }
     debugPrint("Alumni is null ${alumni == null}");
+  }
+
+
+  // Validation for the login form comes in the 
+  void init() {
     userNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Raj kumar";
     collegeNameController.text = alumni != null ? alumni!.colleges[0].collegeName : "ABC College"; // Default College Name
     depNameController.text = alumni != null ? alumni!.colleges[0].departments[0].departmentName : "Computer Science"; // Default Department
