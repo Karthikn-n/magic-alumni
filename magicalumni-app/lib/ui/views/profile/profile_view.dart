@@ -18,7 +18,7 @@ class ProfileView extends StatelessWidget {
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => ProfileViewmodel(),
       onDispose: (viewModel) => viewModel.disposeProfile(),
-      onViewModelReady: (viewModel) async => await viewModel.init(),
+      onViewModelReady: (viewModel) async => await viewModel.fetchAlumni().then((value) => viewModel.init(),),
       builder: (ctx, model, child) {
         return Scaffold(
           backgroundColor: Theme.of(context).primaryColor,

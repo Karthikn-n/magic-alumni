@@ -1,15 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:magic_alumni/ui/views/profile/profile_viewmodel.dart';
 import '../../mocks.dart';
-// import '../../mocks.mocks.dart';
 
 void main(){
   TestWidgetsFlutterBinding.ensureInitialized();
   late ProfileViewmodel viewmodel;
-  // late MockFlutterSecureStorage storage;
   setUpAll(() {
     registerServices();
-    // storage = MockFlutterSecureStorage();
     viewmodel = ProfileViewmodel();
   },);
 
@@ -28,8 +25,7 @@ void main(){
         expect(viewmodel.alumni, null);
     },);
 
-    test("Test field properties", () async {
-      // when(storage.read(key: "key")).thenAnswer((_) async => null);
+    test("Test field properties", () {
       expect(viewmodel.userNameController.text, "");
       expect(viewmodel.collegeNameController.text, "");
       expect(viewmodel.depNameController.text, "");
@@ -39,7 +35,7 @@ void main(){
       expect(viewmodel.emailController.text, "");       
       expect(viewmodel.designationController.text, "");
 
-      await viewmodel.init();
+      viewmodel.init();
 
       expect(viewmodel.userNameController.text, "Raj kumar");
       expect(viewmodel.collegeNameController.text, "ABC College");
