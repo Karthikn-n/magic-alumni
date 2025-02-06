@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/ui/views/events/create-event/create_event_viewmodel.dart';
-import 'package:magic_alumni/widgets/common/text_field.dart';
+import 'package:magic_alumni/ui/widgets/common/text_field.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../../../constants/app_constants.dart';

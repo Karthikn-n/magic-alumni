@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/ui/views/peoples/people_viewmodel.dart';
-import 'package:magic_alumni/widgets/people/people_widget.dart';
+import 'package:magic_alumni/ui/widgets/people/people_widget.dart';
 import 'package:stacked/stacked.dart';
 
 class PeopleView extends StatelessWidget {

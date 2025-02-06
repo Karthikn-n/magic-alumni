@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
 import 'package:magic_alumni/model/notifications_model.dart';
 import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
-import 'package:magic_alumni/widgets/notifications/notification_event.dart';
-import 'package:magic_alumni/widgets/notifications/notification_request.dart';
+import 'package:magic_alumni/ui/widgets/notifications/notification_event.dart';
+import 'package:magic_alumni/ui/widgets/notifications/notification_request.dart';
 import 'package:stacked/stacked.dart';
 
 class NotificationsView extends StatelessWidget {

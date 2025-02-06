@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/model/jobs_model.dart';
 import 'package:magic_alumni/ui/views/jobs/job_viewmodel.dart';
-import 'package:magic_alumni/widgets/common/text_field.dart';
+import 'package:magic_alumni/ui/widgets/common/text_field.dart';
 import 'package:stacked/stacked.dart';
 import 'package:url_launcher/url_launcher.dart';
 

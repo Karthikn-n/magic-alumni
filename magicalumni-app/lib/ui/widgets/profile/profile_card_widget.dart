@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/profile/profile_viewmodel.dart';
-import 'package:magic_alumni/widgets/common/dot_indicator.dart';
+import 'package:magic_alumni/ui/widgets/common/dot_indicator.dart';
 import 'package:stacked/stacked.dart';
 
 class ProfileCardWidget extends StackedView<ProfileViewmodel>{

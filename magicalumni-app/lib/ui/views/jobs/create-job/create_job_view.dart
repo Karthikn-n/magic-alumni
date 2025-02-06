@@ -4,7 +4,7 @@ import 'package:magic_alumni/ui/views/jobs/create-job/create_job_viewmodel.dart'
 import 'package:stacked/stacked.dart';
 
 import '../../../../constants/app_constants.dart';
-import '../../../../widgets/common/text_field.dart';
+import '../../../widgets/common/text_field.dart';
 
 class CreateJobView extends StatelessWidget {
   const CreateJobView({super.key});

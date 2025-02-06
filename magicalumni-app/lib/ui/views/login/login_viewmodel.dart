@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginViewmodel extends BaseViewModel{
   final TextEditingController mobileController = TextEditingController();
@@ -30,6 +32,7 @@ class LoginViewmodel extends BaseViewModel{
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
   set isLoad(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -38,7 +41,6 @@ class LoginViewmodel extends BaseViewModel{
   // Use navigation service to navigate between views
   final NavigationService _navigationService = locator<NavigationService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  
 
   // Authenticate Service used to Authenticate users from Database
   final AuthenticateService auth = locator<AuthenticateService>();
@@ -75,7 +77,6 @@ class LoginViewmodel extends BaseViewModel{
     debugPrint("OTP verified here: $_isOTPVerified");
     notifyListeners();
   }
-
 
   // If the mobile is not added show the snackbar
   void mobileSnackBar(){
@@ -139,7 +140,6 @@ class LoginViewmodel extends BaseViewModel{
     );
   }
  
-
   Future<void> verifyOtp(String otp) async {
     isLoad = true;
     await auth.verifyOtp(otp).then((value) {
@@ -158,8 +158,6 @@ class LoginViewmodel extends BaseViewModel{
   // Navigate to home screen view
   void navigateHome()  => _navigationService.replaceWithAppView();
 
-
-  
   void onDispose() {
     mobileController.dispose();
     otpController.dispose();
@@ -188,6 +186,60 @@ class LoginViewmodel extends BaseViewModel{
   PagingController<String, String> get pagingController => _pagingController; 
 
   final Uint16List data = Uint16List(100);
+  
+  String generateTransactionId() {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final random = Random();
+    final randomNumber = random.nextInt(100000); 
+    debugPrint('TXN${timestamp}_$randomNumber'); // generates a number between 0 and 99999
+    return 'TXN${timestamp}_$randomNumber';
+  }
+  
+  Future<void> initiateUpiPayment() async {
+      // Replace these values with your own merchant details and transaction data.
+      final String upiUrl = getUpiUrl(
+        pa: 'subramaniyam3.m@okaxis', /// Need a Merchant Account VPA from google wallet
+        pn: 'Subbu',
+        tr: generateTransactionId(),
+        tn: 'Payment for Order #1234',
+        am: '200',
+      );
+
+      // Check if any UPI app is available to handle the intent.
+      if (await canLaunchUrl(Uri.parse(upiUrl))) {
+        await launchUrl(Uri.parse(upiUrl));
+        // Once the user finishes the payment flow, control returns to your app.
+        // Note: Handling the payment response (success/failure) requires
+        // additional work (see below).
+      } else {
+        // No UPI apps available. You might want to show an error message.
+        throw 'Could not launch UPI payment. Please install a UPI app.';
+      }
+    }
+  
+  String getUpiUrl({
+    required String pa,
+    required String pn,
+    required String tr,
+    required String tn,
+    required String am,
+    String cu = "INR",
+  }) {
+    final uri = Uri(
+      scheme: 'upi',
+      host: 'pay',
+      queryParameters: {
+        'pa': pa,
+        'pn': pn,
+        'tr': tr,
+        'tn': tn,
+        'am': am,
+        'cu': cu,
+      },
+    );
+    return uri.toString();
+  }
+
 }
 
 

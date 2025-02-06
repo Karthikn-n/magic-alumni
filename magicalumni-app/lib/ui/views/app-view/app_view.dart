@@ -5,7 +5,7 @@ import 'package:magic_alumni/ui/views/jobs/jobs_view.dart';
 import 'package:magic_alumni/ui/views/home/home_view.dart';
 import 'package:magic_alumni/ui/views/peoples/people_view.dart';
 import 'package:magic_alumni/ui/views/profile/profile_view.dart';
-import 'package:magic_alumni/widgets/app/image_widget.dart';
+import 'package:magic_alumni/ui/widgets/app/image_widget.dart';
 import 'package:stacked/stacked.dart';
 
 class AppView extends StatelessWidget {

@@ -172,6 +172,12 @@ class LoginView extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                              ElevatedButton(
+                                onPressed: ()async {
+                                  await model.initiateUpiPayment();
+                                }, 
+                                child: Text("Pay")
+                              ),
                               const SizedBox(height: 15,),
                             ],
                           ),

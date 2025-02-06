@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/peoples/people_viewmodel.dart';
-import 'package:magic_alumni/widgets/common/loading_button_widget.dart';
+import 'package:magic_alumni/ui/widgets/common/loading_button_widget.dart';
 import 'package:stacked/stacked.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../model/alumni_model.dart';
+import '../../../model/alumni_model.dart';
 
 class PeopleWidget extends StatelessWidget {
   final List<AlumniProfileModel> peoples;
