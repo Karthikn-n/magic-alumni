@@ -7,30 +7,27 @@ class PaymentCardView extends StackedView<PaymentCardViewmodel> {
   
   @override
   Widget builder(BuildContext context, PaymentCardViewmodel viewModel, Widget? child) {
-    Size size = MediaQuery.sizeOf(context);
     return Card(
-      child: Container(
-        child: Column(
-          children: [
-            Text(
-              "You are need to Pay to be a alumni",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+      child: Column(
+        children: [
+          Text(
+            "You are need to Pay to be a alumni",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
-            Text(
-              "You ",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+          ),
+          Text(
+            "You ",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
-
-          ],
-        ),
+          ),
+      
+        ],
       ),
     );
   }

@@ -163,7 +163,6 @@ class _PayAdvancedSampleAppState extends State<PayAdvancedSampleApp> {
   StreamSubscription<String>? _googlePayResultSubscription;
 
   late final Future<bool> _canPayGoogleFuture;
-  late final Future<bool> _canPayAppleFuture;
 
   // A method to listen to events coming from the event channel on Android
   void _startListeningForPaymentResults() {

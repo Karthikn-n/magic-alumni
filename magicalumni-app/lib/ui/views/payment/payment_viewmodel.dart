@@ -5,12 +5,10 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-import '../../../service/api_service.dart';
 
 class PaymentViewmodel extends BaseViewModel {
   late Razorpay razorPay;
   final _diologService = locator<DialogService>();
-  final _apiService = locator<ApiService>();
 // https://medium.com/yavar/how-i-integrated-razorpay-into-my-flutter-application-d0858fd35e85
   final Future<PaymentConfiguration> googlePayConfigFuture = PaymentConfiguration.fromAsset('icon/google_pay_config.json');
   List<String> paymentMethods = [

@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/login/login_viewmodel.dart';
-import 'package:magic_alumni/widgets/common/loading_button_widget.dart';
-import 'package:magic_alumni/widgets/common/text_field.dart';
+import 'package:magic_alumni/ui/widgets/common/loading_button_widget.dart';
+import 'package:magic_alumni/ui/widgets/common/text_field.dart';
 import 'package:stacked/stacked.dart';
 
 class LoginView extends StatelessWidget {
@@ -171,12 +171,6 @@ class LoginView extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                              ),
-                              ElevatedButton(
-                                onPressed: ()async {
-                                  await model.initiateUpiPayment();
-                                }, 
-                                child: Text("Pay")
                               ),
                               const SizedBox(height: 15,),
                             ],
