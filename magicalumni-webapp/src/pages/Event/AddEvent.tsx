@@ -106,7 +106,7 @@ const AddEvent: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!alumniId || !collegeId || !eventTitle || !date || !image) {
+    if (!collegeId || !eventTitle || !date || !image) {
       alert('Please fill in all required fields.');
       return;
     }
