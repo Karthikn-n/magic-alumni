@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:magic_alumni/ui/views/home/home_viewmodel.dart';
 import 'package:magic_alumni/ui/views/notifications/notification_viewmodel.dart';
 import 'package:magic_alumni/ui/widgets/home/latest_news_widget.dart';
@@ -19,7 +18,7 @@ class HomeView extends StatelessWidget {
       viewModelBuilder: () => HomeViewmodel(),
       onViewModelReady: (model) async  {
         await model.init();
-        model.alumni!.colleges[0].status != "approved" ? _showNonClosablePopup(context) : null;
+        model.alumni!.colleges[0].status != "approved" ? _showNonClosablePopup(context, model) : null;
       },
       builder: (ctx, model, child) {
         return Scaffold(
@@ -32,11 +31,14 @@ class HomeView extends StatelessWidget {
                 width: 24,
                 child: Image.asset("assets/icon/logo.png"),
               ),
-              title: Text(
-                "Welcome back to the hut,", 
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white
+              title: GestureDetector(
+                onTap: () => _showNonClosablePopup(context, model),
+                child: Text(
+                  "Welcome back to the hut,", 
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white
+                  ),
                 ),
               ),
               subtitle:  Text(
@@ -129,7 +131,7 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  void _showNonClosablePopup(BuildContext context) {
+  void _showNonClosablePopup(BuildContext context, HomeViewmodel model) {
     showDialog(
       context: context,
       barrierDismissible: false, // Prevents closing the dialog by tapping outside
@@ -137,17 +139,24 @@ class HomeView extends StatelessWidget {
         return PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, result) {
-            SystemNavigator.pop();
+            // SystemNavigator.pop();
           },
           child: AlertDialog(
             title: Text('Not approved'),
-            content: Text("You're not approved by college"),
+            content: Text("You need to approved by your college admin to access this app"),
             actions: <Widget>[
-              TextButton(
+              SimpleDialogOption(
+                onPressed: () {
+                  model.navigateToProfileView();
+                  // You can add any action here, but not closing the dialog
+                },
+                child: Text('Profile'),
+              ),
+              SimpleDialogOption(
                 onPressed: () {
                   // You can add any action here, but not closing the dialog
                 },
-                child: Text('OK'),
+                child: Text('Close'),
               ),
             ],
           ),

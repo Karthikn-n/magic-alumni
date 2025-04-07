@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/ui/views/peoples/people_viewmodel.dart';
-import 'package:magic_alumni/ui/widgets/common/loading_button_widget.dart';
 import 'package:stacked/stacked.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -84,17 +83,21 @@ class PeopleWidget extends StatelessWidget {
                         child: ViewModelBuilder.reactive(
                           viewModelBuilder: () => PeopleViewmodel(),
                           builder: (ctx, model, child) {
-                            return model.isLoad 
-                            ? LoadingButtonWidget()
-                            : ElevatedButton(
-                              onPressed: () async => await model.checkStatus(peoples[index].id).then((value) => showConnectionBottomSheet(
-                                model, 
-                                peoples[index].id,
-                                context, 
-                                peoples[index].name, 
-                                peoples[index].linkedUrl,
-                                model.status
-                              )), 
+                            return 
+                            // model.isLoad 
+                            // ? LoadingButtonWidget()
+                            ElevatedButton(
+                              onPressed: () async => 
+                              // await model.checkStatus(peoples[index].id).then((value) => 
+                                showConnectionBottomSheet(
+                                  model, 
+                                  peoples[index].id,
+                                  context, 
+                                  peoples[index].name, 
+                                  peoples[index].linkedUrl,
+                                  model.status
+                                ),
+                              // ), 
                               child: Text("Connect", style: textStyle,)
                             );
                           }

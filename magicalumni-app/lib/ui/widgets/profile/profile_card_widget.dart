@@ -19,15 +19,16 @@ class ProfileCardWidget extends StackedView<ProfileViewmodel>{
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          PageView.builder(
-            controller: viewModel.pageController,
-            scrollDirection: Axis.horizontal,
-            itemCount:  viewModel.alumni != null ? viewModel.alumni!.colleges.length : 2,
-            onPageChanged: (value) {
-              viewModel.changeConfirmation(viewModel.alumni!.colleges[value].collegeName, value);
-            },
-            itemBuilder: (context, index) {
-              return Card(
+          // PageView.builder(
+          //   controller: viewModel.pageController,
+          //   scrollDirection: Axis.horizontal,
+          //   itemCount:  viewModel.alumni != null ? viewModel.alumni!.colleges.length : 2,
+          //   onPageChanged: (value) {
+          //     viewModel.changeConfirmation(viewModel.alumni!.colleges[value].collegeName, value);
+          //   },
+          //   itemBuilder: (context, index) {
+          //     return 
+              Card(
                 color: Color(0xFFFCFCFF),
                 child: Padding(
                   padding: const EdgeInsets.all(commonPadding),
@@ -45,9 +46,9 @@ class ProfileCardWidget extends StackedView<ProfileViewmodel>{
                             ),
                           ),
                           Text(
-                            viewModel.alumni != null && viewModel.alumni!.colleges.isEmpty 
+                            viewModel.currentCollege != null && viewModel.currentCollege!.status == "not approved"
                               ? "Not approved" 
-                              : "${viewModel.alumni!.colleges[index].departments[0].departmentName}, ${viewModel.alumni!.colleges[index].collegeName}",
+                              : "${viewModel.currentCollege!.departments[0].departmentName}, ${viewModel.currentCollege!.collegeName}",
                             maxLines: 1,
                             style: TextStyle(
                               fontSize: 12,
@@ -67,16 +68,16 @@ class ProfileCardWidget extends StackedView<ProfileViewmodel>{
                               spacing: 10,
                               children: [
                                 Icon(
-                                  viewModel.alumni != null && viewModel.alumni!.colleges[index].status == "approved" 
+                                  viewModel.currentCollege != null && viewModel.currentCollege!.status == "approved" 
                                   ? CupertinoIcons.check_mark_circled_solid
                                   : CupertinoIcons.info_circle, 
-                                  size: viewModel.alumni != null && viewModel.alumni!.colleges[index].status == "approved" ? 14 : 18, 
-                                  color: viewModel.alumni != null && viewModel.alumni!.colleges[index].status == "approved" ? Colors.green : Colors.red,
+                                  size: viewModel.currentCollege != null && viewModel.currentCollege!.status == "approved" ? 14 : 18, 
+                                  color: viewModel.currentCollege != null && viewModel.currentCollege!.status == "approved" ? Colors.green : Colors.red,
                                 ),
                                 Text(
-                                  viewModel.alumni !=  null && viewModel.alumni!.colleges.isEmpty
-                                    ? "nothing" 
-                                    : viewModel.alumni!.colleges[index].status == "approved" ? "You are approved ${viewModel.alumni!.alumniProfileDetail.role} now" : "You are not approved by your college",
+                                  viewModel.currentCollege !=  null
+                                    ? viewModel.currentCollege!.status == "approved" ? "You are approved ${viewModel.alumni!.alumniProfileDetail.role} now" : "You are not approved by your college"
+                                    : "nothing",
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500
@@ -90,19 +91,19 @@ class ProfileCardWidget extends StackedView<ProfileViewmodel>{
                     ],
                   ),
                 ),
-              );
-            },
-          ),
-          viewModel.alumni != null && viewModel.alumni!.colleges.isEmpty
+              ),
+          //   },
+          // ),
+          viewModel.currentCollege != null
           ? Container()
           : Positioned(
             bottom: 10,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 5,
-              children: List.generate( viewModel.alumni != null ? viewModel.alumni!.colleges.length : 1, 
+              children: List.generate( viewModel.alumni != null ? 1 : 1, 
               (index) {
-                return DotIndicator(isActive: index == viewModel.selectedIndex,);
+                return DotIndicator(isActive: true,);
               },
               ),
             ),
@@ -123,9 +124,10 @@ class ProfileCardWidget extends StackedView<ProfileViewmodel>{
   }
 
   @override
-  void onViewModelReady(ProfileViewmodel viewModel) {
+  void onViewModelReady(ProfileViewmodel viewModel) async{
     super.onViewModelReady(viewModel);
-    viewModel.init();
+    if(viewModel.alumni != null && viewModel.currentCollege != null) return; 
+    await viewModel.fetchAlumni().then((value) => viewModel.init(),);
   }
   
   @override
