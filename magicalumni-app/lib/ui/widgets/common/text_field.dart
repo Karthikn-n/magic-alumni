@@ -12,6 +12,7 @@ class TextFieldWidget extends StatelessWidget {
   final String? counterText;
   final TextInputAction? textInputAction;
   final VoidCallback? onTap;
+  final Color? fillColor;
   final Function(String value)? onChanged;
   const TextFieldWidget({
     super.key,
@@ -22,6 +23,7 @@ class TextFieldWidget extends StatelessWidget {
     this.maxLines,
     this.prefixIcon,
     this.readOnly,
+    this.fillColor,
     this.suffixIcon,
     this.onChanged,
     this.counterText = "",
@@ -33,7 +35,7 @@ class TextFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: fillColor ?? Colors.white,
         borderRadius: BorderRadius.circular(8),
       ),
       child: TextFormField(

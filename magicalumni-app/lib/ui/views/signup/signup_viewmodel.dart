@@ -52,6 +52,8 @@ class SignupViewmodel extends BaseViewModel{
     selectedCollege = collegeName;
     if (selectedCollege != null) {
       collegeNameController.text = selectedCollege!.id;
+      selectedDepartment = null;
+      depNameController.clear();
     }
     notifyListeners();
   }
@@ -90,9 +92,12 @@ class SignupViewmodel extends BaseViewModel{
     userNameController.addListener(() {
       if (userNameController.text.isNotEmpty) {
         isUserNameValid = true;
+      } else if(RegExp(r'^[A-Za-z ]+$').hasMatch(userNameController.text)) {
+        isUserNameValid = false;
       }else{ 
         isUserNameValid = false;
       }
+      userNameController.text.trim();
     },);
     // College name controller validation
     collegeNameController.addListener(() {

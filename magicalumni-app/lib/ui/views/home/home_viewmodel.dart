@@ -64,5 +64,8 @@ class HomeViewmodel extends BaseViewModel {
   void navigateToNotificationView()
     =>  _navigationService.navigateToNotificationsView();
 
+  void navigateToProfileView() {
+    _navigationService.navigateToProfileView(isFromHomePop: true);
+  }
 }
 

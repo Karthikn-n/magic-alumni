@@ -77,7 +77,7 @@ class LoginViewmodel extends BaseViewModel{
   // If the mobile is not added show the snackbar
   void mobileSnackBar(){
     if (mobileController.text.isEmpty) {
-      _snackbarService.showSnackbar(message: "Enter a Registered Mobile Number",);
+      _snackbarService.showSnackbar(message: "Enter a Mobile Number",);
     }else if(!RegExp(r'^[0-9]{10}$').hasMatch(mobileController.text)){
       _snackbarService.showSnackbar(message: "Enter a Valid Mobile Number",);
     }else{

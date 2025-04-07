@@ -43,7 +43,7 @@ class EventListWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                         splashColor: Colors.white.withValues(alpha: 0.04),
                         onTap: () async => await model.apiService.checkEventStatus(events[index].id).then(
-                          (value) => model.navigateToEventDetail(events[index], value)),
+                          (value) => model.navigateToEventDetail(events[index], value, key)),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(

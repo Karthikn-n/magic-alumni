@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/model/alumni_model.dart';
+import 'package:magic_alumni/model/colleges_model.dart';
 import 'package:magic_alumni/service/dio_service.dart';
 import 'package:magic_alumni/service/encrption_service.dart';
 import 'package:magic_alumni/service/onesignal_service.dart';
@@ -22,6 +23,8 @@ class  AuthenticateService {
   final OnesignalService _onesignalService = OnesignalService();
   
   AlumniModel? _alumni;
+  CollegesModel? _currentCollege;
+  CollegesModel? get currentCollege => _currentCollege;
   AlumniModel? get alumni => _alumni;
 
 
@@ -177,6 +180,7 @@ class  AuthenticateService {
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         _alumni = AlumniModel.fromJson(response.data);
+        await setInitialCollege(_alumni!.colleges[0].id);
         debugPrint("Alumni Profile: ${response.data}");
         return alumni;
       }
@@ -199,6 +203,24 @@ class  AuthenticateService {
       return null;
     }
   }
+
+  Future<void> setInitialCollege(String id) async {
+    await store.write(key: "current_college", value: id);
+    await getCurrentCollege();
+  }
+
+  Future<void> setCurrentCollege(String id) async {
+    await store.write(key: "current_college", value: id);
+    _currentCollege = alumni!.colleges.firstWhere((element) => element.id == id, orElse: () => alumni!.colleges[0]);
+  }
+  
+  Future<CollegesModel?> getCurrentCollege() async {
+    if(_currentCollege != null) return _currentCollege;
+    final collegeId = await store.read(key: "current_college") ?? alumni!.colleges[0].id;
+    _currentCollege = alumni!.colleges.firstWhere((element) => element.id == collegeId, orElse: () => alumni!.colleges[0]);
+    return _currentCollege;
+  }
+
 
   /// Update the alumni || Student profile If they want to edit after approval
   Future<bool> update(Map<String, dynamic> data) async {

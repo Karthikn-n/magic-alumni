@@ -101,6 +101,20 @@ class ApiService {
     }
   }
 
+  Future<void> onChangeCollege() async {
+    String? currentCollegeId = await storage.read(key: "current_college");
+    await storage.write(key: "college_id", value: currentCollegeId);
+    newsList.clear();
+    eventsList.clear();
+    jobsList.clear();
+    peoplesList.clear();
+    Future.wait([
+      news(),
+      peoples(),
+      events(),
+      jobs()
+    ]);
+  }
 
   // Get all the news for the college from the API
   Future<List<NewsModel>> news() async {
@@ -268,15 +282,15 @@ class ApiService {
       }
       return "";
     } on DioException catch (err, st) {
-      log("Something went wrong on checking event status", stackTrace: st, error:  err.toString());
-      final statusCode = err.response!.statusCode;
-      final message = err.response!.data["message"] ?? "Unknown error occured";
-      final status = err.response!.data["status"] ?? "Error";
-      if((status == "not ok" && statusCode == 400) 
-        || (status == "not found" && statusCode == 404)
-        || (status == "error" && status == 500) ) {
-        log("Something went on Requesting Alumni Profile $message", stackTrace: st, error: err.toString());
-      } 
+      // log("Something went wrong on checking event status", stackTrace: st, error:  err.toString());
+      // final statusCode = err.response!.statusCode;
+      // final message = err.response!.data["message"] ?? "Unknown error occured";
+      // final status = err.response!.data["status"] ?? "Error";
+      // if((status == "not ok" && statusCode == 400) 
+      //   || (status == "not found" && statusCode == 404)
+      //   || (status == "error" && status == 500) ) {
+        log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
+      // } 
       return "";
     }
   }
@@ -461,7 +475,8 @@ class ApiService {
         return true;
       }else{
         debugPrint("Something went on requesting mobile number ${response.data["message"]}");
-        return false;
+      _snackbarService.showSnackbar(message: response.data["message"], );
+        return true;
       }
     } on DioException catch (err, st) {
       log("Something went on requesting mobile number $err", stackTrace: st, error: err.toString());
@@ -470,14 +485,14 @@ class ApiService {
         _snackbarService.showSnackbar(message: "Request timed out. Please try again.",);
         return false;
       } 
-      final statusCode = err.response!.statusCode ?? 100;
-      final message = err.response!.data["message"] ?? "Unknown error occured";
-      final status = err.response!.data["status"] ?? "Error";
-      if((status == "not ok" && statusCode == 400) 
-        || (status == "not found" && statusCode == 404)
-        || (status == "error" && status == 500) ) {
-          log("Something went on Requesting mobile number $message", stackTrace: st, error: err.toString());
-      } 
+      // final statusCode = err.response!.statusCode ?? 100;
+      // final message = err.response!.data["message"] ?? "Unknown error occured";
+      // final status = err.response!.data["status"] ?? "Error";
+      // if((status == "not ok" && statusCode == 400) 
+      //   || (status == "not found" && statusCode == 404)
+      //   || (status == "error" && status == 500) ) {
+      //     log("Something went on Requesting mobile number $message", stackTrace: st, error: err.toString());
+      // } 
     }
     return false;
   }

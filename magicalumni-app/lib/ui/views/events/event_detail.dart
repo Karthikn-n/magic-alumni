@@ -158,28 +158,30 @@ class EventsDetailView extends StatelessWidget {
                               color: Colors.black
                             ),
                           ),
-                          model.isSent
-                          ? Text("You status has been Updated to the Event Organizer")
-                          : Material(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  spacing: 10,
-                                  children: List.generate(event.revpOptions.length, (index) {
-                                    return FilterButton(
-                                      width: size.width * 0.25,
-                                      buttonName: event.revpOptions[index], 
-                                      onPressed: () async {
-                                        await model.givePresent(event.revpOptions[index], event.id);
-                                      }
-                                    );
-                                  },) ,
-                                ),
-                              ],
+                          key == Key("past")
+                          ? Container()
+                          : model.isSent
+                            ? Text("You status has been Updated to the Event Organizer")
+                            : Material(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    spacing: 10,
+                                    children: List.generate(event.revpOptions.length, (index) {
+                                      return FilterButton(
+                                        width: size.width * 0.25,
+                                        buttonName: event.revpOptions[index], 
+                                        onPressed: () async {
+                                          await model.givePresent(event.revpOptions[index], event.id);
+                                        }
+                                      );
+                                    },) ,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
                           Text(
                             "Created by", 
                             style: TextStyle(

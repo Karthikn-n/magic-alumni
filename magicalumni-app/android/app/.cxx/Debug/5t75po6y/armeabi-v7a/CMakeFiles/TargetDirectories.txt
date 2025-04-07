@@ -1,0 +1,2 @@
+D:/Projects/magicalumni/magicalumni-app/android/app/.cxx/Debug/5t75po6y/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Projects/magicalumni/magicalumni-app/android/app/.cxx/Debug/5t75po6y/armeabi-v7a/CMakeFiles/rebuild_cache.dir

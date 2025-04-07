@@ -59,9 +59,9 @@ class EventsViewModel extends BaseViewModel {
   
 
   // Navigate to Event Detail view
-  void navigateToEventDetail(EventsModel event, String status){
+  void navigateToEventDetail(EventsModel event, String status, Key? key){
     _navigationService.navigateWithTransition(
-      EventsDetailView(event: event, status: status,), 
+      EventsDetailView(event: event, status: status, key: key,), 
       transitionStyle: Transition.downToUp
     );
   }

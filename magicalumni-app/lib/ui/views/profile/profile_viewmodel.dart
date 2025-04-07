@@ -12,7 +12,7 @@ import '../../../model/colleges_model.dart';
 
 class ProfileViewmodel extends BaseViewModel{
   
-  int selectedIndex = 0;
+  // int selectedIndex = 0;
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController collegeNameController = TextEditingController();
   final TextEditingController depNameController = TextEditingController();
@@ -36,7 +36,7 @@ class ProfileViewmodel extends BaseViewModel{
   bool _isEdited = false;
 
   bool isAddCollegeValid = false;
-
+  
 
 
   bool get isFormValid => isUserNameValid && isCollegNameValid && isdepNameValid && isYearValid && isLinkedInUrlValid;
@@ -48,7 +48,7 @@ class ProfileViewmodel extends BaseViewModel{
   }
 
   AlumniModel? alumni;
-  late PageController pageController = pageController =  PageController(initialPage: selectedIndex);
+  // late PageController pageController = pageController =  PageController(initialPage: selectedIndex);
   final FlutterSecureStorage storage = FlutterSecureStorage();
   final AuthenticateService auth = locator<AuthenticateService>();
   final NavigationService navigation = locator<NavigationService>();
@@ -56,33 +56,28 @@ class ProfileViewmodel extends BaseViewModel{
   final DialogService dialogService = locator<DialogService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
   List<CollegesModel> collegesList = [];
+  CollegesModel? currentCollege;
   CollegesModel? selectedCollege;
   String? selectedDepartment;
+  
 
   bool isLoad = false;
 
-  void selectCollege(int index) async {
-    
-    pageController =  PageController(initialPage: int.parse(await storage.read(key: "college") ?? "0"));
-    notifyListeners();
-  }
+  // void selectCollege(int index) async {
+  //   pageController =  PageController(initialPage: int.parse(await storage.read(key: "college") ?? "0"));
+  //   notifyListeners();
+  // }
 
   /// Confirmation for changing college
-  void changeConfirmation(String collegeName, int index) async {
+  void changeConfirmation(String collegeName, String id) async {
    final  result = await dialogService.showConfirmationDialog(
       title: "Want to change the current college to $collegeName",
       description: "Once your college changed app will load news, events and alumni from the $collegeName",
       confirmationTitle: "Change"
     );
     if (result != null && result.confirmed) {
-      await storage.write(key: "college", value: "$index");
-      pageController =  PageController(initialPage: index);
-      selectedIndex = index;
-      // TODO: call news API with new collegeID
-    } else {
-      await storage.write(key: "college", value: "$index");
-      pageController =  PageController(initialPage: int.parse(await storage.read(key: "college") ?? "0"));
-    }
+      await setCurrentCollege(id);
+    } 
     notifyListeners();
   }
 
@@ -90,7 +85,7 @@ class ProfileViewmodel extends BaseViewModel{
   void setCollege(CollegesModel collegeName){
     selectedCollege = collegeName;
     if (selectedCollege != null) {
-      collegeNameController.text = selectedCollege!.id;
+      newCollegeController.text = selectedCollege!.collegeName;
     }
     notifyListeners();
   }
@@ -98,7 +93,7 @@ class ProfileViewmodel extends BaseViewModel{
   /// Get the Department from selected college
   void setDepartment(DepartmentModel departmentName){
     selectedDepartment = departmentName.departmentName;
-    depNameController.text = departmentName.id;
+    newDepartmentController.text = departmentName.departmentName;
     notifyListeners();
   }
   
@@ -128,7 +123,6 @@ class ProfileViewmodel extends BaseViewModel{
     await api.colleges().then((value) => collegesList = value);
     notifyListeners();
   }
-
 
   Future<void> update() async {
      final alumniData = {
@@ -160,21 +154,27 @@ class ProfileViewmodel extends BaseViewModel{
   Future<void> fetchAlumni() async {
     if (auth.alumni != null) {
       alumni = auth.alumni;
+      currentCollege = auth.currentCollege;
       debugPrint("Called 1");
     }else{
       debugPrint("Called 2");
      alumni = await auth.fetchAlumni();
+     loadCurrentCollege();
     }
+    rebuildUi();
     debugPrint("Alumni is null ${alumni == null}");
   }
 
-
   // Validation for the login form comes in the 
-  void init() {
+  void init() async {
     userNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Raj kumar";
-    collegeNameController.text = alumni != null ? alumni!.colleges[0].collegeName : "ABC College"; // Default College Name
-    depNameController.text = alumni != null ? alumni!.colleges[0].departments[0].departmentName : "Computer Science"; // Default Department
-    currentOrCcyController.text = alumni != null ? alumni!.colleges[0].completedYear.isEmpty ? alumni!.colleges[0].currentYear : alumni!.colleges[0].completedYear : "2024"; // Default Year
+    collegeNameController.text = alumni != null ? currentCollege!.collegeName : "ABC College"; // Default College Name
+    depNameController.text = alumni != null ? currentCollege!.departments[0].departmentName : "Computer Science"; // Default Department
+    currentOrCcyController.text = alumni != null 
+      ? currentCollege!.completedYear.isEmpty 
+        ? currentCollege!.currentYear 
+        : currentCollege!.completedYear 
+      : "2024"; // Default Year
     linkedUrlController.text = alumni != null ? alumni!.alumniProfileDetail.linkedUrl : "https://linkedin.com/in/rajkumar";
     mobileController.text = alumni != null ? alumni!.alumniProfileDetail.mobile : "8957859299";
     emailController.text = alumni != null ? alumni!.alumniProfileDetail.email : "rajkumar@gmail.com";
@@ -223,6 +223,18 @@ class ProfileViewmodel extends BaseViewModel{
     rebuildUi();
   }
 
+  /// User cancel the Edit incase change the value as it is comes from the API
+  void onCancelEdit() {
+      userNameController.text = alumni != null ? alumni!.alumniProfileDetail.name : "Raj kumar";
+      collegeNameController.text = alumni != null ? alumni!.colleges[0].collegeName : "ABC College"; // Default College Name
+      depNameController.text = alumni != null ? alumni!.colleges[0].departments[0].departmentName : "Computer Science"; // Default Department
+      currentOrCcyController.text = alumni != null ? alumni!.colleges[0].completedYear.isEmpty ? alumni!.colleges[0].currentYear : alumni!.colleges[0].completedYear : "2024"; // Default Year
+      linkedUrlController.text = alumni != null ? alumni!.alumniProfileDetail.linkedUrl : "https://linkedin.com/in/rajkumar";
+      mobileController.text = alumni != null ? alumni!.alumniProfileDetail.mobile : "8957859299";
+      emailController.text = alumni != null ? alumni!.alumniProfileDetail.email : "rajkumar@gmail.com";
+      designationController.text = alumni != null ? alumni!.alumniProfileDetail.designation : "Software Developer";
+  }
+
   Future confirmLogout() async {
     final response = await dialogService.showConfirmationDialog(
       title: "Want to logout?",
@@ -233,7 +245,6 @@ class ProfileViewmodel extends BaseViewModel{
       await onLogout();
     }
   }
-
 
   /// Show snackbar if the Alumni is not added the fields in the Profile
   void validateAddCollege() {
@@ -265,6 +276,15 @@ class ProfileViewmodel extends BaseViewModel{
         isLoad = false;
         checkExpanded(false);
         notifyListeners();
+      } else {
+        isLoad = false;
+        selectedCollege = null;
+        selectedDepartment = null;
+         if (isCurrentYearStudent) {
+          newCurrentYearOrAlumniController.clear();
+        }else{
+          newCurrentYearOrAlumniController.clear();
+        }
       }
     },);
     notifyListeners();
@@ -277,7 +297,36 @@ class ProfileViewmodel extends BaseViewModel{
     debugPrint("Logout");
   }
 
+  /// Show can't edit message snackbar
+  void showCantEdit() {
+    _snackbarService.showSnackbar(message: "Can't edit the field", duration: const Duration(milliseconds: 1200));
+  }
 
+  Future<void> setCurrentCollege(String id) async {
+    isLoad = true;
+    Future.wait([
+      auth.setCurrentCollege(id),
+      loadCurrentCollege(),
+    ]);
+    await api.onChangeCollege();
+    isCurrentCollege(id);
+    isLoad = false;
+    rebuildUi();
+  }
+
+
+  Future<void> loadCurrentCollege() async {
+    currentCollege = auth.currentCollege;
+    rebuildUi();
+  }
+
+  bool isCurrentCollege(String id) {
+    if (currentCollege != null) {
+      return currentCollege!.id == id;
+    }else{
+      return false;
+    }
+  }
 
   void disposeProfile(){
     userNameController.dispose();
