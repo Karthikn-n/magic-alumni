@@ -142,59 +142,59 @@ router.post("/create", upload, async (req, res) => {
         actions: [{ id: "view", title: "View Event" }],
       };
 
-      try {
-        console.log(
-          "Sending notification to OneSignal with config:",
-          oneSignalConfig
-        );
-        const oneSignalResponse = await axios.post(
-          "https://onesignal.com/api/v1/notifications",
-          oneSignalConfig,
-          {
-            headers: {
-              Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const members = await Member.find({
-          _id: { $in: alumniIds },
-          status: "approved",
-        }).select("external_id");
-        const externalUserIds = members
-          .map((m) => m.external_id)
-          .filter(Boolean);
+      // try {
+      //   console.log(
+      //     "Sending notification to OneSignal with config:",
+      //     oneSignalConfig
+      //   );
+      //   const oneSignalResponse = await axios.post(
+      //     "https://onesignal.com/api/v1/notifications",
+      //     oneSignalConfig,
+      //     {
+      //       headers: {
+      //         Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
+      //         "Content-Type": "application/json",
+      //       },
+      //     }
+      //   );
+      //   const members = await Member.find({
+      //     _id: { $in: alumniIds },
+      //     status: "approved",
+      //   }).select("external_id");
+      //   const externalUserIds = members
+      //     .map((m) => m.external_id)
+      //     .filter(Boolean);
 
-        console.log("Notification sent:", oneSignalResponse.data);
+      //   console.log("Notification sent:", oneSignalResponse.data);
 
-        console.log("Notification sent successfully");
+      //   console.log("Notification sent successfully");
 
-        await Promise.all(
-          externalUserIds.map((externalId) => {
-            const notification = new Notification({
-              user_id: alumniIds[externalUserIds.indexOf(externalId)],
-              type: "event",
-              title: `New Event Created: ${event_title}`,
-              message: `${event_title} is happening soon! Check it out.`,
-              data: {
-                event_id: savedEvent._id,
-                event_title,
-                created_by: createdBy,
-                date,
-                location,
-              },
-            });
-            return notification.save();
-          })
-        );
+      //   await Promise.all(
+      //     externalUserIds.map((externalId) => {
+      //       const notification = new Notification({
+      //         user_id: alumniIds[externalUserIds.indexOf(externalId)],
+      //         type: "event",
+      //         title: `New Event Created: ${event_title}`,
+      //         message: `${event_title} is happening soon! Check it out.`,
+      //         data: {
+      //           event_id: savedEvent._id,
+      //           event_title,
+      //           created_by: createdBy,
+      //           date,
+      //           location,
+      //         },
+      //       });
+      //       return notification.save();
+      //     })
+      //   );
 
-        console.log("Notifications saved successfully");
-      } catch (error) {
-        console.error(
-          "Error sending OneSignal notification:",
-          error.response?.data || error.message
-        );
-      }
+      //   console.log("Notifications saved successfully");
+      // } catch (error) {
+      //   console.error(
+      //     "Error sending OneSignal notification:",
+      //     error.response?.data || error.message
+      //   );
+      // }
     }
 
     res.status(201).json({
@@ -386,6 +386,51 @@ router.post("/coordinatorList", upload, async (req, res) => {
     res.status(500).json({
       status: "error",
       message: "Error retrieving list",
+      error: error.message,
+    });
+  }
+});
+
+router.post("/checkStatus", upload, async (req, res) => {
+  const { event_id, college_id} = req.body;
+  try {
+    if (!event_id || !college_id) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "event_id and college_id are required",
+      });
+    }
+
+    if (
+      !mongoose.Types.ObjectId.isValid(event_id) ||
+      !mongoose.Types.ObjectId.isValid(college_id)
+    ) {
+      return res.status(400).json({
+        status: "not ok",
+        message: "Invalid event_id or college_id",
+      });
+    }
+
+    const eventStatus = await Event.findOne(
+      { _id: event_id, college_id },
+    );
+
+    if (!eventStatus) {
+      return res.status(404).json({
+        status: "not found",
+        message: "No event found with the provided IDs",
+      });
+    }
+
+    res.status(200).json({
+      status: "ok",
+      message: "Event status fetched successfully",
+      eventStatus: eventStatus.approval_status,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching event status",
       error: error.message,
     });
   }

@@ -757,7 +757,7 @@ router.post("/requestMobile", async (req, res) => {
       !mongoose.Types.ObjectId.isValid(sender) ||
       !mongoose.Types.ObjectId.isValid(receiver)
     ) {
-      return res.status(400).json({
+      return res.status(200).json({
         status: "not ok",
         message: "Invalid sender or receiver ID",
       });
@@ -765,7 +765,7 @@ router.post("/requestMobile", async (req, res) => {
 
     const fakeRequest = await Request.findOne({ request_id });
     if (fakeRequest) {
-      return res.status(400).json({
+      return res.status(200).json({
         status: "not ok",
         message: "Request sent already",
         request: fakeRequest,
