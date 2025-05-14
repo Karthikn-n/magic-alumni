@@ -46,9 +46,7 @@ class ProfileCardWidget extends StackedView<ProfileViewmodel>{
                             ),
                           ),
                           Text(
-                            viewModel.currentCollege != null && viewModel.currentCollege!.status == "not approved"
-                              ? "Not approved" 
-                              : "${viewModel.currentCollege!.departments[0].departmentName}, ${viewModel.currentCollege!.collegeName}",
+                            "${viewModel.currentCollege!.departments[0].departmentName}, ${viewModel.currentCollege!.collegeName}",
                             maxLines: 1,
                             style: TextStyle(
                               fontSize: 12,

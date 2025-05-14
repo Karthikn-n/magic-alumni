@@ -292,6 +292,8 @@ class ProfileViewmodel extends BaseViewModel{
 
   Future<void> onLogout() async {
     await storage.deleteAll();
+    auth.setCollege = null;
+    auth.setAlumni = null;
     navigation.pushNamedAndRemoveUntil(Routes.loginView, predicate: (route) => false,);
     notifyListeners();
     debugPrint("Logout");

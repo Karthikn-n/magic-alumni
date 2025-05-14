@@ -28,7 +28,8 @@ dependencies:
   razorpay_flutter: ^1.4.0
   pay: ^3.1.0
   mockito: ^5.4.5
-
+  permission_handler: ^12.0.0+1
+  sms_autofill: ^2.4.1
 
 dev_dependencies:
   flutter_test:
