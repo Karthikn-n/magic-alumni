@@ -27,6 +27,8 @@ class  AuthenticateService {
   CollegesModel? get currentCollege => _currentCollege;
   AlumniModel? get alumni => _alumni;
 
+  set setAlumni(AlumniModel? value) => _alumni = value;
+  set setCollege(CollegesModel? value) => _currentCollege = value;
 
   /// Register API for the Alumni 
   /// Store the Alumni id and alumni approval Status from response for future use
@@ -82,7 +84,7 @@ class  AuthenticateService {
   /// Call the Alumni profile API to check their approval status
   /// store the message in the log
   /// Checked Working
-  Future<bool> login(String mobile) async {
+  Future<bool> login(String mobile, String otp) async {
     try{
       final response = await _dio.post(
         "${baseApiUrl}member/login",
@@ -90,9 +92,8 @@ class  AuthenticateService {
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
         await store.write(key: "alumni_mobile", value: mobile.toString());
-        snackBar.showSnackbar(
-            message: response.data["message"], 
-        );
+        snackBar.showSnackbar(message: response.data["message"], );
+        await sendOtp(mobile, otp);
         return true;
       } else{
         snackBar.showSnackbar(message: response.data["message"], );
@@ -221,6 +222,35 @@ class  AuthenticateService {
     return _currentCollege;
   }
 
+  /// Send Whatsapp sms to the Alumni using the API
+  Future<void> sendOtp(String mobile, String otp) async {
+    // try{
+      print("URL from postman: http://api.whatsappmessages.in/wapp/api/send?apikey=f24080a2043a46248237a06e30b4c7b2&mobile=8838955205, 8682855091&msg=Missing ");
+      
+      final message = Uri.encodeComponent("Your One-Time password $otp for login");
+      final response = await _dio.post("$whatappAPIUrl$mobile&msg=$message",);
+      // if (response.statusCode == 200 && response.data["status"] == "success") {
+      //   return true;
+      // } else{
+      //   return false;
+      // }
+    // } on DioException catch (err, st) {
+    //   log("Something went on request login", error: err.toString(), stackTrace: st);
+    //   if (err.type == DioExceptionType.connectionTimeout ||
+    //       err.type == DioExceptionType.receiveTimeout) {
+    //     return false;
+    //   } 
+    //   final statusCode = err.response!.statusCode ?? 100;
+    //   final message = err.response!.data["message"] ?? "Unknown error occured";
+    //   final status = err.response!.data["status"] ?? "Error";
+    //   if((status == "not ok" && statusCode == 400) 
+    //     || (status == "not found" && statusCode == 404)
+    //     || (status == "error" && status == 500) ) {
+    //      snackBar.showSnackbar(message: message, );
+    //   } 
+    // }
+    // return false;
+  }
 
   /// Update the alumni || Student profile If they want to edit after approval
   Future<bool> update(Map<String, dynamic> data) async {

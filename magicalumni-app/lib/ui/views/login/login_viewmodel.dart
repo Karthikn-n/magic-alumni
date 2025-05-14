@@ -1,16 +1,22 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
 import 'package:magic_alumni/service/authenticate_service.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class LoginViewmodel extends BaseViewModel{
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
-
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+  final Dio _dio = Dio();
 
   bool isMobileAdded = false;
   bool isOtpAdded = false;
@@ -124,7 +130,9 @@ class LoginViewmodel extends BaseViewModel{
   // Call the API 
   Future<void> login(String mobile) async {
     isLoad = true;
-     await auth.login(mobile).then(
+    
+    final otp = Random().nextInt(900000) + 100000;
+     await auth.login(mobile, otp.toString()).then(
       (value){
         if(value){
           verifyAccount();
@@ -177,6 +185,65 @@ class LoginViewmodel extends BaseViewModel{
       "https://photographylife.com/wp-content/uploads/2014/09/Nikon-D750-Image-Samples-2.jpg", 
     ];
 
+
+  
+  Future<void> notificationPermission() async {
+    await Permission.notification.request();
+    await Permission.sms.request();
+  }
+
+  Future<void> listenForSms() async {
+    await SmsAutoFill().listenForCode();
+  }
+
+  Future<String> apphash() async {
+    String? hash = await storage.read(key: "app_hash");
+    if(hash == null){
+      String? hash = await SmsAutoFill().getAppSignature;
+      await storage.write(key: "app_hash",value: hash);
+      return hash;
+    } else {
+      return hash;
+    }
+  }
+ 
+  Future<int> generateOTP() async {
+    int otp = 1000 + (9999 - 1000) * (DateTime.now().millisecondsSinceEpoch % 1000) ~/ 1000;
+    // await storeOtp(otp.toString());
+    return otp;
+  }
+
+  Future<void> storeOtp(String otp) async{
+   await storage.write(key: "last_otp", value: otp);
+  }
+
+  Future<void> clearOTP() async{
+    await storage.delete(key: "last_otp");
+  }
+
+  Future<String?> getLastOtp() async {
+    return storage.read(key: "last_otp");
+  }
+
+  // TODO: Check the code API once credits are restored and call this in login button
+  Future<void> twilioOTPSender(String mobile) async {
+    try {
+      await SmsAutoFill().listenForCode();
+      int? lastOtp = await generateOTP();
+      String hashId = await apphash();
+      String key = "f665fb10246333b640a6f6bd929e2af3";
+      String templateId= "1407168862906996721";
+      String sms = "Your otp for Maduraimarket is $lastOtp. Please do not share this OTP. $hashId";
+      String url = "http://instantalerts.in/api/smsapi?key=$key&route=2&sender=INSTNE&number=$mobile&templateid=$templateId&sms=$sms";
+      final response = await _dio.post(url);
+      if (response.statusCode == 200) {
+      } else {
+        print("Failed to send OTP: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error sending OTP: $e");
+    }
+  }
 }
 
 
