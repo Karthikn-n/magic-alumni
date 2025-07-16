@@ -1,0 +1,16 @@
+To run the mongo db service:
+
+A) If the mongo db compass not started properly and shows this error
+   connect ECONNREFUSED 127.0.0.1:27017  connect ECONNREFUSED ::1:27017
+	1) open the cmd as admin
+	2) run this command - net start MongoDB
+	3) It will run the mongo db then connect the localhost
+B) Start the project to get the collections.
+	1) open the API project in command line (D:\Projects\magic-alumni\magicalumni-api).
+	2) run this command node app.js.
+C) If error shows like this querySrv ENOTFOUND _mongodb._tcp.localhost
+	1) change the connection setting to mongodb:// from mongodb+srv://
+D)To run the webapp open the folder
+	1) D:\Projects\magic-alumni\magicalumni-webapp
+	2) run - npm install command.
+	3) run - npm run dev then click the URL to open the admin panel
