@@ -19,7 +19,7 @@ class DioService {
 
   Future<void> init() async {
     // Load the .env file
-    await dotenv.load();
+    await dotenv.load(fileName: ".env");
   }
 
   // Singleton constructor
