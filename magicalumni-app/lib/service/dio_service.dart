@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DioService {
   // Create instance singleton constructor to ensure only one instance of Dio is used
@@ -15,11 +14,6 @@ class DioService {
   // Factory constructor to return the instance of DioService if it exists
   factory DioService(){
     return _dioService;
-  }
-
-  Future<void> init() async {
-    // Load the .env file
-    await dotenv.load(fileName: ".env");
   }
 
   // Singleton constructor
