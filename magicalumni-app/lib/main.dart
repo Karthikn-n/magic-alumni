@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:magic_alumni/app/app.locator.dart';
 import 'package:magic_alumni/app/app.router.dart';
-import 'package:magic_alumni/firebase_options.dart';
+// import 'package:magic_alumni/firebase_options.dart';
 import 'package:magic_alumni/service/onesignal_service.dart';
 import 'package:magic_alumni/service/snackbar_service.dart';
 import 'package:magic_alumni/ui/theme/app_theme.dart';
@@ -12,9 +12,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Make sure initialize the locator here for navigation routes
   setupLocator();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform
+  // );
   // Initialize the one signal notfiication service
   await OnesignalService.init();
   CustomSnackbarService.registerSnackbarService();
