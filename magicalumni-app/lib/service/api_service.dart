@@ -271,25 +271,25 @@ class ApiService {
   Future<String> checkEventStatus(String eventId) async {
     try {
       final response = await _dio.post(
-        "${baseApiUrl}event/status",
+        "${baseApiUrl}event/checkStatus",
         data: {
           "event_id": eventId,
-          "alumni_id": await storage.read(key: "alumni_id"),
+          "college_id": await storage.read(key: "college_id"),
         }
       );
       if (response.statusCode == 200 && response.data["status"] == "ok") {
-        return response.data["your_status"] ?? "";
+        return response.data["eventStatus"] ?? "";
       }
       return "";
     } on DioException catch (err, st) {
-      // log("Something went wrong on checking event status", stackTrace: st, error:  err.toString());
+      log("Something went wrong on checking event status", stackTrace: st, error:  err.toString());
       // final statusCode = err.response!.statusCode;
       // final message = err.response!.data["message"] ?? "Unknown error occured";
       // final status = err.response!.data["status"] ?? "Error";
       // if((status == "not ok" && statusCode == 400) 
       //   || (status == "not found" && statusCode == 404)
       //   || (status == "error" && status == 500) ) {
-        log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
+        // log("Something went on Requesting Alumni Profile", stackTrace: st, error: err.toString());
       // } 
       return "";
     }

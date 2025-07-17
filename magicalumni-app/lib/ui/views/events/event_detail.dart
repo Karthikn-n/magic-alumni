@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/model/events_model.dart';
 import 'package:magic_alumni/ui/views/events/events_viewmodel.dart';
 import 'package:stacked/stacked.dart';
@@ -11,7 +12,8 @@ import '../../widgets/people/filter_button.dart';
 class EventsDetailView extends StatelessWidget {
   final EventsModel event;
   final String status;
-  const EventsDetailView({super.key, required this.event, required this.status});
+  final ScrollController? scrollController;
+  const EventsDetailView({super.key, required this.event, required this.status, this.scrollController});
 
    @override
   Widget build(BuildContext context) {
@@ -46,12 +48,15 @@ class EventsDetailView extends StatelessWidget {
               ),
               height: size.height,
               child: SingleChildScrollView(
+                controller: scrollController,
                 child: Column(
                   children: [
                     AspectRatio(
                       aspectRatio: 16 / 9,
                       child: CachedNetworkImage(
-                        imageUrl: event.image,
+                        imageUrl: event.image.startsWith("/uploads") 
+                          ? "${baseApiUrl.replaceFirst('/api/', '')}${event.image}"
+                          : event.image,
                         imageBuilder: (context, imageProvider) => Ink(
                           child: Container(
                             decoration: BoxDecoration(

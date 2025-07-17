@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/model/events_model.dart';
+import 'package:magic_alumni/ui/views/events/event_detail.dart';
 import 'package:magic_alumni/ui/views/events/events_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
@@ -43,7 +45,29 @@ class EventListWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                         splashColor: Colors.white.withValues(alpha: 0.04),
                         onTap: () async => await model.apiService.checkEventStatus(events[index].id).then(
-                          (value) => model.navigateToEventDetail(events[index], value, key)),
+                          (value) => value.isEmpty && value != "approved"
+                             ? model.showUnapprovedEventSnack()
+                             : showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                useSafeArea: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) {
+                                  return DraggableScrollableSheet(
+                                    expand: true,
+                                    initialChildSize: 1.0,  // Full screen
+                                    minChildSize: 0.5,      // Minimum height when dragged down
+                                    maxChildSize: 1.0,
+                                    builder: (context, scrollController) {
+                                      return FractionallySizedBox(
+                                        heightFactor: 1.0, // 100% of screen height
+                                        child: EventsDetailView(event: events[index], status: value, key: key, scrollController: scrollController,),
+                                      );
+                                    },
+                                  );
+                                },
+                              )
+                        ),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
@@ -57,11 +81,14 @@ class EventListWidget extends StatelessWidget {
                               AspectRatio(
                                 aspectRatio: 16 / 9,
                                 child:  CachedNetworkImage(
-                                  imageUrl: events[index].image,
+                                  imageUrl: events[index].image.startsWith("/uploads") 
+                                  ? "${baseApiUrl.replaceFirst('/api/', '')}${events[index].image}"
+                                  : events[index].image,
                                   fit: BoxFit.cover,
                                   imageBuilder: (context, imageProvider) {
                                     return Container(
                                       decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
                                         image: DecorationImage(
                                           image: imageProvider,
                                           fit: BoxFit.cover,

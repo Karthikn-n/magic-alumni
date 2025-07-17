@@ -10,7 +10,10 @@ import '../../../service/api_service.dart';
 
 class EventsViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
-  
+  final bottomSheetService = locator<BottomSheetService>();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
+
+
    /// Use API Service to get the news from the API
   final ApiService apiService = ApiService();
   final ScrollController scrollController = ScrollController();
@@ -55,15 +58,21 @@ class EventsViewModel extends BaseViewModel {
     },);
   }
 
-  /// Get the event status if already user send the request
+  /// Get the event status if already user send the request and show snackbar if not approved
+  void showUnapprovedEventSnack() async => _snackbarService.showSnackbar(message: "Event is not approved yet");
   
 
   // Navigate to Event Detail view
   void navigateToEventDetail(EventsModel event, String status, Key? key){
-    _navigationService.navigateWithTransition(
-      EventsDetailView(event: event, status: status, key: key,), 
-      transitionStyle: Transition.downToUp
-    );
+    // bottomSheetService. setCustomSheetBuilders({
+    //     BottomSheetType.eventDetails: (context, sheetRequest, completer) =>
+    //         _EventDetailsSheet(request: sheetRequest, completer: completer),
+    //   });
+    // bottomS/
+    // _navigationService.navigateWithTransition(
+    //   EventsDetailView(event: event, status: status, key: key,), 
+    //   transitionStyle: Transition.downToUp
+    // );
   }
 
   void onDispose(){

@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:magic_alumni/constants/app_constants.dart';
 import 'package:magic_alumni/model/news_model.dart';
 import 'package:magic_alumni/ui/views/home/home_viewmodel.dart';
+import 'package:magic_alumni/ui/views/news/news_detail_view.dart';
 import 'package:stacked/stacked.dart';
 
 class LatestNewsWidget extends StatelessWidget {
@@ -31,7 +33,26 @@ class LatestNewsWidget extends StatelessWidget {
                 children: [
                   InkWell(
                     splashColor: Colors.transparent,
-                    onTap: () => model.navigateToNewsDetail(news[index], index),
+                    onTap: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      useSafeArea: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) {
+                        return DraggableScrollableSheet(
+                          expand: true,
+                          initialChildSize: 1.0,  // Full screen
+                          minChildSize: 0.5,      // Minimum height when dragged down
+                          maxChildSize: 1.0,
+                          builder: (context, scrollController) {
+                            return FractionallySizedBox(
+                              heightFactor: 1.0, // 100% of screen height
+                              child: NewsDetailView(news: news[index],),
+                            );
+                          },
+                        );
+                      },
+                    ),
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -53,7 +74,9 @@ class LatestNewsWidget extends StatelessWidget {
                                   topRight: Radius.circular(10)
                                 ),
                                 child: CachedNetworkImage(
-                                  imageUrl: news[index].image,
+                                  imageUrl: news[index].image.startsWith("/uploads") 
+                                  ? "${baseApiUrl.replaceFirst('/api/', '')}${news[index].image}"
+                                  : news[index].image,
                                   fit: BoxFit.cover,
                                   imageBuilder: (context, imageProvider) {
                                     return Container(
